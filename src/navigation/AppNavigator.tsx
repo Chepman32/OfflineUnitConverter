@@ -19,7 +19,7 @@ type ScreenKey = 'Home' | 'Converter' | 'Favorites' | 'History' | 'Settings';
 
 export default function AppNavigator() {
   // Always call hooks at the top level
-  const [tab, setTab] = useState<ScreenKey>('Converter');
+  const [tab, setTab] = useState<ScreenKey>('Home');
   
   // Try to dynamically require React Navigation if available; otherwise use shim.
   const Nav = useMemo(() => {
@@ -44,8 +44,9 @@ export default function AppNavigator() {
             case 'Converter': return 'swap-horizontal-outline';
             case 'Favorites': return 'star-outline';
             case 'History': return 'time-outline';
-            case 'MultiConvert': return 'list-outline';
             case 'Settings': return 'settings-outline';
+            // Nested screens
+            case 'MultiConvert': return 'list-outline';
             case 'Pro': return 'diamond-outline';
             case 'About': return 'information-circle-outline';
             case 'Licenses': return 'document-text-outline';
@@ -53,6 +54,54 @@ export default function AppNavigator() {
             default: return 'ellipse-outline';
           }
         };
+
+        // Settings Stack for nested screens
+        const SettingsStack = createNativeStackNavigator();
+        const SettingsStackScreen = () => (
+          <SettingsStack.Navigator screenOptions={{ headerShown: true }}>
+            <SettingsStack.Screen 
+              name="SettingsMain" 
+              component={SettingsScreen} 
+              options={{ title: t('tabs.settings', 'Settings') }}
+            />
+            <SettingsStack.Screen 
+              name="Pro" 
+              component={PaywallScreen} 
+              options={{ title: t('tabs.pro', 'Pro') }}
+            />
+            <SettingsStack.Screen 
+              name="About" 
+              component={AboutScreen} 
+              options={{ title: t('settings.about', 'About') }}
+            />
+            <SettingsStack.Screen 
+              name="Licenses" 
+              component={LicensesScreen} 
+              options={{ title: t('licenses.title', 'Licenses') }}
+            />
+            <SettingsStack.Screen 
+              name="CustomUnits" 
+              component={CustomUnitsScreen} 
+              options={{ title: t('customUnits.title', 'Custom Units') }}
+            />
+          </SettingsStack.Navigator>
+        );
+
+        // Home Stack for MultiConvert access
+        const HomeStack = createNativeStackNavigator();
+        const HomeStackScreen = () => (
+          <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name="HomeMain" component={HomeScreen} />
+            <HomeStack.Screen 
+              name="MultiConvert" 
+              component={MultiConvertScreen}
+              options={{ 
+                headerShown: true,
+                title: t('tabs.multiConvert', 'All Units')
+              }}
+            />
+          </HomeStack.Navigator>
+        );
 
 
 
@@ -74,16 +123,31 @@ export default function AppNavigator() {
               },
             })}
           >
-            <Tabs.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t('tabs.home','Home') }} />
-            <Tabs.Screen name="Converter" component={ConverterScreen} options={{ tabBarLabel: t('tabs.converter','Converter') }} />
-            <Tabs.Screen name="Favorites" component={FavoritesScreen} options={{ tabBarLabel: t('tabs.favorites','Favorites') }} />
-            <Tabs.Screen name="History" component={HistoryScreen} options={{ tabBarLabel: t('tabs.history','History') }} />
-            <Tabs.Screen name="MultiConvert" component={MultiConvertScreen} options={{ tabBarLabel: t('tabs.multiConvert','All Units') }} />
-            <Tabs.Screen name="Settings" component={SettingsScreen} options={{ tabBarLabel: t('tabs.settings','Settings') }} />
-            <Tabs.Screen name="Pro" component={PaywallScreen} options={{ tabBarLabel: t('tabs.pro','Pro') }} />
-            <Tabs.Screen name="About" component={AboutScreen} options={{ tabBarLabel: 'About' }} />
-            <Tabs.Screen name="Licenses" component={LicensesScreen} options={{ tabBarLabel: t('licenses.title','Licenses') }} />
-            <Tabs.Screen name="CustomUnits" component={CustomUnitsScreen} options={{ tabBarLabel: t('customUnits.title','Custom') }} />
+            <Tabs.Screen 
+              name="Home" 
+              component={HomeStackScreen} 
+              options={{ tabBarLabel: t('tabs.home','Home') }} 
+            />
+            <Tabs.Screen 
+              name="Converter" 
+              component={ConverterScreen} 
+              options={{ tabBarLabel: t('tabs.converter','Converter') }} 
+            />
+            <Tabs.Screen 
+              name="Favorites" 
+              component={FavoritesScreen} 
+              options={{ tabBarLabel: t('tabs.favorites','Favorites') }} 
+            />
+            <Tabs.Screen 
+              name="History" 
+              component={HistoryScreen} 
+              options={{ tabBarLabel: t('tabs.history','History') }} 
+            />
+            <Tabs.Screen 
+              name="Settings" 
+              component={SettingsStackScreen} 
+              options={{ tabBarLabel: t('tabs.settings','Settings') }} 
+            />
           </Tabs.Navigator>
         );
 
@@ -131,16 +195,14 @@ export default function AppNavigator() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        {tab === 'Home' && <HomeScreen />}
         {tab === 'Converter' && <ConverterScreen />}
         {tab === 'Favorites' && <FavoritesScreen />}
         {tab === 'History' && <HistoryScreen />}
         {tab === 'Settings' && <SettingsScreen />}
-        {tab === 'Home' && (
-          <View style={styles.center}><Text>Home (stub)</Text></View>
-        )}
       </View>
       <View style={styles.tabbar}>
-        {(['Converter','Favorites','History','Settings'] as ScreenKey[]).map(k => (
+        {(['Home','Converter','Favorites','History','Settings'] as ScreenKey[]).map(k => (
           <Pressable key={k} onPress={() => setTab(k)} style={[styles.tab, tab===k && styles.tabActive]}>
             <Text style={[styles.tabText, tab===k && styles.tabTextActive]}>{k}</Text>
           </Pressable>

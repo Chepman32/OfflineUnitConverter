@@ -11,8 +11,6 @@ import IconTest from '../components/IconTest';
 
 export default function HomeScreen() {
   const nav = useOptionalNavigation();
-  const setFrom = useAppStore(s => s.setFrom);
-  const setTo = useAppStore(s => s.setTo);
   const setPair = useAppStore(s => s.setPair);
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
   const recents = useAppStore(s => s.recentsCategories);
@@ -20,7 +18,15 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
       <IconTest />
-      <Text style={[styles.title, { color: theme.onSurface }]}>{t('home.categories','Categories')}</Text>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: theme.onSurface }]}>{t('home.categories','Categories')}</Text>
+        <Pressable 
+          style={styles.multiConvertBtn} 
+          onPress={() => nav?.navigate?.('MultiConvert')}
+        >
+          <Text style={styles.multiConvertText}>{t('tabs.multiConvert','All Units')}</Text>
+        </Pressable>
+      </View>
       {recents.length > 0 && (
         <View style={{ marginBottom: 8 }}>
           <Text style={[styles.subtitle, { color: theme.onSurface }]}>{t('home.recents','Recents')}</Text>
@@ -62,7 +68,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex:1, padding: 20, paddingBottom: 80 },
-  title: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  title: { fontSize: 20, fontWeight: '700' },
+  multiConvertBtn: { backgroundColor: '#007AFF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
+  multiConvertText: { color: '#fff', fontWeight: '600', fontSize: 14 },
   subtitle: { fontWeight: '600', marginBottom: 6 },
   grid: { justifyContent: 'space-between' },
   chip: { borderWidth:1, borderColor:'#ddd', borderRadius: 12, paddingHorizontal:10, paddingVertical:6 },
