@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { convert } from '../domain/conversion/engine';
 import { getUnitById, categories } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
@@ -10,6 +10,7 @@ import NumericKeypad from '../components/NumericKeypad';
 import UnitPicker from '../components/UnitPicker';
 import { useFormatOptions } from '../hooks/useFormatOptions';
 import { useAppStore } from '../store';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 export default function ConverterScreen() {
   const fromUnit = useAppStore(s => s.fromUnitId);
@@ -23,6 +24,8 @@ export default function ConverterScreen() {
   const [pickerFor, setPickerFor] = React.useState<'from'|'to'|'category'|null>(null);
   const [showPrecision, setShowPrecision] = React.useState(false);
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
+  const addHistory = useAppStore(s => s.addHistory);
+  const isPro = useAppStore(s => s.pro);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
 
@@ -39,6 +42,28 @@ export default function ConverterScreen() {
     if ((s.match(/\./g) || []).length > 1) return true;
     return isNaN(Number(s));
   }, [input]);
+
+  // Auto-track history when conversion changes
+  React.useEffect(() => {
+    if (!input || input === '0' || result === '-' || invalid) return;
+    
+    const timeoutId = setTimeout(() => {
+      try {
+        addHistory({
+          id: String(Date.now()),
+          inputValue: input,
+          fromUnitId: fromUnit,
+          toUnitId: toUnit,
+          resultValue: result,
+          createdAt: Date.now(),
+        }, isPro);
+      } catch (error) {
+        console.warn('Failed to add history:', error);
+      }
+    }, 1000); // Debounce for 1 second to avoid spamming history
+
+    return () => clearTimeout(timeoutId);
+  }, [input, fromUnit, toUnit, result, invalid, addHistory, isPro]);
 
   const onKey = (k: string) => {
     const prev = useAppStore.getState().input;
@@ -77,14 +102,41 @@ export default function ConverterScreen() {
             <Text style={styles.swapIcon}>⇄</Text>
           </Pressable>
 
-          <View style={styles.valueContainer}>
+          <Pressable
+            style={styles.valueContainer}
+            onLongPress={() => {
+              Alert.alert(
+                'Result Options',
+                `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { 
+                    text: 'Copy Value', 
+                    onPress: () => {
+                      Clipboard.setString(result);
+                      Alert.alert('Copied', 'Result copied to clipboard');
+                    }
+                  },
+                  { 
+                    text: 'Copy with Unit', 
+                    onPress: () => {
+                      const unit = getUnitById(toUnit);
+                      const text = `${result} ${unit?.symbol || toUnit}`;
+                      Clipboard.setString(text);
+                      Alert.alert('Copied', 'Result with unit copied to clipboard');
+                    }
+                  }
+                ]
+              );
+            }}
+          >
             <Text style={[styles.resultValue, { color: theme.onSurface }]}>
               {result}
             </Text>
             <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
               {getUnitById(toUnit)?.symbol || toUnit}
             </Text>
-          </View>
+          </Pressable>
         </View>
       </View>
 
@@ -104,6 +156,7 @@ export default function ConverterScreen() {
         onSelect={(id) => {
           const pair = getDefaultPairForCategory(id as any);
           setPair(pair[0], pair[1]);
+          setInput('0'); // Reset input when category changes
           addRecentCategory(id);
         }}
       />
@@ -147,6 +200,7 @@ export default function ConverterScreen() {
                 onPress={() => {
                   const pair = getDefaultPairForCategory(cat.id as any);
                   setPair(pair[0], pair[1]);
+                  setInput('0'); // Reset input when category changes
                   addRecentCategory(cat.id);
                   setPickerFor(null);
                 }}
