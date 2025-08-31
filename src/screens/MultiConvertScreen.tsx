@@ -106,7 +106,7 @@ export default function MultiConvertScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
   row: { flexDirection:'row', alignItems:'center', gap: 8, marginBottom: 12 },
   label: { color:'#555' },

@@ -38,7 +38,7 @@ export default function FavoritesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600' },
   desc: { marginTop: 6, color: '#666' },
   row: { flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingVertical: 10, borderBottomWidth:1, borderColor:'#f0f0f0' },

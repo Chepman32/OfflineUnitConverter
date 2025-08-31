@@ -251,7 +251,7 @@ function ScrollRowCategories({ active, onSelect }: { active: string; onSelect: (
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, gap: 12 },
+  container: { flex: 1, padding: 20, paddingBottom: 80 },
   row: { flexDirection: 'row', alignItems:'center', gap: 12 },
   input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, fontSize: 18 },
   inputInvalid: { borderColor: '#ff3b30' },

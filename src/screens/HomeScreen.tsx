@@ -7,6 +7,7 @@ import { useAppStore } from '../store';
 import { t } from '../i18n';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import { useTheme } from '../theme/ThemeProvider';
+import IconTest from '../components/IconTest';
 
 export default function HomeScreen() {
   const nav = useOptionalNavigation();
@@ -18,6 +19,7 @@ export default function HomeScreen() {
   const theme = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
+      <IconTest />
       <Text style={[styles.title, { color: theme.onSurface }]}>{t('home.categories','Categories')}</Text>
       {recents.length > 0 && (
         <View style={{ marginBottom: 8 }}>
@@ -59,7 +61,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex:1, padding: 20 },
+  container: { flex:1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
   subtitle: { fontWeight: '600', marginBottom: 6 },
   grid: { justifyContent: 'space-between' },

@@ -136,7 +136,7 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, gap: 12 },
+  container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600' },
   row: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical: 8 },
   label: { fontSize: 16 },

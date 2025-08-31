@@ -13,10 +13,14 @@ import LicensesScreen from '../screens/LicensesScreen';
 import CustomUnitsScreen from '../screens/CustomUnitsScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import { useAppStore } from '../store';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type ScreenKey = 'Home' | 'Converter' | 'Favorites' | 'History' | 'Settings';
 
 export default function AppNavigator() {
+  // Always call hooks at the top level
+  const [tab, setTab] = useState<ScreenKey>('Converter');
+  
   // Try to dynamically require React Navigation if available; otherwise use shim.
   const Nav = useMemo(() => {
     try {
@@ -32,12 +36,7 @@ export default function AppNavigator() {
         const { createNativeStackNavigator } = require('@react-navigation/native-stack');
         const Stack = createNativeStackNavigator();
 
-        // Prefer vector icons if available; fallback to emoji if not installed
-        let Ionicons: any = null;
-        try {
-          Ionicons = require('react-native-vector-icons/Ionicons').default
-            || require('react-native-vector-icons/Ionicons');
-        } catch {}
+        // Vector icons are now imported at the top of the file
 
         const getIonName = (name: string): string => {
           switch (name) {
@@ -55,31 +54,24 @@ export default function AppNavigator() {
           }
         };
 
-        const getEmoji = (name: string): string => {
-          switch (name) {
-            case 'Home': return '🏠';
-            case 'Converter': return '🔁';
-            case 'Favorites': return '⭐';
-            case 'History': return '🕘';
-            case 'MultiConvert': return '📋';
-            case 'Settings': return '⚙️';
-            case 'Pro': return '💎';
-            case 'About': return 'ℹ️';
-            case 'Licenses': return '📜';
-            case 'CustomUnits': return '🧩';
-            default: return '⬣';
-          }
-        };
+
 
         const TabsNav = () => (
           <Tabs.Navigator
             screenOptions={({ route }: any) => ({
               headerShown: false,
-              tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-                Ionicons
-                  ? <Ionicons name={getIonName(route.name)} size={size} color={color} />
-                  : <Text style={{ fontSize: size, color }} accessibilityLabel={route.name + ' icon'}>{getEmoji(route.name)}</Text>
-              ),
+              tabBarStyle: {
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 60,
+                paddingBottom: 5,
+                paddingTop: 5,
+              },
+              tabBarIcon: ({ color, size }: { color: string; size: number }) => {
+                return <Ionicons name={getIonName(route.name)} size={size} color={color} />;
+              },
             })}
           >
             <Tabs.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: t('tabs.home','Home') }} />
@@ -136,7 +128,6 @@ export default function AppNavigator() {
   if (Nav) return <Nav />;
 
   // Fallback shim: simple top tabs
-  const [tab, setTab] = useState<ScreenKey>('Converter');
   return (
     <View style={styles.container}>
       <View style={styles.content}>
