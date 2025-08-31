@@ -7,6 +7,8 @@ export default {
     paste: 'Paste',
     delete: 'Delete',
     open: 'Open',
+    next: 'Next',
+    done: 'Done',
     from: 'From',
     to: 'To',
     value: 'Value',
@@ -108,5 +110,17 @@ export default {
     text2: 'High precision math, multi-convert, favorites.',
     title3: 'Unlock Pro',
     text3: 'Unlimited history and favorites, themes, more.',
+    card1: {
+      title: 'History',
+      text: 'View your recent conversion history',
+    },
+    card2: {
+      title: 'Settings',
+      text: 'Customize the app to suit your preferences',
+    },
+    card3: {
+      title: 'Simple and Easy',
+      text: 'Enjoy a clean and easy-to-use interface',
+    },
   },
 };
