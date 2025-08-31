@@ -190,8 +190,14 @@ export default function ConverterScreen() {
 
       {/* Category Picker Modal */}
       {pickerFor === 'category' && (
-        <View style={styles.modalOverlay}>
-          <View style={[styles.categoryModal, { backgroundColor: theme.surface }]}>
+        <Pressable 
+          style={styles.modalOverlay}
+          onPress={() => setPickerFor(null)}
+        >
+          <Pressable 
+            style={[styles.categoryModal, { backgroundColor: theme.surface }]}
+            onPress={(e) => e.stopPropagation()}
+          >
             <Text style={[styles.modalTitle, { color: theme.onSurface }]}>Select Category</Text>
             {categories.map(cat => (
               <Pressable
@@ -214,8 +220,8 @@ export default function ConverterScreen() {
             >
               <Text style={styles.modalCloseText}>Close</Text>
             </Pressable>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       )}
     </View>
   );

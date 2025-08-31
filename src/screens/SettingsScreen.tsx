@@ -29,11 +29,16 @@ export default function SettingsScreen() {
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
   const pro = useAppStore(s => s.pro);
+  const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
   const [json, setJson] = React.useState('');
   const nav = useOptionalNavigation();
   const tokens = useTheme();
   return (
-    <View style={[styles.container, { backgroundColor: tokens.surface }]}>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: tokens.surface }]}
+      contentContainerStyle={{ minHeight: '120%' }}
+      showsVerticalScrollIndicator={true}
+    >
       <Text style={[styles.title, { color: tokens.onSurface }]}>{t('settings.title','Settings')}</Text>
       <View style={styles.row}>
         <Text style={styles.label}>{t('settings.theme','Theme')}</Text>
@@ -129,20 +134,21 @@ export default function SettingsScreen() {
           <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('About')}><Text style={styles.btnText}>{t('settings.about','About')}</Text></Pressable>
           <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('Licenses')}><Text style={styles.btnText}>{t('licenses.title','Licenses')}</Text></Pressable>
           <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('CustomUnits')}><Text style={styles.btnText}>{t('customUnits.title','Custom Units')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: '#ff6b35' }]} onPress={() => { setOnboardingSeen(false); Alert.alert('Onboarding Reset', 'Onboarding will show again on next app launch'); }}><Text style={styles.btnText}>Reset Onboarding</Text></Pressable>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingBottom: 80 },
+  container: { flex: 1, padding: 20, paddingBottom: 150 },
   title: { fontSize: 20, fontWeight: '600' },
   row: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical: 8 },
   label: { fontSize: 16 },
   section: { marginTop: 16 },
   subtitle: { fontWeight:'600', marginBottom: 8 },
-  buttons: { flexDirection:'row', gap: 12 },
+  buttons: { flexDirection:'row', gap: 12, flexWrap: 'wrap' },
   btn: { backgroundColor:'#111', paddingHorizontal:12, paddingVertical:10, borderRadius:8 },
   btnText: { color:'#fff', fontWeight:'600' },
   textbox: { marginTop: 8, borderWidth:1, borderColor:'#eee', borderRadius:10, padding: 8, maxHeight: 160 },
