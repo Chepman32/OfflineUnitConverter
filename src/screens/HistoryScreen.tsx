@@ -26,7 +26,7 @@ export default function HistoryScreen() {
         <Pressable accessibilityRole="button" onPress={() => Alert.alert(t('history.title','History'), t('confirm.areYouSure','Are you sure?'),[
           { text:'Cancel', style:'cancel' },
           { text:t('history.clear','Clear'), style:'destructive', onPress: () => clear() },
-        ])}><Text>{t('history.clear','Clear')}</Text></Pressable>
+        ])}><Text style={{ color: theme.onSurface }}>{t('history.clear','Clear')}</Text></Pressable>
       </View>
       <FlatList
         data={history}
@@ -35,10 +35,10 @@ export default function HistoryScreen() {
           const f = favorites.find(x => x.fromUnitId === item.fromUnitId && x.toUnitId === item.toUnitId);
           const starred = !!f;
           return (
-            <View style={styles.row}>
+            <View style={[styles.row, { borderBottomColor: theme.border }]}>
               <Pressable style={{ flex: 1 }} onPress={() => { setFrom(item.fromUnitId); setTo(item.toUnitId); setInput(item.inputValue); nav?.navigate?.('Converter'); }}>
-                <Text style={styles.expr}>{item.inputValue} {item.fromUnitId} → {item.resultValue} {item.toUnitId}</Text>
-                <Text style={styles.time}>{dayjs(item.createdAt).fromNow()}</Text>
+                <Text style={[styles.expr, { color: theme.onSurface }]}>{item.inputValue} {item.fromUnitId} → {item.resultValue} {item.toUnitId}</Text>
+                <Text style={[styles.time, { color: theme.onSurfaceSecondary }]}>{dayjs(item.createdAt).fromNow()}</Text>
               </Pressable>
               <Pressable accessibilityRole="button" style={styles.starBtn} onPress={() => {
                 if (starred) removeFavorite(f!.id);
@@ -49,7 +49,7 @@ export default function HistoryScreen() {
             </View>
           );
         }}
-        ListEmptyComponent={<Text style={styles.desc}>{t('history.empty','No history yet.')}</Text>}
+        ListEmptyComponent={<Text style={[styles.desc, { color: theme.onSurfaceSecondary }]}>{t('history.empty','No history yet.')}</Text>}
       />
     </View>
   );
@@ -58,11 +58,11 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600' },
-  desc: { marginTop: 6, color: '#666' },
-  row: { paddingVertical: 10, borderBottomWidth:1, borderColor:'#f0f0f0' },
+  desc: { marginTop: 6 },
+  row: { paddingVertical: 10, borderBottomWidth:1 },
   expr: { fontSize: 16 },
-  time: { color:'#888', marginTop: 2, fontSize: 12 },
+  time: { marginTop: 2, fontSize: 12 },
   starBtn: { paddingHorizontal: 10, paddingVertical: 6 },
-  star: { fontSize: 18, color:'#bbb' },
+  star: { fontSize: 18, color:'#BBBBBB' },
   starActive: { color:'#f7b500' },
 });

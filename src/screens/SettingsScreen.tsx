@@ -41,99 +41,101 @@ export default function SettingsScreen() {
     >
       <Text style={[styles.title, { color: tokens.onSurface }]}>{t('settings.title','Settings')}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.theme','Theme')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.theme','Theme')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
           {(['system','light','dark','oled'] as const).map(m => (
-            <AnimatedPress key={m} onPress={() => { if (m==='oled' && !pro) { nav?.navigate?.('Pro'); return; } setTheme(m); }} style={[styles.chip, themeMode===m && styles.chipActive]}>
-              <Text style={[styles.chipText, themeMode===m && styles.chipTextActive]}>{m}</Text>
+            <AnimatedPress key={m} onPress={() => { if (m==='oled' && !pro) { nav?.navigate?.('Pro'); return; } setTheme(m); }} style={[styles.chip, { borderColor: tokens.border }, themeMode===m && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
+              <Text style={[{ color: tokens.onSurface }, themeMode===m && { color: '#FFFFFF' }]}>{m}</Text>
             </AnimatedPress>
           ))}
         </View>
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.reduceMotion','Reduce Motion')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.reduceMotion','Reduce Motion')}</Text>
         <Switch value={reduceMotion} onValueChange={setReduceMotion} />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.grouping','Thousands Grouping')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.grouping','Thousands Grouping')}</Text>
         <Switch value={!!useGrouping} onValueChange={setUseGrouping} />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.copy','Copy Mode')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.copy','Copy Mode')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
           {([ 'value', 'value_unit', 'expression' ] as const).map(m => (
-            <AnimatedPress key={m} onPress={() => setCopyMode(m)} style={[styles.chip, copyMode===m && styles.chipActive]}>
-              <Text style={[styles.chipText, copyMode===m && styles.chipTextActive]}>{m}</Text>
+            <AnimatedPress key={m} onPress={() => setCopyMode(m)} style={[styles.chip, { borderColor: tokens.border }, copyMode===m && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
+              <Text style={[{ color: tokens.onSurface }, copyMode===m && { color: '#FFFFFF' }]}>{m}</Text>
             </AnimatedPress>
           ))}
         </View>
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.locale','Locale')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.locale','Locale')}</Text>
         <TextInput
           accessibilityLabel={t('settings.locale','Locale')}
           value={locale ?? ''}
           onChangeText={(v) => setLocale(v || undefined)}
           placeholder="e.g. en-US"
-          style={{ borderWidth:1, borderColor:'#ddd', borderRadius:8, paddingHorizontal:8, paddingVertical:6, minWidth: 100 }}
+          style={{ borderWidth:1, borderColor: tokens.inputBorder, backgroundColor: tokens.inputBackground, color: tokens.onSurface, borderRadius:8, paddingHorizontal:8, paddingVertical:6, minWidth: 100 }}
         />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.haptics','Haptics')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.haptics','Haptics')}</Text>
         <Switch value={haptics} onValueChange={setHaptics} />
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.language','Language')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.language','Language')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
           {(['en'] as const).map(lng => (
-            <AnimatedPress key={lng} onPress={() => setLanguage(lng)} style={[styles.chip, language===lng && styles.chipActive]}>
-              <Text style={[styles.chipText, language===lng && styles.chipTextActive]}>{lng}</Text>
+            <AnimatedPress key={lng} onPress={() => setLanguage(lng)} style={[styles.chip, { borderColor: tokens.border }, language===lng && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
+              <Text style={[{ color: tokens.onSurface }, language===lng && { color: '#FFFFFF' }]}>{lng}</Text>
             </AnimatedPress>
           ))}
         </View>
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.decimals','Decimals')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.decimals','Decimals')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
-          <Pressable style={styles.btnSmall} onPress={() => setDecimals(Math.max(0, decimals - 1))}><Text>-</Text></Pressable>
-          <Text style={{ minWidth: 24, textAlign:'center' }}>{decimals}</Text>
-          <Pressable style={styles.btnSmall} onPress={() => setDecimals(Math.min(12, decimals + 1))}><Text>+</Text></Pressable>
+          <Pressable style={[styles.btnSmall, { borderColor: tokens.border }]} onPress={() => setDecimals(Math.max(0, decimals - 1))}><Text style={{ color: tokens.onSurface }}>-</Text></Pressable>
+          <Text style={{ minWidth: 24, textAlign:'center', color: tokens.onSurface }}>{decimals}</Text>
+          <Pressable style={[styles.btnSmall, { borderColor: tokens.border }]} onPress={() => setDecimals(Math.min(12, decimals + 1))}><Text style={{ color: tokens.onSurface }}>+</Text></Pressable>
         </View>
       </View>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('settings.rounding','Rounding')}</Text>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.rounding','Rounding')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
           {(['halfUp','floor','ceil','bankers'] as const).map(m => (
-            <Pressable key={m} onPress={() => setRounding(m)} style={[styles.chip, rounding===m && styles.chipActive]}>
-              <Text style={[styles.chipText, rounding===m && styles.chipTextActive]}>{m}</Text>
+            <Pressable key={m} onPress={() => setRounding(m)} style={[styles.chip, { borderColor: tokens.border }, rounding===m && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
+              <Text style={[{ color: tokens.onSurface }, rounding===m && { color: '#FFFFFF' }]}>{m}</Text>
             </Pressable>
           ))}
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.subtitle}>{t('settings.export','Export')} / {t('settings.import','Import')}</Text>
+        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.export','Export')} / {t('settings.import','Import')}</Text>
         <View style={styles.buttons}>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => setJson(exportAll())}><Text style={styles.btnText}>{t('settings.export','Export')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => { try { importAll(json); Alert.alert(t('settings.import','Import'), t('settings.success','Success')); } catch (e:any) { Alert.alert(t('settings.import','Import'), e?.message || String(e)); } }}><Text style={styles.btnText}>{t('settings.import','Import')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={async () => { try { await (RNShare as any).Share.share({ message: exportAll() }); } catch {} }}><Text style={styles.btnText}>{t('settings.share','Share')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={async () => { try { const s = await Clipboard.getString(); if (s) setJson(s); } catch {} }}><Text style={styles.btnText}>{t('settings.paste','Paste')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => setJson(exportAll())}><Text style={styles.btnText}>{t('settings.export','Export')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => { try { importAll(json); Alert.alert(t('settings.import','Import'), t('settings.success','Success')); } catch (e:any) { Alert.alert(t('settings.import','Import'), e?.message || String(e)); } }}><Text style={styles.btnText}>{t('settings.import','Import')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={async () => { try { await (RNShare as any).Share.share({ message: exportAll() }); } catch {} }}><Text style={styles.btnText}>{t('settings.share','Share')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={async () => { try { const s = await Clipboard.getString(); if (s) setJson(s); } catch {} }}><Text style={styles.btnText}>{t('settings.paste','Paste')}</Text></Pressable>
         </View>
-        <ScrollView style={styles.textbox}>
+        <ScrollView style={[styles.textbox, { borderColor: tokens.border, backgroundColor: tokens.inputBackground }]}>
           <TextInput
             multiline
             placeholder="Exported JSON will appear here. Paste here to import."
+            placeholderTextColor={tokens.onSurfaceMuted}
             value={json}
             onChangeText={setJson}
+            style={{ color: tokens.onSurface }}
           />
         </ScrollView>
       </View>
       <View style={styles.section}>
-        <Text style={styles.subtitle}>{t('settings.more','More')}</Text>
+        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.more','More')}</Text>
         <View style={styles.buttons}>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('Pro')}><Text style={styles.btnText}>{t('tabs.pro','Pro')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('About')}><Text style={styles.btnText}>{t('settings.about','About')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('Licenses')}><Text style={styles.btnText}>{t('licenses.title','Licenses')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={styles.btn} onPress={() => nav?.navigate?.('CustomUnits')}><Text style={styles.btnText}>{t('customUnits.title','Custom Units')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('Pro')}><Text style={styles.btnText}>{t('tabs.pro','Pro')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('About')}><Text style={styles.btnText}>{t('settings.about','About')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('Licenses')}><Text style={styles.btnText}>{t('licenses.title','Licenses')}</Text></Pressable>
+          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('CustomUnits')}><Text style={styles.btnText}>{t('customUnits.title','Custom Units')}</Text></Pressable>
           <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: '#ff6b35' }]} onPress={() => { setOnboardingSeen(false); Alert.alert('Onboarding Reset', 'Onboarding will show again on next app launch'); }}><Text style={styles.btnText}>Reset Onboarding</Text></Pressable>
         </View>
       </View>
