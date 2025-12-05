@@ -165,6 +165,13 @@ export const units: UnitDef[] = [
   { id: 'cd_m2', categoryId: 'luminance', name: 'Candela per square meter', symbol: 'cd/m²', factor: 1, aliases: ['nit'] },
   { id: 'nit', categoryId: 'luminance', name: 'Nit', symbol: 'nt', factor: 1 },
   { id: 'ftL', categoryId: 'luminance', name: 'Foot-lambert', symbol: 'ft-L', factor: 3.4262591 },
+
+  // Fuel Efficiency (base: L/100km - lower is more efficient)
+  // Using L/100km as base. For mpg conversions: mpg = 235.214583 / (L/100km)
+  { id: 'L_100km', categoryId: 'fuel_efficiency', name: 'Liters per 100 km', symbol: 'L/100km', factor: 1 },
+  { id: 'L_10km', categoryId: 'fuel_efficiency', name: 'Liters per 10 km', symbol: 'L/10km', factor: 0.1 },
+  { id: 'gal_100mi_us', categoryId: 'fuel_efficiency', name: 'Gallons (US) per 100 mi', symbol: 'gal/100mi', factor: 2.352145833 },
+  { id: 'gal_100mi_uk', categoryId: 'fuel_efficiency', name: 'Gallons (UK) per 100 mi', symbol: 'gal/100mi (UK)', factor: 2.824809363 },
 ];
 
 export function getCategoryById(id: Category['id']): Category | undefined {

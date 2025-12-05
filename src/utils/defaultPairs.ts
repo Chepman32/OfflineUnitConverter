@@ -15,6 +15,7 @@ export const defaultPairs: Record<string, [string, string]> = {
   data: ['MB', 'MiB'],
   angle: ['deg', 'rad'],
   frequency: ['Hz', 'kHz'],
+  fuel_efficiency: ['L_100km', 'gal_100mi_us'],
   force: ['N', 'lbf'],
   torque: ['N_m', 'lbf_ft'],
   density: ['kg_m3', 'g_cm3'],

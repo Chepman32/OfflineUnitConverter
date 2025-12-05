@@ -35,12 +35,18 @@ export const createConversionSlice: StateCreator<ConversionState, [], [], Conver
   }),
   swap: () => {
     const { fromUnitId, toUnitId, input } = get();
-    set({ fromUnitId: toUnitId, toUnitId: fromUnitId, result: convert(input, toUnitId, fromUnitId) });
+    let res = '-';
+    try { res = convert(input, toUnitId, fromUnitId); } catch {}
+    set({ fromUnitId: toUnitId, toUnitId: fromUnitId, result: res });
   },
-  setInput: (value: string) => set({ input: value, result: convert(value, get().fromUnitId, get().toUnitId) }),
-  setPair: (fromUnitId: string, toUnitId: string) => set((state) => ({
-    fromUnitId,
-    toUnitId,
-    result: convert(state.input, fromUnitId, toUnitId),
-  })),
+  setInput: (value: string) => {
+    let res = '-';
+    try { res = convert(value, get().fromUnitId, get().toUnitId); } catch {}
+    set({ input: value, result: res });
+  },
+  setPair: (fromUnitId: string, toUnitId: string) => set((state) => {
+    let res = '-';
+    try { res = convert(state.input, fromUnitId, toUnitId); } catch {}
+    return { fromUnitId, toUnitId, result: res };
+  }),
 });

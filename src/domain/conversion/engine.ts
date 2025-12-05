@@ -93,7 +93,8 @@ function applyRounding(d: any, mode: RoundingMode, decimals: number): any {
 export function convertRaw(value: string | number, fromUnitId: string, toUnitId: string): any {
   const from = getUnitById(fromUnitId);
   const to = getUnitById(toUnitId);
-  if (!from || !to) throw new Error('Unknown unit');
+  if (!from) throw new Error(`Unknown unit: ${fromUnitId}`);
+  if (!to) throw new Error(`Unknown unit: ${toUnitId}`);
   if (from.categoryId !== to.categoryId) throw new Error('Category mismatch');
 
   const v = toDecimal(value);

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
 import { convert } from '../domain/conversion/engine';
 import { getUnitById, categories } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
@@ -31,6 +31,17 @@ export default function ConverterScreen() {
   const removeFavorite = useAppStore(s => s.removeFavorite);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
+
+  // Validate that fromUnit and toUnit exist, otherwise reset to defaults
+  React.useEffect(() => {
+    const from = getUnitById(fromUnit);
+    const to = getUnitById(toUnit);
+    if (!from || !to) {
+      console.warn('Invalid unit detected, resetting to defaults:', { fromUnit, toUnit });
+      const [defaultFrom, defaultTo] = getDefaultPairForCategory(categoryId as any);
+      setPair(defaultFrom, defaultTo);
+    }
+  }, [fromUnit, toUnit, categoryId, setPair]);
 
   const fmt = useFormatOptions();
   const result = useMemo(() => {
@@ -101,104 +112,98 @@ export default function ConverterScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
-      {/* Category Header */}
-      <View style={styles.headerRow}>
-        <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
-          {categories.find(c => c.id === categoryId)?.name?.toUpperCase() || 'CONVERSION'}
-        </Text>
-        <Pressable accessibilityRole="button" accessibilityLabel="Toggle favorite" onPress={toggleFavorite} style={styles.starBtn}>
-          <Text style={[styles.starIcon, { color: favMatch ? '#f5b300' : '#999' }]}>{favMatch ? '★' : '☆'}</Text>
-        </Pressable>
-      </View>
-
-      {/* Main Conversion Display */}
-      <View style={[styles.conversionCard, { backgroundColor: theme.surfaceElevated }]}>
-        <View style={styles.conversionRow}>
-          <View style={styles.valueContainer}>
-            <Text style={[styles.inputValue, { color: theme.onSurface }]}>
-              {input || '0'}
-            </Text>
-            <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
-              {getUnitById(fromUnit)?.symbol || fromUnit}
-            </Text>
-          </View>
-
-          {/* Swap Button */}
-          <Pressable
-            style={styles.swapButton}
-            onPress={() => swap()}
-            accessibilityRole="button"
-            accessibilityLabel="Swap units"
-          >
-            <Text style={styles.swapIcon}>⇄</Text>
-          </Pressable>
-
-          <Pressable
-            style={styles.valueContainer}
-            onLongPress={() => {
-              Alert.alert(
-                'Result Options',
-                `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  { 
-                    text: 'Copy Value', 
-                    onPress: () => {
-                      Clipboard.setString(result);
-                      Alert.alert('Copied', 'Result copied to clipboard');
-                    }
-                  },
-                  { 
-                    text: 'Copy with Unit', 
-                    onPress: () => {
-                      const unit = getUnitById(toUnit);
-                      const text = `${result} ${unit?.symbol || toUnit}`;
-                      Clipboard.setString(text);
-                      Alert.alert('Copied', 'Result with unit copied to clipboard');
-                    }
-                  }
-                ]
-              );
-            }}
-          >
-            <Text style={[styles.resultValue, { color: theme.onSurface }]}>
-              {result}
-            </Text>
-            <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
-              {getUnitById(toUnit)?.symbol || toUnit}
-            </Text>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
+        {/* Category Header */}
+        <View style={styles.headerRow}>
+          <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
+            {categories.find(c => c.id === categoryId)?.name?.toUpperCase() || 'CONVERSION'}
+          </Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Toggle favorite" onPress={toggleFavorite} style={styles.starBtn}>
+            <Text style={[styles.starIcon, { color: favMatch ? '#f5b300' : '#999' }]}>{favMatch ? '★' : '☆'}</Text>
           </Pressable>
         </View>
-      </View>
 
-      {/* Categories Section */}
-      <View style={styles.categoriesSection}>
-        <Pressable
-          style={[styles.categoriesButton, { borderColor: '#ddd' }]}
-          onPress={() => setPickerFor('category')}
-        >
-          <Text style={[styles.categoriesText, { color: theme.onSurface }]}>Categories</Text>
-        </Pressable>
-      </View>
+        {/* Main Conversion Display */}
+        <View style={[styles.conversionCard, { backgroundColor: theme.surfaceElevated }]}>
+          <View style={styles.conversionRow}>
+            <View style={styles.valueContainer}>
+              <Text style={[styles.inputValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
+                {input || '0'}
+              </Text>
+              <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
+                {getUnitById(fromUnit)?.symbol || fromUnit}
+              </Text>
+            </View>
 
-      {/* Category Pills */}
-      <ScrollRowCategories
-        active={categoryId}
-        onSelect={(id) => {
-          const pair = getDefaultPairForCategory(id as any);
-          setPair(pair[0], pair[1]);
-          setInput('0'); // Reset input when category changes
-          addRecentCategory(id);
-        }}
-      />
+            {/* Swap Button */}
+            <Pressable
+              style={styles.swapButton}
+              onPress={() => swap()}
+              accessibilityRole="button"
+              accessibilityLabel="Swap units"
+            >
+              <Text style={styles.swapIcon}>⇄</Text>
+            </Pressable>
 
-      {/* Result Section Label */}
-      <Text style={[styles.resultSectionLabel, { color: '#666' }]}>Result</Text>
+            <Pressable
+              style={styles.valueContainer}
+              onLongPress={() => {
+                Alert.alert(
+                  'Result Options',
+                  `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Copy Value',
+                      onPress: () => {
+                        Clipboard.setString(result);
+                        Alert.alert('Copied', 'Result copied to clipboard');
+                      }
+                    },
+                    {
+                      text: 'Copy with Unit',
+                      onPress: () => {
+                        const unit = getUnitById(toUnit);
+                        const text = `${result} ${unit?.symbol || toUnit}`;
+                        Clipboard.setString(text);
+                        Alert.alert('Copied', 'Result with unit copied to clipboard');
+                      }
+                    }
+                  ]
+                );
+              }}
+            >
+              <Text style={[styles.resultValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
+                {result}
+              </Text>
+              <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
+                {getUnitById(toUnit)?.symbol || toUnit}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
-      {/* Numeric Keypad */}
-      <View style={styles.keypadContainer}>
-        <NumericKeypad onKey={onKey} />
-      </View>
+        {/* Category Pills - Horizontal Scroll */}
+        <ScrollRowCategories
+          active={categoryId}
+          onSelect={(id) => {
+            const pair = getDefaultPairForCategory(id as any);
+            setPair(pair[0], pair[1]);
+            setInput('0');
+            addRecentCategory(id);
+          }}
+        />
+
+        {/* Numeric Keypad */}
+        <View style={styles.keypadContainer}>
+          <NumericKeypad onKey={onKey} />
+        </View>
+      </ScrollView>
 
       {/* Hidden UI Elements - keeping existing functionality */}
       <View style={{ opacity: 0, position: 'absolute', top: -1000 }}>
@@ -221,30 +226,32 @@ export default function ConverterScreen() {
 
       {/* Category Picker Modal */}
       {pickerFor === 'category' && (
-        <Pressable 
+        <Pressable
           style={styles.modalOverlay}
           onPress={() => setPickerFor(null)}
         >
-          <Pressable 
+          <Pressable
             style={[styles.categoryModal, { backgroundColor: theme.surface }]}
             onPress={(e) => e.stopPropagation()}
           >
             <Text style={[styles.modalTitle, { color: theme.onSurface }]}>Select Category</Text>
-            {categories.map(cat => (
-              <Pressable
-                key={cat.id}
-                style={[styles.categoryItem, { borderBottomColor: '#ddd' }]}
-                onPress={() => {
-                  const pair = getDefaultPairForCategory(cat.id as any);
-                  setPair(pair[0], pair[1]);
-                  setInput('0'); // Reset input when category changes
-                  addRecentCategory(cat.id);
-                  setPickerFor(null);
-                }}
-              >
-                <Text style={[styles.categoryItemText, { color: theme.onSurface }]}>{cat.name}</Text>
-              </Pressable>
-            ))}
+            <ScrollView style={{ maxHeight: 300 }}>
+              {categories.map(cat => (
+                <Pressable
+                  key={cat.id}
+                  style={[styles.categoryItem, { borderBottomColor: '#ddd' }]}
+                  onPress={() => {
+                    const pair = getDefaultPairForCategory(cat.id as any);
+                    setPair(pair[0], pair[1]);
+                    setInput('0');
+                    addRecentCategory(cat.id);
+                    setPickerFor(null);
+                  }}
+                >
+                  <Text style={[styles.categoryItemText, { color: theme.onSurface }]}>{cat.name}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
             <Pressable
               style={styles.modalCloseButton}
               onPress={() => setPickerFor(null)}
@@ -260,13 +267,18 @@ export default function ConverterScreen() {
 
 function ScrollRowCategories({ active, onSelect }: { active: string; onSelect: (id: string) => void }) {
   return (
-    <View style={styles.categoryPills}>
-      {categories.slice(0, 8).map(cat => (
-        <Pressable 
-          key={cat.id} 
-          accessibilityRole="button" 
-          accessibilityLabel={cat.name} 
-          onPress={() => onSelect(cat.id)} 
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.categoryPillsScroll}
+      style={styles.categoryPillsContainer}
+    >
+      {categories.map(cat => (
+        <Pressable
+          key={cat.id}
+          accessibilityRole="button"
+          accessibilityLabel={cat.name}
+          onPress={() => onSelect(cat.id)}
           style={[
             styles.categoryPill,
             active === cat.id && styles.categoryPillActive
@@ -280,93 +292,98 @@ function ScrollRowCategories({ active, onSelect }: { active: string; onSelect: (
           </Text>
         </Pressable>
       ))}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    paddingBottom: 80 
+  container: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 100,
   },
   headerRow: {
-    position:'relative',
-    alignItems:'center',
-    justifyContent:'center',
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
   },
-  
+
   // Category Header
   categoryHeader: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 16,
     letterSpacing: 1,
   },
-  starBtn: { position:'absolute', right: 0, padding: 6 },
+  starBtn: { position: 'absolute', right: 0, padding: 6 },
   starIcon: { fontSize: 24 },
-  
+
   // Main Conversion Card
   conversionCard: {
-    borderRadius: 20,
-    padding: 30,
-    marginBottom: 25,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
   },
-  
+
   conversionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  
+
   valueContainer: {
     flex: 1,
     alignItems: 'center',
   },
-  
+
   inputValue: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: '300',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
-  
+
   resultValue: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: '300',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
-  
+
   unitLabel: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
-  
+
   swapButton: {
-    marginHorizontal: 20,
-    padding: 12,
+    marginHorizontal: 12,
+    padding: 10,
     borderRadius: 12,
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
   },
-  
+
   swapIcon: {
-    fontSize: 24,
+    fontSize: 20,
     color: '#666',
   },
-  
+
   // Categories Section
   categoriesSection: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
-  
+
   categoriesButton: {
     borderWidth: 1,
     borderRadius: 12,
@@ -374,44 +391,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
   },
-  
+
   categoriesText: {
     fontSize: 16,
     fontWeight: '500',
   },
-  
+
   // Category Pills
-  categoryPills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 25,
+  categoryPillsContainer: {
+    marginBottom: 0,
+    marginHorizontal: -20,
   },
-  
+
+  categoryPillsScroll: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+
   categoryPill: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 20,
-    paddingHorizontal: 16,
+    borderRadius: 16,
+    paddingHorizontal: 14,
     paddingVertical: 8,
     backgroundColor: '#fff',
   },
-  
+
   categoryPillActive: {
     backgroundColor: '#000',
     borderColor: '#000',
   },
-  
+
   categoryPillText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: '#333',
   },
-  
+
   categoryPillTextActive: {
     color: '#fff',
   },
-  
+
   // Result Section
   resultSectionLabel: {
     fontSize: 16,
@@ -419,11 +439,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: '#666',
   },
-  
+
   // Numeric Keypad Container
   keypadContainer: {
-    flex: 1,
-    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
   
   // Modal Styles

@@ -25,6 +25,9 @@ export default {
     searchPlaceholder: 'Search units',
     empty: 'Type to search',
   },
+  screens: {
+    unitPicker: 'Select Units',
+  },
   tabs: {
     home: 'Home',
     converter: 'Converter',

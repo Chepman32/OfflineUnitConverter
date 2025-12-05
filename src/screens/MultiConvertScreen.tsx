@@ -1,14 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { getUnitsByCategory, getUnitById } from '../data/units';
-import { multiConvert } from '../domain/conversion/engine';
-import { useFormatOptions } from '../hooks/useFormatOptions';
 import { useAppStore } from '../store';
 import { t } from '../i18n';
 import { useOptionalNavigation } from '../navigation/safe';
-import UnitPicker from '../components/UnitPicker';
 import { categories } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import AnimatedPress from '../components/AnimatedPress';
@@ -18,121 +15,361 @@ export default function MultiConvertScreen() {
   const theme = useTheme();
   const fromUnit = useAppStore(s => s.fromUnitId);
   const toUnit = useAppStore(s => s.toUnitId);
-  const input = useAppStore(s => s.input);
   const setFrom = useAppStore(s => s.setFrom);
   const setTo = useAppStore(s => s.setTo);
   const setPair = useAppStore(s => s.setPair);
-  const setInput = useAppStore(s => s.setInput);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
-  const fmt = useFormatOptions();
   const units = getUnitsByCategory(categoryId as any);
   const nav = useOptionalNavigation();
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
-  const [pickerVisible, setPickerVisible] = useState(false);
-  const [pickerToVisible, setPickerToVisible] = useState(false);
   const pro = useAppStore(s => s.pro);
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   const [filter, setFilter] = useState('');
-  const rowsAll = useMemo(() => {
-    try {
-      return multiConvert(input || '0', fromUnit, categoryId, fmt);
-    } catch (e) {
-      console.warn('multiConvert failed', e);
-      return [];
+
+  // Validate that fromUnit exists, otherwise reset to default
+  React.useEffect(() => {
+    const unit = getUnitById(fromUnit);
+    if (!unit) {
+      console.warn('Invalid fromUnit:', fromUnit, '- resetting to default');
+      const defaultUnit = units[0]?.id || 'm';
+      setFrom(defaultUnit);
     }
-  }, [input, fromUnit, categoryId, fmt]);
-  const rows = useMemo(() => {
-    if (!filter.trim()) return rowsAll;
+  }, [fromUnit, units, setFrom]);
+
+  const filteredUnits = useMemo(() => {
+    if (!filter.trim()) return units;
     const f = filter.toLowerCase();
-    return rowsAll.filter(r => {
-      const u = getUnitById(r.unitId);
-      const text = `${r.unitId} ${u?.name ?? ''} ${u?.symbol ?? ''}`.toLowerCase();
+    return units.filter(u => {
+      const text = `${u.id} ${u.name} ${u.symbol}`.toLowerCase();
       return text.includes(f);
     });
-  }, [rowsAll, filter]);
-  const limitedRows = useMemo(() => {
-    const pro = useAppStore.getState().pro;
-    return pro ? rows : rows.slice(0, 15);
-  }, [rows]);
+  }, [units, filter]);
+
+  const limitedUnits = useMemo(() => {
+    return pro ? filteredUnits : filteredUnits.slice(0, 15);
+  }, [filteredUnits, pro]);
+
+  const fromUnitData = getUnitById(fromUnit);
+  const toUnitData = getUnitById(toUnit);
 
   return (
     <FlatList
       style={{ flex: 1 }}
       contentContainerStyle={{ padding: 20, backgroundColor: theme.surface, paddingBottom: bottomPadding }}
-      data={limitedRows}
+      data={limitedUnits}
       keyboardDismissMode="on-drag"
       keyboardShouldPersistTaps="handled"
       scrollIndicatorInsets={{ bottom: bottomPadding }}
-      keyExtractor={r => r.unitId}
-      renderItem={({ item }) => (
-        <View style={styles.mcRow}>
-          <Text allowFontScaling style={styles.mcUnit}>{item.unitId}</Text>
-          <Text allowFontScaling style={styles.mcVal}>{item.value}</Text>
-          <View style={styles.actions}>
-            <Pressable style={styles.actBtn} onPress={() => { setFrom(item.unitId); nav?.navigate?.('Converter'); }}><Text>{t('common.from','From')}</Text></Pressable>
-            <Pressable style={styles.actBtn} onPress={() => { setTo(item.unitId); nav?.navigate?.('Converter'); }}><Text>{t('common.to','To')}</Text></Pressable>
+      keyExtractor={u => u.id}
+      renderItem={({ item }) => {
+        const isFrom = item.id === fromUnit;
+        const isTo = item.id === toUnit;
+        return (
+          <View style={[styles.unitRow, isFrom && styles.unitRowFrom, isTo && styles.unitRowTo]}>
+            <View style={styles.unitInfo}>
+              <Text style={[styles.unitSymbol, { color: theme.onSurface }]}>{item.symbol}</Text>
+              <Text style={[styles.unitName, { color: theme.onSurfaceSecondary || '#666' }]}>{item.name}</Text>
+            </View>
+            <View style={styles.unitActions}>
+              <Pressable
+                style={[styles.selectBtn, isFrom && styles.selectBtnActive]}
+                onPress={() => setFrom(item.id)}
+              >
+                <Text style={[styles.selectBtnText, isFrom && styles.selectBtnTextActive]}>From</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.selectBtn, isTo && styles.selectBtnActive]}
+                onPress={() => setTo(item.id)}
+              >
+                <Text style={[styles.selectBtnText, isTo && styles.selectBtnTextActive]}>To</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      )}
+        );
+      }}
       ListHeaderComponent={(
         <View>
-          <Text style={styles.title}>{t('tabs.multiConvert','All Units')}</Text>
+          <Text style={[styles.title, { color: theme.onSurface }]}>{t('screens.unitPicker', 'Select Units')}</Text>
+
+          {/* Current Selection Card */}
+          <View style={[styles.selectionCard, { backgroundColor: theme.surfaceElevated || '#f8f8f8' }]}>
+            <View style={styles.selectionRow}>
+              <View style={styles.selectionUnit}>
+                <Text style={styles.selectionLabel}>From</Text>
+                <Text style={[styles.selectionValue, { color: theme.onSurface }]}>{fromUnitData?.symbol || fromUnit}</Text>
+                <Text style={styles.selectionName}>{fromUnitData?.name || ''}</Text>
+              </View>
+              <Text style={styles.arrow}>→</Text>
+              <View style={styles.selectionUnit}>
+                <Text style={styles.selectionLabel}>To</Text>
+                <Text style={[styles.selectionValue, { color: theme.onSurface }]}>{toUnitData?.symbol || toUnit}</Text>
+                <Text style={styles.selectionName}>{toUnitData?.name || ''}</Text>
+              </View>
+            </View>
+            <Pressable
+              style={styles.convertBtn}
+              onPress={() => nav?.navigate?.('Converter')}
+            >
+              <Text style={styles.convertBtnText}>Go to Converter</Text>
+            </Pressable>
+          </View>
+
           {!pro && (
-            <View style={{ padding: 10, borderWidth:1, borderColor:'#ffd60a', backgroundColor:'#fff8e1', borderRadius:8, marginBottom: 8 }}>
-              <Text style={{ color:'#7a5b00' }}>{t('pro.multiConvertNote','Multi-convert is fully unlocked with Pro.')}</Text>
-              <Pressable accessibilityRole="button" style={[styles.btn, { marginTop: 6 }]} onPress={() => nav?.navigate?.('Pro')}><Text>{t('tabs.pro','Pro')}</Text></Pressable>
+            <View style={styles.proNotice}>
+              <Text style={styles.proNoticeText}>{t('pro.multiConvertNote', 'All units unlocked with Pro.')}</Text>
+              <Pressable style={styles.proBtn} onPress={() => nav?.navigate?.('Pro')}>
+                <Text style={styles.proBtnText}>{t('tabs.pro', 'Pro')}</Text>
+              </Pressable>
             </View>
           )}
-          <View style={styles.row}>
-            <Text style={styles.label}>{t('common.from','From')}</Text>
-            <Pressable style={styles.btn} onPress={() => setPickerVisible(true)}><Text>{fromUnit}</Text></Pressable>
-            <Text style={styles.label}>{t('common.to','To')}</Text>
-            <Pressable style={styles.btn} onPress={() => setPickerToVisible(true)}><Text>{toUnit}</Text></Pressable>
-            <Text style={styles.label}>{t('common.value','Value')}</Text>
-            <TextInput style={styles.input} keyboardType="decimal-pad" value={input} onChangeText={setInput} />
-          </View>
-          <View style={[styles.row, { flexWrap:'wrap' }]}>
+
+          {/* Category Pills */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoryScroll}
+            contentContainerStyle={styles.categoryScrollContent}
+          >
             {categories.map(cat => (
-              <AnimatedPress key={cat.id} accessibilityRole="button" accessibilityLabel={cat.name} onPress={() => {
-                const pair = getDefaultPairForCategory(cat.id as any);
-                setPair(pair[0], pair[1]); addRecentCategory(cat.id);
-              }} style={[styles.chip, (getUnitById(fromUnit)?.categoryId===cat.id) && styles.chipActive]}>
-                <Text style={[styles.chipText, (getUnitById(fromUnit)?.categoryId===cat.id) && styles.chipTextActive]}>{cat.name}</Text>
+              <AnimatedPress
+                key={cat.id}
+                accessibilityRole="button"
+                accessibilityLabel={cat.name}
+                onPress={() => {
+                  const pair = getDefaultPairForCategory(cat.id as any);
+                  setPair(pair[0], pair[1]);
+                  addRecentCategory(cat.id);
+                }}
+                style={[styles.chip, categoryId === cat.id && styles.chipActive]}
+              >
+                <Text style={[styles.chipText, categoryId === cat.id && styles.chipTextActive]}>{cat.name}</Text>
               </AnimatedPress>
             ))}
+          </ScrollView>
+
+          {/* Filter */}
+          <View style={styles.filterRow}>
+            <TextInput
+              style={[styles.filterInput, { color: theme.onSurface, backgroundColor: theme.surfaceElevated || '#f5f5f5' }]}
+              value={filter}
+              onChangeText={setFilter}
+              placeholder={t('common.filterPlaceholder', 'Search units...')}
+              placeholderTextColor="#999"
+            />
           </View>
-          <View style={[styles.row, { marginBottom: 8 }]}>
-            <Text style={styles.label}>{t('common.filter','Filter')}</Text>
-            <TextInput style={styles.input} value={filter} onChangeText={setFilter} placeholder={t('common.filterPlaceholder','e.g., ft or foot')} />
-          </View>
+
+          <Text style={styles.sectionLabel}>{categories.find(c => c.id === categoryId)?.name || 'Units'}</Text>
         </View>
       )}
-      ListFooterComponent={(
-        <>
-          <UnitPicker visible={pickerVisible} onClose={() => setPickerVisible(false)} categoryId={categoryId} onSelect={(id) => { setFrom(id); setPickerVisible(false); }} />
-          <UnitPicker visible={pickerToVisible} onClose={() => setPickerToVisible(false)} categoryId={categoryId} onSelect={(id) => { setTo(id); setPickerToVisible(false); }} />
-        </>
+      ListEmptyComponent={(
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyText}>No units found</Text>
+        </View>
       )}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
-  row: { flexDirection:'row', alignItems:'center', gap: 8, marginBottom: 12 },
-  label: { color:'#555' },
-  input: { borderWidth:1, borderColor:'#ddd', borderRadius:8, paddingHorizontal:8, paddingVertical:6, minWidth: 80 },
-  btn: { borderWidth:1, borderColor:'#ddd', borderRadius:8, paddingHorizontal:10, paddingVertical:6 },
-  mcRow: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical: 10, borderBottomWidth:1, borderColor:'#f0f0f0' },
-  mcUnit: { color:'#333' },
-  mcVal: { color:'#111', fontWeight:'600', flex: 1, textAlign:'right', marginRight: 12 },
-  actions: { flexDirection:'row', gap: 8 },
-  actBtn: { borderWidth:1, borderColor:'#ddd', borderRadius:8, paddingHorizontal:10, paddingVertical:6 },
-  chip: { borderWidth:1, borderColor:'#ddd', borderRadius: 12, paddingHorizontal:10, paddingVertical:6, marginRight:8, marginTop: 8 },
-  chipActive: { backgroundColor:'#111', borderColor:'#111' },
-  chipText: { color:'#111' },
-  chipTextActive: { color:'#fff' },
+  title: { fontSize: 28, fontWeight: '700', marginBottom: 16 },
+
+  // Selection Card
+  selectionCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+  },
+  selectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  selectionUnit: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  selectionLabel: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  selectionValue: {
+    fontSize: 28,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  selectionName: {
+    fontSize: 12,
+    color: '#666',
+  },
+  arrow: {
+    fontSize: 24,
+    color: '#999',
+    marginHorizontal: 12,
+  },
+  convertBtn: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  convertBtnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // Pro Notice
+  proNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ffd60a',
+    backgroundColor: '#fff8e1',
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  proNoticeText: {
+    color: '#7a5b00',
+    fontSize: 14,
+    flex: 1,
+  },
+  proBtn: {
+    backgroundColor: '#ffd60a',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 12,
+  },
+  proBtnText: {
+    color: '#7a5b00',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+
+  // Category Pills
+  categoryScroll: {
+    marginBottom: 16,
+    marginHorizontal: -20,
+  },
+  categoryScrollContent: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+  },
+  chipActive: {
+    backgroundColor: '#111',
+    borderColor: '#111',
+  },
+  chipText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  chipTextActive: {
+    color: '#fff',
+  },
+
+  // Filter
+  filterRow: {
+    marginBottom: 16,
+  },
+  filterInput: {
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+  },
+
+  // Section Label
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#888',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+
+  // Unit Row
+  unitRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  unitRowFrom: {
+    borderColor: '#007AFF',
+    borderWidth: 2,
+  },
+  unitRowTo: {
+    borderColor: '#34C759',
+    borderWidth: 2,
+  },
+  unitInfo: {
+    flex: 1,
+  },
+  unitSymbol: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  unitName: {
+    fontSize: 13,
+  },
+  unitActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  selectBtn: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+  },
+  selectBtnActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  selectBtnText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+  },
+  selectBtnTextActive: {
+    color: '#fff',
+  },
+
+  // Empty State
+  emptyState: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+  },
 });

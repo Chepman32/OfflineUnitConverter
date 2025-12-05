@@ -35,8 +35,8 @@ export default function NumericKeypad({ onKey }: { onKey: (k: string) => void })
 }
 
 const styles = StyleSheet.create({
-  grid: { flexDirection:'row', flexWrap:'wrap', gap: 8, justifyContent:'center' },
-  key: { width: 72, height: 56, borderRadius: 12, borderWidth:1, borderColor:'#ddd', alignItems:'center', justifyContent:'center', backgroundColor:'#fff' },
+  grid: { flexDirection:'row', flexWrap:'wrap', gap: 10, justifyContent:'center' },
+  key: { width: 80, height: 64, borderRadius: 14, borderWidth:1, borderColor:'#ddd', alignItems:'center', justifyContent:'center', backgroundColor:'#fff' },
   keyPressed: { opacity: 0.7 },
-  keyText: { fontSize: 20, fontWeight:'600' },
+  keyText: { fontSize: 24, fontWeight:'600' },
 });
