@@ -6,6 +6,8 @@ import { getUnitById, getUnitsByCategory } from '../../data/units';
 
 // Lazy import pattern to decouple when module is loaded in environments before deps are installed.
 let DecimalLib: any;
+const DECIMAL_INPUT_RE = /^[+-]?(?:\d+|\d*\.\d+|\d+\.?)(?:e[+-]?\d+)?$/i;
+
 class SmallDecimal {
   private n: number;
   constructor(v: any) {
@@ -23,7 +25,7 @@ class SmallDecimal {
   greaterThanOrEqualTo(v: any) { return this.n >= Number(v instanceof SmallDecimal ? v.n : v); }
 }
 
-function Decimal(value: any) {
+function ensureDecimalLib() {
   if (DecimalLib === undefined) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -33,10 +35,42 @@ function Decimal(value: any) {
       DecimalLib = null; // unavailable, fallback to SmallDecimal
     }
   }
-  return DecimalLib ? new DecimalLib(value) : new SmallDecimal(value);
+}
+
+function makeDecimalInstance(v: any) {
+  ensureDecimalLib();
+  return DecimalLib ? new DecimalLib(v) : new SmallDecimal(v);
+}
+
+function sanitizeNumericInput(value: any): string | number {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) throw new Error('Invalid number');
+    return value;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    const cleaned = trimmed.replace(/,/g, '');
+    if (!cleaned || cleaned === '-' || cleaned === '.' || cleaned === '-.' || cleaned === '+') return 0;
+    if (!DECIMAL_INPUT_RE.test(cleaned)) throw new Error('Invalid number');
+    return cleaned;
+  }
+  if (typeof value === 'object' && typeof (value as any).toString === 'function') {
+    return sanitizeNumericInput((value as any).toString());
+  }
+  throw new Error('Invalid number');
+}
+
+function toDecimal(value: any) {
+  try {
+    return makeDecimalInstance(sanitizeNumericInput(value));
+  } catch {
+    return makeDecimalInstance(0);
+  }
 }
 
 function applyRounding(d: any, mode: RoundingMode, decimals: number): any {
+  const decimalsSafe = Math.max(0, Math.min(12, Number.isFinite(decimals) ? decimals : 0));
   const rmMap: Record<RoundingMode, number> = {
     halfUp: 4, // Decimal.ROUND_HALF_UP
     floor: 3, // Decimal.ROUND_FLOOR
@@ -47,13 +81,13 @@ function applyRounding(d: any, mode: RoundingMode, decimals: number): any {
     const original = DecimalLib.rounding;
     DecimalLib.set({ rounding: rmMap[mode] });
     // Support both decimal.js-light's toDP and potential toDecimalPlaces alias
-    const res = typeof d.toDecimalPlaces === 'function' ? d.toDecimalPlaces(decimals) :
-      typeof d.toDP === 'function' ? d.toDP(decimals) : d; // fallback to unchanged
+    const res = typeof d.toDecimalPlaces === 'function' ? d.toDecimalPlaces(decimalsSafe) :
+      typeof d.toDP === 'function' ? d.toDP(decimalsSafe) : d; // fallback to unchanged
     DecimalLib.set({ rounding: original });
     return res;
   }
   // Fallback: SmallDecimal ignores mode and uses standard toFixed rounding
-  return d.toDecimalPlaces(decimals);
+  return d.toDecimalPlaces(decimalsSafe);
 }
 
 export function convertRaw(value: string | number, fromUnitId: string, toUnitId: string): any {
@@ -62,7 +96,7 @@ export function convertRaw(value: string | number, fromUnitId: string, toUnitId:
   if (!from || !to) throw new Error('Unknown unit');
   if (from.categoryId !== to.categoryId) throw new Error('Category mismatch');
 
-  const v = Decimal(value);
+  const v = toDecimal(value);
   // To base: (x + offset_u) * factor_u
   const offsetFrom = from.offset ?? 0;
   const valueBase = v.plus(offsetFrom).times(from.factor);
@@ -86,8 +120,10 @@ export function formatDecimal(d: any, fmt: FormatOptions = {}): string {
     scientificThreshold = 1e12,
   } = fmt;
 
-  const abs = Decimal(0).plus(d).abs();
-  const toRound = applyRounding(d, roundingMode, decimals);
+  const decimalsSafe = Math.max(0, Math.min(12, Number.isFinite(decimals as any) ? Number(decimals) : 6));
+  const safeDecimal = toDecimal(d);
+  const abs = safeDecimal.abs();
+  const toRound = applyRounding(safeDecimal, roundingMode, decimalsSafe);
   // Cross-library safe greater-or-equal check
   const useSci = (typeof (abs as any).greaterThanOrEqualTo === 'function')
     ? (abs as any).greaterThanOrEqualTo(scientificThreshold)
@@ -104,11 +140,11 @@ export function formatDecimal(d: any, fmt: FormatOptions = {}): string {
   try {
     return new Intl.NumberFormat(locale, {
       useGrouping,
-      minimumFractionDigits: Math.max(0, Math.min(decimals, 12)),
-      maximumFractionDigits: Math.max(0, Math.min(decimals, 12)),
+      minimumFractionDigits: decimalsSafe,
+      maximumFractionDigits: decimalsSafe,
     }).format(num);
   } catch {
-    return toRound.toFixed(decimals);
+    return toRound.toFixed(decimalsSafe);
   }
 }
 

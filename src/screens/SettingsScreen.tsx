@@ -31,6 +31,7 @@ export default function SettingsScreen() {
   const pro = useAppStore(s => s.pro);
   const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
   const [json, setJson] = React.useState('');
+  const [moreOpen, setMoreOpen] = React.useState(false);
   const nav = useOptionalNavigation();
   const tokens = useTheme();
   return (
@@ -130,14 +131,35 @@ export default function SettingsScreen() {
         </ScrollView>
       </View>
       <View style={styles.section}>
-        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.more','More')}</Text>
-        <View style={styles.buttons}>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('Pro')}><Text style={styles.btnText}>{t('tabs.pro','Pro')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('About')}><Text style={styles.btnText}>{t('settings.about','About')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('Licenses')}><Text style={styles.btnText}>{t('licenses.title','Licenses')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => nav?.navigate?.('CustomUnits')}><Text style={styles.btnText}>{t('customUnits.title','Custom Units')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: '#ff6b35' }]} onPress={() => { setOnboardingSeen(false); Alert.alert('Onboarding Reset', 'Onboarding will show again on next app launch'); }}><Text style={styles.btnText}>Reset Onboarding</Text></Pressable>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setMoreOpen(v => !v)}
+          style={[styles.accordionHeader, { borderColor: tokens.border }]}
+        >
+          <Text style={[styles.subtitle, { color: tokens.onSurface, marginBottom: 0 }]}>{t('settings.more','More')}</Text>
+          <Text style={{ color: tokens.onSurface }}>{moreOpen ? '−' : '+'}</Text>
+        </Pressable>
+        {moreOpen && (
+          <View style={[styles.listBox, { borderColor: tokens.border, backgroundColor: tokens.surface }]}>
+            {[
+              { label: t('tabs.pro','Pro'), action: () => nav?.navigate?.('Pro') },
+              { label: t('settings.about','About'), action: () => nav?.navigate?.('About') },
+              { label: t('licenses.title','Licenses'), action: () => nav?.navigate?.('Licenses') },
+              { label: t('customUnits.title','Custom Units'), action: () => nav?.navigate?.('CustomUnits') },
+              { label: 'Reset Onboarding', action: () => { setOnboardingSeen(false); Alert.alert('Onboarding Reset', 'Onboarding will show again on next app launch'); }, danger: true },
+            ].map((item, idx, arr) => (
+              <React.Fragment key={item.label}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={item.action}
+                  style={[styles.listItem, idx === arr.length - 1 && { borderBottomWidth: 0 }]}
+                >
+                  <Text style={[styles.listItemText, { color: item.danger ? '#c0392b' : tokens.onSurface }]}>{item.label}</Text>
+                </Pressable>
+              </React.Fragment>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -159,4 +181,8 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor:'#111', borderColor:'#111' },
   chipText: { color:'#111' },
   chipTextActive: { color:'#fff' },
+  accordionHeader: { flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingVertical: 10, paddingHorizontal: 4, borderWidth:1, borderRadius: 10 },
+  listBox: { marginTop: 10, borderWidth:1, borderRadius: 16, overflow:'hidden' },
+  listItem: { paddingVertical: 14, paddingHorizontal: 14, borderBottomWidth:1, borderColor:'#eee' },
+  listItemText: { fontSize: 17, fontWeight:'500' },
 });

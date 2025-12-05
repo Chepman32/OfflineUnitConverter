@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { getUnitsByCategory, getUnitById } from '../data/units';
 import { multiConvert } from '../domain/conversion/engine';
 import { useFormatOptions } from '../hooks/useFormatOptions';
@@ -29,9 +31,19 @@ export default function MultiConvertScreen() {
   const [pickerVisible, setPickerVisible] = useState(false);
   const [pickerToVisible, setPickerToVisible] = useState(false);
   const pro = useAppStore(s => s.pro);
+  const insets = useSafeAreaInsets();
+  const tabBarHeight = useBottomTabBarHeight();
+  const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   const [filter, setFilter] = useState('');
-  const rowsAll = useMemo(() => multiConvert(input || '0', fromUnit, categoryId, fmt), [input, fromUnit, categoryId, fmt]);
+  const rowsAll = useMemo(() => {
+    try {
+      return multiConvert(input || '0', fromUnit, categoryId, fmt);
+    } catch (e) {
+      console.warn('multiConvert failed', e);
+      return [];
+    }
+  }, [input, fromUnit, categoryId, fmt]);
   const rows = useMemo(() => {
     if (!filter.trim()) return rowsAll;
     const f = filter.toLowerCase();
@@ -48,8 +60,12 @@ export default function MultiConvertScreen() {
 
   return (
     <FlatList
-      contentContainerStyle={[styles.container, { backgroundColor: theme.surface }]}
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 20, backgroundColor: theme.surface, paddingBottom: bottomPadding }}
       data={limitedRows}
+      keyboardDismissMode="on-drag"
+      keyboardShouldPersistTaps="handled"
+      scrollIndicatorInsets={{ bottom: bottomPadding }}
       keyExtractor={r => r.unitId}
       renderItem={({ item }) => (
         <View style={styles.mcRow}>
@@ -94,7 +110,6 @@ export default function MultiConvertScreen() {
           </View>
         </View>
       )}
-      stickyHeaderIndices={[0]}
       ListFooterComponent={(
         <>
           <UnitPicker visible={pickerVisible} onClose={() => setPickerVisible(false)} categoryId={categoryId} onSelect={(id) => { setFrom(id); setPickerVisible(false); }} />
@@ -106,7 +121,6 @@ export default function MultiConvertScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600', marginBottom: 8 },
   row: { flexDirection:'row', alignItems:'center', gap: 8, marginBottom: 12 },
   label: { color:'#555' },

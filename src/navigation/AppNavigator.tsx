@@ -65,11 +65,6 @@ export default function AppNavigator() {
               options={{ title: t('tabs.settings', 'Settings') }}
             />
             <SettingsStack.Screen 
-              name="Pro" 
-              component={PaywallScreen} 
-              options={{ title: t('tabs.pro', 'Pro') }}
-            />
-            <SettingsStack.Screen 
               name="About" 
               component={AboutScreen} 
               options={{ title: t('settings.about', 'About') }}
@@ -91,7 +86,7 @@ export default function AppNavigator() {
         const HomeStack = createNativeStackNavigator();
         const HomeStackScreen = () => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="HomeMain" component={HomeScreen} />
+            <HomeStack.Screen name="Home" component={HomeScreen} />
             <HomeStack.Screen 
               name="MultiConvert" 
               component={MultiConvertScreen}
@@ -110,10 +105,6 @@ export default function AppNavigator() {
             screenOptions={({ route }: any) => ({
               headerShown: false,
               tabBarStyle: {
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
                 height: 60,
                 paddingBottom: 5,
                 paddingTop: 5,
@@ -158,6 +149,11 @@ export default function AppNavigator() {
               <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={seen ? 'Main' : 'Onboarding'}>
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                 <Stack.Screen name="Main" component={TabsNav} />
+                <Stack.Screen 
+                  name="Pro" 
+                  component={PaywallScreen} 
+                  options={{ headerShown: true, title: t('tabs.pro', 'Pro') }}
+                />
               </Stack.Navigator>
             </NavigationContainer>
           );

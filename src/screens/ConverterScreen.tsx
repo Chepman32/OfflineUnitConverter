@@ -26,6 +26,9 @@ export default function ConverterScreen() {
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
   const addHistory = useAppStore(s => s.addHistory);
   const isPro = useAppStore(s => s.pro);
+  const favorites = useAppStore(s => s.favorites);
+  const addFavorite = useAppStore(s => s.addFavorite);
+  const removeFavorite = useAppStore(s => s.removeFavorite);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
 
@@ -73,12 +76,40 @@ export default function ConverterScreen() {
     if (/^\d$/.test(k)) return setInput(prev === '0' ? k : prev + k);
   };
 
+  const favMatch = favorites.find(f => f.fromUnitId === fromUnit && f.toUnitId === toUnit);
+  const toggleFavorite = () => {
+    if (favMatch) {
+      removeFavorite(favMatch.id);
+      return;
+    }
+    if (!isPro && favorites.length >= 20) {
+      Alert.alert(t('favorites.title','Favorites'), t('errors.favLimit','Favorite limit reached. Unlock Pro for more.'));
+      return;
+    }
+    const from = getUnitById(fromUnit);
+    const to = getUnitById(toUnit);
+    const id = `${fromUnit}-${toUnit}`;
+    const label = `${input || '0'} ${from?.symbol || fromUnit} → ${result} ${to?.symbol || toUnit}`;
+    addFavorite({
+      id,
+      fromUnitId: fromUnit,
+      toUnitId: toUnit,
+      label,
+      lastUsedAt: Date.now(),
+    });
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
       {/* Category Header */}
-      <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
-        {categories.find(c => c.id === categoryId)?.name?.toUpperCase() || 'CONVERSION'}
-      </Text>
+      <View style={styles.headerRow}>
+        <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
+          {categories.find(c => c.id === categoryId)?.name?.toUpperCase() || 'CONVERSION'}
+        </Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Toggle favorite" onPress={toggleFavorite} style={styles.starBtn}>
+          <Text style={[styles.starIcon, { color: favMatch ? '#f5b300' : '#999' }]}>{favMatch ? '★' : '☆'}</Text>
+        </Pressable>
+      </View>
 
       {/* Main Conversion Display */}
       <View style={[styles.conversionCard, { backgroundColor: theme.surfaceElevated }]}>
@@ -259,6 +290,12 @@ const styles = StyleSheet.create({
     padding: 20, 
     paddingBottom: 80 
   },
+  headerRow: {
+    position:'relative',
+    alignItems:'center',
+    justifyContent:'center',
+    marginBottom: 10,
+  },
   
   // Category Header
   categoryHeader: {
@@ -268,6 +305,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     letterSpacing: 1,
   },
+  starBtn: { position:'absolute', right: 0, padding: 6 },
+  starIcon: { fontSize: 24 },
   
   // Main Conversion Card
   conversionCard: {
