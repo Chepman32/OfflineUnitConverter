@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOptionalNavigation } from '../navigation/safe';
-import { View, Text, Switch, StyleSheet, Pressable, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Text, Switch, StyleSheet, Pressable, TextInput, ScrollView, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
 import AnimatedPress from '../components/AnimatedPress';
 import * as RNShare from 'react-native';
 import { useAppStore } from '../store';
@@ -31,13 +31,37 @@ export default function SettingsScreen() {
   const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
   const [json, setJson] = React.useState('');
   const [moreOpen, setMoreOpen] = React.useState(false);
+  const scrollRef = React.useRef<ScrollView>(null);
   const nav = useOptionalNavigation();
   const tokens = useTheme();
+
+  React.useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
+
+  const toggleMore = React.useCallback(() => {
+    if (!reduceMotion) {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    }
+    setMoreOpen(v => !v);
+  }, [reduceMotion]);
+
+  React.useEffect(() => {
+    if (!moreOpen) return;
+    const timeout = setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: !reduceMotion });
+    }, reduceMotion ? 0 : 220);
+    return () => clearTimeout(timeout);
+  }, [moreOpen, reduceMotion]);
+
   return (
     <ScrollView 
       style={[styles.container, { backgroundColor: tokens.surface }]}
       contentContainerStyle={{ minHeight: '120%' }}
       showsVerticalScrollIndicator={true}
+      ref={scrollRef}
     >
       <Text style={[styles.title, { color: tokens.onSurface }]}>{t('settings.title','Settings')}</Text>
       <View style={styles.row}>
@@ -130,7 +154,7 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Pressable
           accessibilityRole="button"
-          onPress={() => setMoreOpen(v => !v)}
+          onPress={toggleMore}
           style={[styles.accordionHeader, { borderColor: tokens.border }]}
         >
           <Text style={[styles.subtitle, { color: tokens.onSurface, marginBottom: 0 }]}>{t('settings.more','More')}</Text>
