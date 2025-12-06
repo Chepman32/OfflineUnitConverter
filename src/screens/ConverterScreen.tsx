@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   },
 
   unitLabel: {
-    fontSize: 14,
+    fontSize: 40,
     fontWeight: '500',
   },
 
