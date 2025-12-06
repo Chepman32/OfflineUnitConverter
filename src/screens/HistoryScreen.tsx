@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Alert, Share } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import dayjs from 'dayjs';
@@ -34,18 +35,31 @@ export default function HistoryScreen() {
         renderItem={({ item }) => {
           const f = favorites.find(x => x.fromUnitId === item.fromUnitId && x.toUnitId === item.toUnitId);
           const starred = !!f;
+          const shareMessage = `${item.inputValue} ${item.fromUnitId} → ${item.resultValue} ${item.toUnitId}`;
           return (
             <View style={[styles.row, { borderBottomColor: theme.border }]}>
               <Pressable style={{ flex: 1 }} onPress={() => { setFrom(item.fromUnitId); setTo(item.toUnitId); setInput(item.inputValue); nav?.navigate?.('Converter'); }}>
                 <Text style={[styles.expr, { color: theme.onSurface }]}>{item.inputValue} {item.fromUnitId} → {item.resultValue} {item.toUnitId}</Text>
                 <Text style={[styles.time, { color: theme.onSurfaceSecondary }]}>{dayjs(item.createdAt).fromNow()}</Text>
               </Pressable>
-              <Pressable accessibilityRole="button" style={styles.starBtn} onPress={() => {
-                if (starred) removeFavorite(f!.id);
-                else addFavorite({ id: String(Date.now()), fromUnitId: item.fromUnitId, toUnitId: item.toUnitId, lastUsedAt: Date.now() });
-              }}>
-                <Text style={[styles.star, starred && styles.starActive]}>★</Text>
-              </Pressable>
+              <View style={styles.actions}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('history.share','Share')}
+                  style={styles.shareBtn}
+                  onPress={async () => {
+                  try { await Share.share({ message: shareMessage }); } catch {}
+                  }}
+                >
+                  <Ionicons name="share-outline" size={20} color={theme.onSurface} />
+                </Pressable>
+                <Pressable accessibilityRole="button" style={styles.starBtn} onPress={() => {
+                  if (starred) removeFavorite(f!.id);
+                  else addFavorite({ id: String(Date.now()), fromUnitId: item.fromUnitId, toUnitId: item.toUnitId, lastUsedAt: Date.now() });
+                }}>
+                  <Text style={[styles.star, starred && styles.starActive]}>★</Text>
+                </Pressable>
+              </View>
             </View>
           );
         }}
@@ -59,9 +73,11 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, paddingBottom: 80 },
   title: { fontSize: 20, fontWeight: '600' },
   desc: { marginTop: 6 },
-  row: { paddingVertical: 10, borderBottomWidth:1 },
+  row: { paddingVertical: 10, borderBottomWidth:1, flexDirection:'row', alignItems:'center', gap: 8, justifyContent:'space-between' },
   expr: { fontSize: 16 },
   time: { marginTop: 2, fontSize: 12 },
+  actions: { flexDirection:'row', alignItems:'center', gap: 4 },
+  shareBtn: { paddingHorizontal: 10, paddingVertical: 6 },
   starBtn: { paddingHorizontal: 10, paddingVertical: 6 },
   star: { fontSize: 18, color:'#BBBBBB' },
   starActive: { color:'#f7b500' },

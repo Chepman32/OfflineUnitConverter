@@ -2,10 +2,8 @@ import React from 'react';
 import { useOptionalNavigation } from '../navigation/safe';
 import { View, Text, Switch, StyleSheet, Pressable, TextInput, ScrollView, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
 import AnimatedPress from '../components/AnimatedPress';
-import * as RNShare from 'react-native';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
-import { exportAll } from '../store/exportImportHelpers';
 import { t } from '../i18n';
 
 export default function SettingsScreen() {
@@ -29,7 +27,6 @@ export default function SettingsScreen() {
   const setLanguage = useAppStore(s => s.setLanguage);
   const pro = useAppStore(s => s.pro);
   const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
-  const [json, setJson] = React.useState('');
   const [moreOpen, setMoreOpen] = React.useState(false);
   const scrollRef = React.useRef<ScrollView>(null);
   const nav = useOptionalNavigation();
@@ -135,23 +132,6 @@ export default function SettingsScreen() {
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.export','Export')} / {t('settings.share','Share')}</Text>
-        <View style={styles.buttons}>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => setJson(exportAll())}><Text style={styles.btnText}>{t('settings.export','Export')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={async () => { try { await (RNShare as any).Share.share({ message: exportAll() }); } catch {} }}><Text style={styles.btnText}>{t('settings.share','Share')}</Text></Pressable>
-        </View>
-        <ScrollView style={[styles.textbox, { borderColor: tokens.border, backgroundColor: tokens.inputBackground }]}>
-          <TextInput
-            multiline
-            placeholder="Exported JSON will appear here."
-            placeholderTextColor={tokens.onSurfaceMuted}
-            value={json}
-            onChangeText={setJson}
-            style={{ color: tokens.onSurface }}
-          />
-        </ScrollView>
-      </View>
-      <View style={styles.section}>
         <Pressable
           accessibilityRole="button"
           onPress={toggleMore}
@@ -193,10 +173,6 @@ const styles = StyleSheet.create({
   label: { fontSize: 16 },
   section: { marginTop: 16 },
   subtitle: { fontWeight:'600', marginBottom: 8 },
-  buttons: { flexDirection:'row', gap: 12, flexWrap: 'wrap' },
-  btn: { backgroundColor:'#111', paddingHorizontal:12, paddingVertical:10, borderRadius:8 },
-  btnText: { color:'#fff', fontWeight:'600' },
-  textbox: { marginTop: 8, borderWidth:1, borderColor:'#eee', borderRadius:10, padding: 8, maxHeight: 160 },
   btnSmall: { borderWidth:1, borderColor:'#ddd', borderRadius:8, paddingHorizontal:10, paddingVertical:6, alignItems:'center' },
   chip: { borderWidth:1, borderColor:'#ddd', borderRadius: 12, paddingHorizontal:10, paddingVertical:6 },
   chipActive: { backgroundColor:'#111', borderColor:'#111' },
