@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, FlatList, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, FlatList, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { getUnitsByCategory, getUnitById } from '../data/units';
 import { useAppStore } from '../store';
 import { t } from '../i18n';
@@ -25,6 +26,7 @@ export default function MultiConvertScreen() {
   const pro = useAppStore(s => s.pro);
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
+  const headerHeight = useHeaderHeight();
   const bottomPadding = tabBarHeight + insets.bottom + 20;
 
   const [filter, setFilter] = useState('');
@@ -56,14 +58,21 @@ export default function MultiConvertScreen() {
   const toUnitData = getUnitById(toUnit);
 
   return (
-    <FlatList
-      style={{ flex: 1 }}
-      contentContainerStyle={{ padding: 20, backgroundColor: theme.surface, paddingBottom: bottomPadding }}
-      data={limitedUnits}
-      keyboardDismissMode="on-drag"
-      keyboardShouldPersistTaps="handled"
-      scrollIndicatorInsets={{ bottom: bottomPadding }}
-      keyExtractor={u => u.id}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: theme.surface }}
+      behavior={Platform.OS === 'ios' ? 'position' : 'height'}
+      keyboardVerticalOffset={headerHeight}
+      contentContainerStyle={{ flex: 1 }}
+    >
+      <FlatList
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 20, backgroundColor: theme.surface, paddingBottom: bottomPadding }}
+        data={limitedUnits}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
+        scrollIndicatorInsets={{ bottom: bottomPadding }}
+        automaticallyAdjustKeyboardInsets={true}
+        keyExtractor={u => u.id}
       renderItem={({ item }) => {
         const isFrom = item.id === fromUnit;
         const isTo = item.id === toUnit;
@@ -170,6 +179,7 @@ export default function MultiConvertScreen() {
         </View>
       )}
     />
+    </KeyboardAvoidingView>
   );
 }
 
