@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "OfflineUnitConverter.app"
-               BlueprintName = "OfflineUnitConverter"
-               ReferencedContainer = "container:OfflineUnitConverter.xcodeproj">
+               BuildableName = "ConvertMate.app"
+               BlueprintName = "ConvertMate"
+               ReferencedContainer = "container:ConvertMate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "OfflineUnitConverterTests.xctest"
-               BlueprintName = "OfflineUnitConverterTests"
-               ReferencedContainer = "container:OfflineUnitConverter.xcodeproj">
+               BuildableName = "ConvertMateTests.xctest"
+               BlueprintName = "ConvertMateTests"
+               ReferencedContainer = "container:ConvertMate.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "OfflineUnitConverter.app"
-            BlueprintName = "OfflineUnitConverter"
-            ReferencedContainer = "container:OfflineUnitConverter.xcodeproj">
+            BuildableName = "ConvertMate.app"
+            BlueprintName = "ConvertMate"
+            ReferencedContainer = "container:ConvertMate.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "OfflineUnitConverter.app"
-            BlueprintName = "OfflineUnitConverter"
-            ReferencedContainer = "container:OfflineUnitConverter.xcodeproj">
+            BuildableName = "ConvertMate.app"
+            BlueprintName = "ConvertMate"
+            ReferencedContainer = "container:ConvertMate.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

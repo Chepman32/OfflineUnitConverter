@@ -24,7 +24,7 @@ export default function AnimatedSplash() {
   return (
     <Animated.View style={[styles.overlay, style, { backgroundColor: theme.surface }]}> 
       <View style={styles.center}>
-        <Text style={styles.logo}>OfflineUnitConverter</Text>
+        <Text style={styles.logo}>ConvertMate</Text>
         <Text style={styles.badge}>offline</Text>
       </View>
     </Animated.View>

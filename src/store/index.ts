@@ -53,6 +53,6 @@ export const useAppStore = create<AppState>()(
         }),
       }
     ),
-    { name: 'OfflineUnitConverter' }
+    { name: 'ConvertMate' }
   )
 );

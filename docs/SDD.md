@@ -1,7 +1,7 @@
-OfflineUnitConverter — Software Design Document (SDD)
+ConvertMate — Software Design Document (SDD)
 
 Overview
-- Product: OfflineUnitConverter
+- Product: ConvertMate
 - Platform: iOS (primary), React Native (TypeScript), fully offline
 - Monetization: In-App Purchase (IAP) non-consumable “Pro” unlock; optional tip jar
 - Animations: Extensive React Native Reanimated animations (including animated splash)
@@ -209,7 +209,7 @@ Design Language
 - LaunchScreen.storyboard shows static logo and background color (instant display).
 - After JS loads, Animated Splash appears:
   - Background gradient sweeps diagonally with a repeating but subtle withTiming loop (respect Reduce Motion).
-  - Logo wordmark “OfflineUnitConverter” letter glyphs are drawn using stroke-dashoffset with Reanimated and react-native-svg; easing with withTiming, cubic-bezier.
+  - Logo wordmark “ConvertMate” letter glyphs are drawn using stroke-dashoffset with Reanimated and react-native-svg; easing with withTiming, cubic-bezier.
   - Category icons orbit lightly around the logo using useSharedValue + withSpring; parallax responding to device tilt (useAnimatedSensor if available).
   - A shimmering “offline” badge pulses with withRepeat.
   - Transition out: logo scales down and morphs into the navbar title using shared transition (Reanimated Shared Element style layout animation), background crossfades to Home.
@@ -572,5 +572,5 @@ Appendix F: Performance Budgets
 - JS Thread idle during animation; avoid heavy loops on every keystroke.
 - Virtualized lists for Multi-Convert with windowing.
 
-This SDD defines a complete, production-ready plan for OfflineUnitConverter on iOS with a fully offline architecture, carefully scoped IAP model, detailed UI/UX, and extensive Reanimated-driven animations. It is implementable end-to-end with React Native and JavaScript tools, aligned to Apple’s platform expectations.
+This SDD defines a complete, production-ready plan for ConvertMate on iOS with a fully offline architecture, carefully scoped IAP model, detailed UI/UX, and extensive Reanimated-driven animations. It is implementable end-to-end with React Native and JavaScript tools, aligned to Apple’s platform expectations.
 

@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.offlineunitconverter"
+    namespace "com.convertmate.app"
     defaultConfig {
-        applicationId "com.offlineunitconverter"
+        applicationId "com.convertmate.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -20,7 +20,7 @@ export default function ConverterDemo() {
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title}>OfflineUnitConverter (Demo)</Text>
+      <Text style={styles.title}>ConvertMate (Demo)</Text>
 
       <View style={styles.row}>
         <TextInput
@@ -98,4 +98,3 @@ const styles = StyleSheet.create({
   chipText: { color: '#111' },
   chipTextActive: { color: '#fff' },
 });
-

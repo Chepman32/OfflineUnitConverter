@@ -6,7 +6,7 @@ export default function AboutScreen() {
   const theme = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
-      <Text style={[styles.title, { color: theme.onSurface }]}>OfflineUnitConverter</Text>
+      <Text style={[styles.title, { color: theme.onSurface }]}>ConvertMate</Text>
       <Text style={[styles.subtitle, { color: theme.onSurface }]}>Version 0.1.0 (dev)</Text>
       <Text style={[styles.text, { color: theme.onSurface }]}>Fully offline unit conversions with high precision.
       No analytics, no tracking. See docs/SDD.md for architecture.
