@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
 import { convert } from '../domain/conversion/engine';
-import { getUnitById, categories } from '../data/units';
+import { getUnitById, categories, getUnitsByCategory } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import { useTheme } from '../theme/ThemeProvider';
 import { t } from '../i18n';
@@ -11,6 +11,8 @@ import UnitPicker from '../components/UnitPicker';
 import { useFormatOptions } from '../hooks/useFormatOptions';
 import { useAppStore } from '../store';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { MenuView } from '@react-native-menu/menu';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function ConverterScreen() {
   const fromUnit = useAppStore(s => s.fromUnitId);
@@ -29,8 +31,76 @@ export default function ConverterScreen() {
   const favorites = useAppStore(s => s.favorites);
   const addFavorite = useAppStore(s => s.addFavorite);
   const removeFavorite = useAppStore(s => s.removeFavorite);
+  const recentsUnits = useAppStore(s => s.recentsUnits);
+  const addRecentUnit = useAppStore(s => s.addRecentUnit);
+  const haptics = useAppStore(s => s.haptics);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
+
+  // Build menu for unit selection
+  const buildUnitMenu = React.useCallback((forSide: 'from' | 'to') => {
+    const currentUnitId = forSide === 'from' ? fromUnit : toUnit;
+    const categoryUnits = getUnitsByCategory(categoryId);
+
+    // Filter recent units by current category, take first 6
+    const recentInCategory = recentsUnits
+      .map(id => getUnitById(id))
+      .filter(u => u && u.categoryId === categoryId)
+      .slice(0, 6);
+
+    const recentIds = new Set(recentInCategory.map(u => u!.id));
+    const otherUnits = categoryUnits.filter(u => !recentIds.has(u.id));
+
+    const menuItems = [];
+
+    // Recent section with displayInline
+    if (recentInCategory.length > 0) {
+      menuItems.push({
+        id: '__recent',
+        title: 'Recent',
+        displayInline: true,
+        subactions: recentInCategory.map(unit => ({
+          id: unit!.id,
+          title: unit!.name,
+          subtitle: unit!.symbol,
+          state: unit!.id === currentUnitId ? 'on' : undefined,
+        })),
+      });
+    }
+
+    // All units section with displayInline
+    menuItems.push({
+      id: '__all',
+      title: 'All Units',
+      displayInline: true,
+      subactions: otherUnits.map(unit => ({
+        id: unit.id,
+        title: unit.name,
+        subtitle: unit.symbol,
+        state: unit.id === currentUnitId ? 'on' : undefined,
+      })),
+    });
+
+    return menuItems;
+  }, [fromUnit, toUnit, categoryId, recentsUnits]);
+
+  // Handle unit selection from menu
+  const handleUnitSelection = React.useCallback((unitId: string, forSide: 'from' | 'to') => {
+    if (haptics) {
+      ReactNativeHapticFeedback.trigger('selection', {
+        enableVibrateFallback: true,
+        ignoreAndroidSystemSettings: false,
+      });
+    }
+
+    if (forSide === 'from') {
+      setFrom(unitId);
+    } else {
+      setTo(unitId);
+    }
+
+    addRecentUnit(unitId);
+  }, [setFrom, setTo, addRecentUnit, haptics]);
 
   // Validate that fromUnit and toUnit exist, otherwise reset to defaults
   React.useEffect(() => {
@@ -135,9 +205,29 @@ export default function ConverterScreen() {
               <Text style={[styles.inputValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
                 {input || '0'}
               </Text>
-              <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
-                {getUnitById(fromUnit)?.symbol || fromUnit}
-              </Text>
+              <MenuView
+                title="Select From Unit"
+                actions={buildUnitMenu('from')}
+                onPressAction={({ nativeEvent }) => {
+                  handleUnitSelection(nativeEvent.event, 'from');
+                }}
+                shouldOpenOnLongPress={false}
+              >
+                <Pressable
+                  onPress={() => {
+                    if (haptics) {
+                      ReactNativeHapticFeedback.trigger('impactLight', {
+                        enableVibrateFallback: true,
+                        ignoreAndroidSystemSettings: false,
+                      });
+                    }
+                  }}
+                >
+                  <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
+                    {getUnitById(fromUnit)?.symbol || fromUnit}
+                  </Text>
+                </Pressable>
+              </MenuView>
             </View>
 
             {/* Swap Button */}
@@ -150,41 +240,63 @@ export default function ConverterScreen() {
               <Text style={styles.swapIcon}>⇄</Text>
             </Pressable>
 
-            <Pressable
-              style={styles.valueContainer}
-              onLongPress={() => {
-                Alert.alert(
-                  'Result Options',
-                  `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    {
-                      text: 'Copy Value',
-                      onPress: () => {
-                        Clipboard.setString(result);
-                        Alert.alert('Copied', 'Result copied to clipboard');
+            <View style={styles.valueContainer}>
+              <Text
+                style={[styles.resultValue, { color: theme.onSurface }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                onLongPress={() => {
+                  Alert.alert(
+                    'Result Options',
+                    `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Copy Value',
+                        onPress: () => {
+                          Clipboard.setString(result);
+                          Alert.alert('Copied', 'Result copied to clipboard');
+                        }
+                      },
+                      {
+                        text: 'Copy with Unit',
+                        onPress: () => {
+                          const unit = getUnitById(toUnit);
+                          const text = `${result} ${unit?.symbol || toUnit}`;
+                          Clipboard.setString(text);
+                          Alert.alert('Copied', 'Result with unit copied to clipboard');
+                        }
                       }
-                    },
-                    {
-                      text: 'Copy with Unit',
-                      onPress: () => {
-                        const unit = getUnitById(toUnit);
-                        const text = `${result} ${unit?.symbol || toUnit}`;
-                        Clipboard.setString(text);
-                        Alert.alert('Copied', 'Result with unit copied to clipboard');
-                      }
-                    }
-                  ]
-                );
-              }}
-            >
-              <Text style={[styles.resultValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
+                    ]
+                  );
+                }}
+              >
                 {result}
               </Text>
-              <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
-                {getUnitById(toUnit)?.symbol || toUnit}
-              </Text>
-            </Pressable>
+              <MenuView
+                title="Select To Unit"
+                actions={buildUnitMenu('to')}
+                onPressAction={({ nativeEvent }) => {
+                  handleUnitSelection(nativeEvent.event, 'to');
+                }}
+                shouldOpenOnLongPress={false}
+              >
+                <Pressable
+                  onPress={() => {
+                    if (haptics) {
+                      ReactNativeHapticFeedback.trigger('impactLight', {
+                        enableVibrateFallback: true,
+                        ignoreAndroidSystemSettings: false,
+                      });
+                    }
+                  }}
+                >
+                  <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
+                    {getUnitById(toUnit)?.symbol || toUnit}
+                  </Text>
+                </Pressable>
+              </MenuView>
+            </View>
           </View>
         </View>
 
