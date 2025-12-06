@@ -180,6 +180,17 @@ export default function ConverterScreen() {
     });
   };
 
+  const copyValue = React.useCallback((value: string, side: 'from' | 'to') => {
+    Clipboard.setString(value);
+    if (haptics) {
+      ReactNativeHapticFeedback.trigger('impactLight', {
+        enableVibrateFallback: true,
+        ignoreAndroidSystemSettings: false,
+      });
+    }
+    Alert.alert('Copied', side === 'from' ? 'Input value copied to clipboard' : 'Result copied to clipboard');
+  }, [haptics]);
+
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
       <ScrollView
@@ -202,9 +213,11 @@ export default function ConverterScreen() {
         <View style={[styles.conversionCard, { backgroundColor: theme.surfaceElevated }]}>
           <View style={styles.conversionRow}>
             <View style={styles.valueContainer}>
-              <Text style={[styles.inputValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
-                {input || '0'}
-              </Text>
+              <Pressable onPress={() => copyValue(input || '0', 'from')} hitSlop={10}>
+                <Text style={[styles.inputValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
+                  {input || '0'}
+                </Text>
+              </Pressable>
               <MenuView
                 title="Select From Unit"
                 actions={buildUnitMenu('from')}
@@ -241,10 +254,9 @@ export default function ConverterScreen() {
             </Pressable>
 
             <View style={styles.valueContainer}>
-              <Text
-                style={[styles.resultValue, { color: theme.onSurface }]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
+              <Pressable
+                onPress={() => copyValue(result, 'to')}
+                hitSlop={10}
                 onLongPress={() => {
                   Alert.alert(
                     'Result Options',
@@ -271,8 +283,14 @@ export default function ConverterScreen() {
                   );
                 }}
               >
-                {result}
-              </Text>
+                <Text
+                  style={[styles.resultValue, { color: theme.onSurface }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {result}
+                </Text>
+              </Pressable>
               <MenuView
                 title="Select To Unit"
                 actions={buildUnitMenu('to')}
@@ -477,6 +495,10 @@ const styles = StyleSheet.create({
   unitLabel: {
     fontSize: 40,
     fontWeight: '500',
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    paddingHorizontal: 12,
+    paddingVertical: 0,
+    borderRadius: 12,
   },
 
   swapButton: {

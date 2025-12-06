@@ -1,12 +1,11 @@
 import React from 'react';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { useOptionalNavigation } from '../navigation/safe';
 import { View, Text, Switch, StyleSheet, Pressable, TextInput, ScrollView, Alert } from 'react-native';
 import AnimatedPress from '../components/AnimatedPress';
 import * as RNShare from 'react-native';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
-import { exportAll, importAll } from '../store/exportImportHelpers';
+import { exportAll } from '../store/exportImportHelpers';
 import { t } from '../i18n';
 
 export default function SettingsScreen() {
@@ -112,17 +111,15 @@ export default function SettingsScreen() {
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.export','Export')} / {t('settings.import','Import')}</Text>
+        <Text style={[styles.subtitle, { color: tokens.onSurface }]}>{t('settings.export','Export')} / {t('settings.share','Share')}</Text>
         <View style={styles.buttons}>
           <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => setJson(exportAll())}><Text style={styles.btnText}>{t('settings.export','Export')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={() => { try { importAll(json); Alert.alert(t('settings.import','Import'), t('settings.success','Success')); } catch (e:any) { Alert.alert(t('settings.import','Import'), e?.message || String(e)); } }}><Text style={styles.btnText}>{t('settings.import','Import')}</Text></Pressable>
           <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={async () => { try { await (RNShare as any).Share.share({ message: exportAll() }); } catch {} }}><Text style={styles.btnText}>{t('settings.share','Share')}</Text></Pressable>
-          <Pressable accessibilityRole="button" style={[styles.btn, { backgroundColor: tokens.accent }]} onPress={async () => { try { const s = await Clipboard.getString(); if (s) setJson(s); } catch {} }}><Text style={styles.btnText}>{t('settings.paste','Paste')}</Text></Pressable>
         </View>
         <ScrollView style={[styles.textbox, { borderColor: tokens.border, backgroundColor: tokens.inputBackground }]}>
           <TextInput
             multiline
-            placeholder="Exported JSON will appear here. Paste here to import."
+            placeholder="Exported JSON will appear here."
             placeholderTextColor={tokens.onSurfaceMuted}
             value={json}
             onChangeText={setJson}
