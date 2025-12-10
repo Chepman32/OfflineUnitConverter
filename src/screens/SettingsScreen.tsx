@@ -25,7 +25,6 @@ export default function SettingsScreen() {
   const setCopyMode = useAppStore(s => s.setCopyMode);
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
-  const pro = useAppStore(s => s.pro);
   const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
   const [moreOpen, setMoreOpen] = React.useState(false);
   const scrollRef = React.useRef<ScrollView>(null);
@@ -65,7 +64,7 @@ export default function SettingsScreen() {
         <Text style={[styles.label, { color: tokens.onSurface }]}>{t('settings.theme','Theme')}</Text>
         <View style={{ flexDirection:'row', gap: 8 }}>
           {(['system','light','dark','oled'] as const).map(m => (
-            <AnimatedPress key={m} onPress={() => { if (m==='oled' && !pro) { nav?.navigate?.('Pro'); return; } setTheme(m); }} style={[styles.chip, { borderColor: tokens.border }, themeMode===m && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
+            <AnimatedPress key={m} onPress={() => { setTheme(m); }} style={[styles.chip, { borderColor: tokens.border }, themeMode===m && { backgroundColor: tokens.accent, borderColor: tokens.accent }]}>
               <Text style={[{ color: tokens.onSurface }, themeMode===m && { color: '#FFFFFF' }]}>{m}</Text>
             </AnimatedPress>
           ))}
@@ -143,7 +142,6 @@ export default function SettingsScreen() {
         {moreOpen && (
           <View style={[styles.listBox, { borderColor: tokens.border, backgroundColor: tokens.surface }]}>
             {[
-              { label: t('tabs.pro','Pro'), action: () => nav?.navigate?.('Pro') },
               { label: t('settings.about','About'), action: () => nav?.navigate?.('About') },
               { label: t('licenses.title','Licenses'), action: () => nav?.navigate?.('Licenses') },
               { label: t('customUnits.title','Custom Units'), action: () => nav?.navigate?.('CustomUnits') },

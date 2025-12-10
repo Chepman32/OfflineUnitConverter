@@ -13,8 +13,7 @@ import {
 import AppNavigator from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/theme/ThemeProvider';
 import { useAppStore } from './src/store';
-import React, { useEffect } from 'react';
-import { hydrateProFromKeychain } from './src/services/entitlements';
+import React from 'react';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import ErrorBoundary from './src/components/ErrorBoundary';
 
@@ -26,9 +25,7 @@ function App() {
     <SafeAreaProvider>
       <ThemeProvider mode={themeMode}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <AppHydrator>
-          <AppContent />
-        </AppHydrator>
+        <AppContent />
       </ThemeProvider>
     </SafeAreaProvider>
   );
@@ -54,11 +51,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
-function AppHydrator({ children }: { children: React.ReactNode }) {
-  const setPro = useAppStore(s => s.setPro);
-  useEffect(() => {
-    hydrateProFromKeychain().then(val => setPro(val)).catch(() => {});
-  }, [setPro]);
-  return <>{children}</>;
-}

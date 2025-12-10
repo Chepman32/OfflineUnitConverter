@@ -1,17 +1,15 @@
 import type { StateCreator } from 'zustand';
 import type { HistoryItem } from '../../domain/conversion/types';
 
-const FREE_CAP = 500; // can expand when Pro entitlement is true
-
 export interface HistoryState {
   history: HistoryItem[];
-  addHistory: (h: HistoryItem, isPro: boolean) => void;
+  addHistory: (h: HistoryItem) => void;
   clearHistory: () => void;
 }
 
 export const createHistorySlice: StateCreator<HistoryState, [], [], HistoryState> = (set) => ({
   history: [],
-  addHistory: (h, isPro) => set((state) => {
+  addHistory: (h) => set((state) => {
     const last = state.history[0];
     const isDuplicate =
       last &&
@@ -26,8 +24,7 @@ export const createHistorySlice: StateCreator<HistoryState, [], [], HistoryState
       return { history: next };
     }
 
-    const list = [h, ...state.history];
-    return { history: isPro ? list : list.slice(0, FREE_CAP) };
+    return { history: [h, ...state.history] };
   }),
   clearHistory: () => set({ history: [] }),
 });

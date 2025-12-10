@@ -12,7 +12,6 @@ export default function CustomUnitsScreen() {
   const remove = useAppStore(s => s.removeCustomUnit);
   const [activeCat, setActiveCat] = useState(categories[0].id);
   const list = customUnits[activeCat] || [];
-  const pro = useAppStore(s => s.pro);
 
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -63,7 +62,6 @@ export default function CustomUnitsScreen() {
         disabled={!valid}
         onPress={() => {
           if (!valid) return;
-          if (!pro && list.length >= 10) { Alert.alert(t('customUnits.title','Custom Units'), t('errors.customLimit','Limit reached. Unlock Pro for more.')); return; }
           const id = `custom_${Date.now()}`;
           const now = Date.now();
           add({ id, categoryId: activeCat as any, name: name.trim(), symbol: symbol.trim(), factor: Number(factor), offset: Number(offset)||0, notes: note, createdAt: now, updatedAt: now, userNote: note } as any);

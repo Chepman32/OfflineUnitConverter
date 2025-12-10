@@ -1,8 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { FavoritePair } from '../../domain/conversion/types';
 
-const FREE_FAV_CAP = 20;
-
 export interface FavoritesState {
   favorites: FavoritePair[];
   addFavorite: (f: FavoritePair) => void;
@@ -17,8 +15,6 @@ export const createFavoritesSlice: StateCreator<FavoritesState, [], [], Favorite
   addFavorite: (f) => set((state) => {
     // prevent duplicates
     if (state.favorites.some(x => x.fromUnitId === f.fromUnitId && x.toUnitId === f.toUnitId)) return {} as any;
-    const isPro = (state as any).pro as boolean;
-    if (!isPro && state.favorites.length >= FREE_FAV_CAP) return {} as any;
     return { favorites: [...state.favorites, f] };
   }),
   removeFavorite: (id) => set((state) => ({ favorites: state.favorites.filter(x => x.id !== id) })),

@@ -27,7 +27,6 @@ export default function ConverterScreen() {
   const [showPrecision, setShowPrecision] = React.useState(false);
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
   const addHistory = useAppStore(s => s.addHistory);
-  const isPro = useAppStore(s => s.pro);
   const favorites = useAppStore(s => s.favorites);
   const addFavorite = useAppStore(s => s.addFavorite);
   const removeFavorite = useAppStore(s => s.removeFavorite);
@@ -140,14 +139,14 @@ export default function ConverterScreen() {
           toUnitId: toUnit,
           resultValue: result,
           createdAt: Date.now(),
-        }, isPro);
+        });
       } catch (error) {
         console.warn('Failed to add history:', error);
       }
     }, 1000); // Debounce for 1 second to avoid spamming history
 
     return () => clearTimeout(timeoutId);
-  }, [input, fromUnit, toUnit, result, invalid, addHistory, isPro]);
+  }, [input, fromUnit, toUnit, result, invalid, addHistory]);
 
   const onKey = (k: string) => {
     const prev = useAppStore.getState().input;
@@ -161,10 +160,6 @@ export default function ConverterScreen() {
   const toggleFavorite = () => {
     if (favMatch) {
       removeFavorite(favMatch.id);
-      return;
-    }
-    if (!isPro && favorites.length >= 20) {
-      Alert.alert(t('favorites.title','Favorites'), t('errors.favLimit','Favorite limit reached. Unlock Pro for more.'));
       return;
     }
     const from = getUnitById(fromUnit);

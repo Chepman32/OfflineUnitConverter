@@ -35,15 +35,6 @@ export default {
     history: 'History',
     settings: 'Settings',
     multiConvert: 'All Units',
-    pro: 'Pro',
-  },
-  paywall: {
-    title: 'Pro',
-    restore: 'Restore Purchases',
-    unlock: 'Unlock Pro',
-    tip: 'Tip',
-    thanks: 'Thanks!',
-    success: 'Purchase successful',
   },
   confirm: {
     areYouSure: 'Are you sure?',
@@ -87,11 +78,6 @@ export default {
   },
   errors: {
     invalidNumber: 'Invalid number format',
-    favLimit: 'Favorite limit reached. Unlock Pro for more.',
-    customLimit: 'Limit reached. Unlock Pro for more.',
-  },
-  pro: {
-    multiConvertNote: 'Multi-convert is fully unlocked with Pro.',
   },
   customUnits: {
     title: 'Custom Units',
@@ -111,8 +97,8 @@ export default {
     text1: 'Works 100% offline. No tracking.',
     title2: 'Powerful conversions',
     text2: 'High precision math, multi-convert, favorites.',
-    title3: 'Unlock Pro',
-    text3: 'Unlimited history and favorites, themes, more.',
+    title3: 'Fully Featured',
+    text3: 'Unlimited history and favorites, themes, and more.',
     card1: {
       title: 'History',
       text: 'View your recent conversion history',

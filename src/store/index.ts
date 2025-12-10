@@ -12,10 +12,8 @@ import type { FavoritesState } from './slices/favoritesSlice';
 import { createFavoritesSlice } from './slices/favoritesSlice';
 import type { HistoryState } from './slices/historySlice';
 import { createHistorySlice } from './slices/historySlice';
-import type { IAPState } from './slices/iapSlice';
-import { createIAPSlice } from './slices/iapSlice';
 
-export type AppState = ConversionState & SettingsState & UnitsState & FavoritesState & HistoryState & IAPState;
+export type AppState = ConversionState & SettingsState & UnitsState & FavoritesState & HistoryState;
 
 export const useAppStore = create<AppState>()(
   devtools(
@@ -26,7 +24,6 @@ export const useAppStore = create<AppState>()(
         ...createUnitsSlice(...a),
         ...createFavoritesSlice(...a),
         ...createHistorySlice(...a),
-        ...createIAPSlice(...a),
       })),
       {
         name: 'ouc_store',
@@ -49,7 +46,6 @@ export const useAppStore = create<AppState>()(
           customUnits: state.customUnits,
           favorites: state.favorites,
           history: state.history,
-          pro: state.pro,
         }),
       }
     ),

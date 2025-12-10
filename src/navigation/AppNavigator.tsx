@@ -5,7 +5,6 @@ import FavoritesScreen from '../screens/FavoritesScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MultiConvertScreen from '../screens/MultiConvertScreen';
-import PaywallScreen from '../screens/PaywallScreen';
 import AboutScreen from '../screens/AboutScreen';
 import { t } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
@@ -47,7 +46,6 @@ export default function AppNavigator() {
             case 'Settings': return 'settings-outline';
             // Nested screens
             case 'MultiConvert': return 'list-outline';
-            case 'Pro': return 'diamond-outline';
             case 'About': return 'information-circle-outline';
             case 'Licenses': return 'document-text-outline';
             case 'CustomUnits': return 'construct-outline';
@@ -149,11 +147,6 @@ export default function AppNavigator() {
               <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={seen ? 'Main' : 'Onboarding'}>
                 <Stack.Screen name="Onboarding" component={OnboardingScreen} />
                 <Stack.Screen name="Main" component={TabsNav} />
-                <Stack.Screen 
-                  name="Pro" 
-                  component={PaywallScreen} 
-                  options={{ headerShown: true, title: t('tabs.pro', 'Pro') }}
-                />
               </Stack.Navigator>
             </NavigationContainer>
           );
@@ -172,7 +165,6 @@ export default function AppNavigator() {
             <Stack.Screen name="History" component={HistoryScreen} />
             <Stack.Screen name="MultiConvert" component={MultiConvertScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
-            <Stack.Screen name="Pro" component={PaywallScreen} />
             <Stack.Screen name="About" component={AboutScreen} />
             <Stack.Screen name="Licenses" component={LicensesScreen} />
             <Stack.Screen name="CustomUnits" component={CustomUnitsScreen} />

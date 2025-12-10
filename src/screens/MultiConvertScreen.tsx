@@ -23,7 +23,6 @@ export default function MultiConvertScreen() {
   const units = getUnitsByCategory(categoryId as any);
   const nav = useOptionalNavigation();
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
-  const pro = useAppStore(s => s.pro);
   const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const headerHeight = useHeaderHeight();
@@ -50,9 +49,7 @@ export default function MultiConvertScreen() {
     });
   }, [units, filter]);
 
-  const limitedUnits = useMemo(() => {
-    return pro ? filteredUnits : filteredUnits.slice(0, 15);
-  }, [filteredUnits, pro]);
+  const limitedUnits = filteredUnits;
 
   const fromUnitData = getUnitById(fromUnit);
   const toUnitData = getUnitById(toUnit);
@@ -125,15 +122,6 @@ export default function MultiConvertScreen() {
               <Text style={styles.convertBtnText}>Go to Converter</Text>
             </Pressable>
           </View>
-
-          {!pro && (
-            <View style={styles.proNotice}>
-              <Text style={styles.proNoticeText}>{t('pro.multiConvertNote', 'All units unlocked with Pro.')}</Text>
-              <Pressable style={styles.proBtn} onPress={() => nav?.navigate?.('Pro')}>
-                <Text style={styles.proBtnText}>{t('tabs.pro', 'Pro')}</Text>
-              </Pressable>
-            </View>
-          )}
 
           {/* Category Pills */}
           <ScrollView
@@ -233,36 +221,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-
-  // Pro Notice
-  proNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ffd60a',
-    backgroundColor: '#fff8e1',
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  proNoticeText: {
-    color: '#7a5b00',
-    fontSize: 14,
-    flex: 1,
-  },
-  proBtn: {
-    backgroundColor: '#ffd60a',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginLeft: 12,
-  },
-  proBtnText: {
-    color: '#7a5b00',
-    fontWeight: '600',
-    fontSize: 14,
   },
 
   // Category Pills

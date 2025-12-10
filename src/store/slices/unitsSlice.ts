@@ -1,8 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { CustomUnit } from '../../domain/conversion/types';
 
-const FREE_CUSTOM_CAP = 10;
-
 export interface UnitsState {
   customUnits: Record<string, CustomUnit[]>; // key: categoryId
   recentsUnits: string[]; // unit ids
@@ -19,8 +17,6 @@ export const createUnitsSlice: StateCreator<UnitsState, [], [], UnitsState> = (s
   recentsCategories: [],
   addCustomUnit: (u) => set((state) => {
     const arr = state.customUnits[u.categoryId] ?? [];
-    const isPro = (state as any).pro as boolean;
-    if (!isPro && arr.length >= FREE_CUSTOM_CAP) return {} as any;
     return { customUnits: { ...state.customUnits, [u.categoryId]: [...arr, u] } };
   }),
   removeCustomUnit: (categoryId, id) => set((state) => {
