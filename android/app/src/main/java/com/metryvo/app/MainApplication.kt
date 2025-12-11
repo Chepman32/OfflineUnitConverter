@@ -1,4 +1,4 @@
-package com.convertmate.app
+package com.metryvo.app
 
 import android.app.Application
 import com.facebook.react.PackageList

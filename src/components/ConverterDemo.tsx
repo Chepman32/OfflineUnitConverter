@@ -20,7 +20,7 @@ export default function ConverterDemo() {
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title}>ConvertMate (Demo)</Text>
+      <Text style={styles.title}>Metryvo (Demo)</Text>
 
       <View style={styles.row}>
         <TextInput

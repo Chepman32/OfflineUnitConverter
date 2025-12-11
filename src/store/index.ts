@@ -49,6 +49,6 @@ export const useAppStore = create<AppState>()(
         }),
       }
     ),
-    { name: 'ConvertMate' }
+    { name: 'Metryvo' }
   )
 );

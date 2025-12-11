@@ -1,4 +1,4 @@
-# ConvertMate
+# Metryvo
 
 Production-ready, offline-first unit converter for iOS (React Native + TypeScript).
 
