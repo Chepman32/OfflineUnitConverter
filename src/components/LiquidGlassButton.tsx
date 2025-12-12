@@ -92,14 +92,14 @@ export default function LiquidGlassButton({
     <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
       <Defs>
         <LinearGradient id={`grad_${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor="#b4d0ff" stopOpacity="1" />
-          <Stop offset="30%" stopColor="#9bb8ff" stopOpacity="1" />
-          <Stop offset="60%" stopColor="#8a9eff" stopOpacity="1" />
-          <Stop offset="100%" stopColor="#9080e0" stopOpacity="1" />
+          <Stop offset="0%" stopColor="#60a5fa" stopOpacity="1" />
+          <Stop offset="30%" stopColor="#818cf8" stopOpacity="1" />
+          <Stop offset="60%" stopColor="#a78bfa" stopOpacity="1" />
+          <Stop offset="100%" stopColor="#8b5cf6" stopOpacity="1" />
         </LinearGradient>
         <LinearGradient id={`shine_${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
-          <Stop offset="50%" stopColor="#ffffff" stopOpacity="0.15" />
+          <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.5" />
+          <Stop offset="50%" stopColor="#ffffff" stopOpacity="0.2" />
           <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </LinearGradient>
       </Defs>
@@ -114,16 +114,16 @@ export default function LiquidGlassButton({
         <LinearGradient id="animGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           {/* Pattern spans 400px (50%), then repeats identically */}
           {/* First 400px */}
-          <Stop offset="0%" stopColor="#b4d0ff" stopOpacity="1" />
-          <Stop offset="12.5%" stopColor="#a0c4ff" stopOpacity="1" />
-          <Stop offset="25%" stopColor="#9bb8ff" stopOpacity="1" />
-          <Stop offset="37.5%" stopColor="#8a9eff" stopOpacity="1" />
-          <Stop offset="50%" stopColor="#9080e0" stopOpacity="1" />
+          <Stop offset="0%" stopColor="#60a5fa" stopOpacity="1" />
+          <Stop offset="12.5%" stopColor="#6d9ffa" stopOpacity="1" />
+          <Stop offset="25%" stopColor="#818cf8" stopOpacity="1" />
+          <Stop offset="37.5%" stopColor="#a78bfa" stopOpacity="1" />
+          <Stop offset="50%" stopColor="#8b5cf6" stopOpacity="1" />
           {/* Second 400px - exact mirror back to start color */}
-          <Stop offset="62.5%" stopColor="#8a9eff" stopOpacity="1" />
-          <Stop offset="75%" stopColor="#9bb8ff" stopOpacity="1" />
-          <Stop offset="87.5%" stopColor="#a0c4ff" stopOpacity="1" />
-          <Stop offset="100%" stopColor="#b4d0ff" stopOpacity="1" />
+          <Stop offset="62.5%" stopColor="#a78bfa" stopOpacity="1" />
+          <Stop offset="75%" stopColor="#818cf8" stopOpacity="1" />
+          <Stop offset="87.5%" stopColor="#6d9ffa" stopOpacity="1" />
+          <Stop offset="100%" stopColor="#60a5fa" stopOpacity="1" />
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width="800" height="100%" fill="url(#animGrad)" />
@@ -199,11 +199,11 @@ export default function LiquidGlassButton({
 
 const styles = StyleSheet.create({
   container: {
-    shadowColor: '#6366f1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: '#8b5cf6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 12,
   },
   glassContainer: {
     height: 56,
