@@ -13,13 +13,25 @@ import {
 import AppNavigator from './src/navigation/AppNavigator';
 import { ThemeProvider } from './src/theme/ThemeProvider';
 import { useAppStore } from './src/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import ErrorBoundary from './src/components/ErrorBoundary';
+import { getDeviceLanguage } from './src/i18n';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const themeMode = useAppStore(s => s.theme);
+  const language = useAppStore(s => s.language);
+  const setLanguage = useAppStore(s => s.setLanguage);
+  const onboardingSeen = useAppStore(s => s.onboardingSeen);
+
+  useEffect(() => {
+    // Auto-detect device language on first launch
+    if (!onboardingSeen && !language) {
+      const deviceLang = getDeviceLanguage();
+      setLanguage(deviceLang);
+    }
+  }, [onboardingSeen, language, setLanguage]);
 
   return (
     <SafeAreaProvider>
