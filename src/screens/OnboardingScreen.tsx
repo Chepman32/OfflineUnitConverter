@@ -12,6 +12,8 @@ import { t } from '../i18n';
 import { useOptionalNavigation } from '../navigation/safe';
 import { useTheme } from '../theme/ThemeProvider';
 import { useAppStore } from '../store';
+import LiquidGlassButton from '../components/LiquidGlassButton';
+import { triggerLightHaptic } from '../utils/haptics';
 
 const { width, height } = Dimensions.get('window');
 
@@ -149,7 +151,10 @@ export default function OnboardingScreen() {
                   <View style={styles.systemPicker}>
                     <Pressable
                       accessibilityRole="button"
-                      onPress={() => setMeasurementSystem('metric')}
+                      onPress={() => {
+                        triggerLightHaptic();
+                        setMeasurementSystem('metric');
+                      }}
                       style={[
                         styles.systemOption,
                         {
@@ -193,7 +198,10 @@ export default function OnboardingScreen() {
                     </Pressable>
                     <Pressable
                       accessibilityRole="button"
-                      onPress={() => setMeasurementSystem('imperial')}
+                      onPress={() => {
+                        triggerLightHaptic();
+                        setMeasurementSystem('imperial');
+                      }}
                       style={[
                         styles.systemOption,
                         {
@@ -260,17 +268,15 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          style={[styles.nextBtn, { backgroundColor: theme.accent }]}
-          onPress={next}
-        >
-          <Text style={styles.nextText}>
-            {index === pages.length - 1
+        <LiquidGlassButton
+          title={
+            index === pages.length - 1
               ? t('common.getStarted', 'Get Started')
-              : t('common.next', 'Next')}
-          </Text>
-        </Pressable>
+              : t('common.next', 'Next')
+          }
+          onPress={next}
+          style={styles.nextBtn}
+        />
       </View>
     </View>
   );
@@ -356,13 +362,5 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     width: width * 0.9,
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-  },
-  nextText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
   },
 });
