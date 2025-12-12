@@ -59,6 +59,9 @@ export default {
     success: 'Success',
     more: 'More',
     about: 'About',
+    measurementSystem: 'Measurement System',
+    metric: 'Metric',
+    imperial: 'Imperial',
   },
   home: {
     categories: 'Categories',
@@ -116,6 +119,14 @@ export default {
     card4: {
       title: '15 unit categories',
       text: 'Convert area, data, speed, time and more.',
+    },
+    card5: {
+      title: "You're all set!",
+      text: 'Start converting units instantly. Tap below to begin.',
+    },
+    card6: {
+      title: 'Choose your measurement system',
+      text: 'Select your preferred unit system. You can change this later in settings.',
     },
   },
 };

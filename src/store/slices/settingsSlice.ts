@@ -5,7 +5,8 @@ import type {
 } from '../../domain/conversion/types';
 import { setLanguage as i18nSetLanguage } from '../../i18n';
 
-export type ThemeMode = 'system' | 'light' | 'dark' | 'oled';
+export type ThemeMode = 'system' | 'light' | 'dark' | 'solar' | 'mono';
+export type MeasurementSystem = 'metric' | 'imperial';
 
 export interface SettingsState {
   theme: ThemeMode;
@@ -20,6 +21,7 @@ export interface SettingsState {
   copyMode: 'value' | 'value_unit' | 'expression';
   language?: string;
   onboardingSeen: boolean;
+  measurementSystem: MeasurementSystem;
   setTheme: (t: ThemeMode) => void;
   setRoundingMode: (m: RoundingMode) => void;
   setDecimals: (n: number) => void;
@@ -31,6 +33,7 @@ export interface SettingsState {
   setCopyMode: (m: 'value' | 'value_unit' | 'expression') => void;
   setLanguage: (lng?: string) => void;
   setOnboardingSeen: (v: boolean) => void;
+  setMeasurementSystem: (m: MeasurementSystem) => void;
 }
 
 export const createSettingsSlice: StateCreator<
@@ -52,6 +55,7 @@ export const createSettingsSlice: StateCreator<
   copyMode: 'value',
   language: undefined,
   onboardingSeen: false,
+  measurementSystem: 'metric',
   setTheme: t => set({ theme: t }),
   setRoundingMode: m => set({ roundingMode: m }),
   setDecimals: n => set({ decimalsGlobal: Math.max(0, Math.min(12, n)) }),
@@ -68,4 +72,5 @@ export const createSettingsSlice: StateCreator<
     set({ language: lng });
   },
   setOnboardingSeen: v => set({ onboardingSeen: v }),
+  setMeasurementSystem: m => set({ measurementSystem: m }),
 });

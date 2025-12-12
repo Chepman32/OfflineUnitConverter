@@ -9,14 +9,19 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  LayoutAnimation,
-  Platform,
-  UIManager,
 } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import AnimatedPress from '../components/AnimatedPress';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { t } from '../i18n';
+
+const ACCORDION_HEIGHT = 220; // Approximate height of expanded content
 
 export default function SettingsScreen() {
   const reduceMotion = useAppStore(s => s.reduceMotion);
@@ -38,37 +43,46 @@ export default function SettingsScreen() {
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
   const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
+  const measurementSystem = useAppStore(s => s.measurementSystem);
+  const setMeasurementSystem = useAppStore(s => s.setMeasurementSystem);
   const [moreOpen, setMoreOpen] = React.useState(false);
   const scrollRef = React.useRef<ScrollView>(null);
   const nav = useOptionalNavigation();
   const tokens = useTheme();
 
-  React.useEffect(() => {
-    if (
-      Platform.OS === 'android' &&
-      UIManager.setLayoutAnimationEnabledExperimental
-    ) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
-  }, []);
+  const accordionHeight = useSharedValue(0);
 
-  const toggleMore = React.useCallback(() => {
-    if (!reduceMotion) {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    }
-    setMoreOpen(v => !v);
-  }, [reduceMotion]);
+  const accordionStyle = useAnimatedStyle(() => {
+    return {
+      height: accordionHeight.value === 0 ? 0 : accordionHeight.value,
+      opacity: accordionHeight.value / ACCORDION_HEIGHT,
+      overflow: 'hidden' as const,
+    };
+  });
 
-  React.useEffect(() => {
-    if (!moreOpen) return;
-    const timeout = setTimeout(
-      () => {
+  const toggleMore = () => {
+    if (moreOpen) {
+      // Closing
+      accordionHeight.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.inOut(Easing.cubic),
+      });
+      setMoreOpen(false);
+      setTimeout(() => {
+        scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
+      }, 300);
+    } else {
+      // Opening
+      setMoreOpen(true);
+      accordionHeight.value = withTiming(ACCORDION_HEIGHT, {
+        duration: 300,
+        easing: Easing.inOut(Easing.cubic),
+      });
+      setTimeout(() => {
         scrollRef.current?.scrollToEnd({ animated: !reduceMotion });
-      },
-      reduceMotion ? 0 : 220,
-    );
-    return () => clearTimeout(timeout);
-  }, [moreOpen, reduceMotion]);
+      }, 300);
+    }
+  };
 
   return (
     <ScrollView
@@ -77,19 +91,21 @@ export default function SettingsScreen() {
       showsVerticalScrollIndicator={true}
       ref={scrollRef}
     >
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: tokens.onSurface }]}>
+      <View style={styles.section}>
+        <Text
+          style={[styles.label, { color: tokens.onSurface, marginBottom: 12 }]}
+        >
           {t('settings.theme', 'Theme')}
         </Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {(['system', 'light', 'dark', 'oled'] as const).map(m => (
+        <View style={styles.themeGrid}>
+          {(['system', 'light', 'dark', 'solar', 'mono'] as const).map(m => (
             <AnimatedPress
               key={m}
               onPress={() => {
                 setTheme(m);
               }}
               style={[
-                styles.chip,
+                styles.themeTile,
                 { borderColor: tokens.border },
                 themeMode === m && {
                   backgroundColor: tokens.accent,
@@ -99,11 +115,12 @@ export default function SettingsScreen() {
             >
               <Text
                 style={[
+                  styles.themeTileText,
                   { color: tokens.onSurface },
                   themeMode === m && { color: '#FFFFFF' },
                 ]}
               >
-                {m}
+                {m.charAt(0).toUpperCase() + m.slice(1)}
               </Text>
             </AnimatedPress>
           ))}
@@ -266,6 +283,57 @@ export default function SettingsScreen() {
           ))}
         </View>
       </View>
+      <View style={styles.row}>
+        <Text style={[styles.label, { color: tokens.onSurface }]}>
+          {t('settings.measurementSystem', 'Measurement System')}
+        </Text>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {(['metric', 'imperial'] as const).map(m => (
+            <AnimatedPress
+              key={m}
+              onPress={() => setMeasurementSystem(m)}
+              style={[
+                styles.chip,
+                { borderColor: tokens.border },
+                measurementSystem === m && {
+                  backgroundColor: tokens.accent,
+                  borderColor: tokens.accent,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  { color: tokens.onSurface },
+                  measurementSystem === m && { color: '#FFFFFF' },
+                ]}
+              >
+                {m === 'metric'
+                  ? t('settings.metric', 'Metric')
+                  : t('settings.imperial', 'Imperial')}
+              </Text>
+            </AnimatedPress>
+          ))}
+        </View>
+      </View>
+      {/* Temporary: Reset Onboarding button for development */}
+      <View style={styles.row}>
+        <AnimatedPress
+          onPress={() => {
+            setOnboardingSeen(false);
+            Alert.alert(
+              'Onboarding Reset',
+              'Onboarding will show again on next app launch',
+            );
+          }}
+          style={[
+            styles.chip,
+            { borderColor: '#c0392b', backgroundColor: '#c0392b' },
+          ]}
+        >
+          <Text style={{ color: '#FFFFFF' }}>Reset Onboarding</Text>
+        </AnimatedPress>
+      </View>
+
       <View style={styles.section}>
         <Pressable
           accessibilityRole="button"
@@ -284,7 +352,7 @@ export default function SettingsScreen() {
             {moreOpen ? '−' : '+'}
           </Text>
         </Pressable>
-        {moreOpen && (
+        <Animated.View style={accordionStyle}>
           <View
             style={[
               styles.listBox,
@@ -337,7 +405,7 @@ export default function SettingsScreen() {
               </React.Fragment>
             ))}
           </View>
-        )}
+        </Animated.View>
       </View>
     </ScrollView>
   );
@@ -351,6 +419,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 8,
+    gap: 12,
   },
   label: { fontSize: 16 },
   section: { marginTop: 16 },
@@ -366,13 +435,30 @@ const styles = StyleSheet.create({
   chip: {
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
   chipActive: { backgroundColor: '#111', borderColor: '#111' },
   chipText: { color: '#111' },
   chipTextActive: { color: '#fff' },
+  themeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  themeTile: {
+    width: '30%',
+    aspectRatio: 1.4,
+    borderWidth: 2,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  themeTileText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
   accordionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

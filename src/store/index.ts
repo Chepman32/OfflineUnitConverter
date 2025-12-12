@@ -46,6 +46,7 @@ export const useAppStore = create<AppState>()(
           customUnits: state.customUnits,
           favorites: state.favorites,
           history: state.history,
+          measurementSystem: state.measurementSystem,
         }),
       }
     ),

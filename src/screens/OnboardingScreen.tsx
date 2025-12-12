@@ -24,6 +24,8 @@ export default function OnboardingScreen() {
   const nav = useOptionalNavigation();
   const theme = useTheme();
   const setSeen = useAppStore(s => s.setOnboardingSeen);
+  const measurementSystem = useAppStore(s => s.measurementSystem);
+  const setMeasurementSystem = useAppStore(s => s.setMeasurementSystem);
   const [index, setIndex] = React.useState(0);
   const scroller = React.useRef<ScrollView | null>(null);
 
@@ -62,6 +64,25 @@ export default function OnboardingScreen() {
       text: t(
         'onboarding.card4.text',
         'Convert area, data, speed, time and more.',
+      ),
+    },
+    {
+      key: 'measurementSystem',
+      image: null,
+      title: t('onboarding.card6.title', 'Choose your measurement system'),
+      text: t(
+        'onboarding.card6.text',
+        'Select your preferred unit system. You can change this later in settings.',
+      ),
+      interactive: true,
+    },
+    {
+      key: 'getStarted',
+      image: null,
+      title: t('onboarding.card5.title', "You're all set!"),
+      text: t(
+        'onboarding.card5.text',
+        'Start converting units instantly. Tap below to begin.',
       ),
     },
   ];
@@ -107,7 +128,116 @@ export default function OnboardingScreen() {
       >
         {pages.map(p => (
           <View key={p.key} style={[styles.page, { width }]}>
-            <Image source={p.image} style={styles.image} resizeMode="contain" />
+            {p.image ? (
+              <Image
+                source={p.image}
+                style={styles.image}
+                resizeMode="contain"
+              />
+            ) : (
+              <View style={styles.textOnlyPage}>
+                <Text style={[styles.pageTitle, { color: theme.onSurface }]}>
+                  {p.title}
+                </Text>
+                <Text
+                  style={[styles.pageText, { color: theme.onSurfaceSecondary }]}
+                >
+                  {p.text}
+                </Text>
+                {p.key === 'measurementSystem' && (
+                  <View style={styles.systemPicker}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setMeasurementSystem('metric')}
+                      style={[
+                        styles.systemOption,
+                        {
+                          borderColor:
+                            measurementSystem === 'metric'
+                              ? theme.accent
+                              : theme.border,
+                          backgroundColor:
+                            measurementSystem === 'metric'
+                              ? theme.accent
+                              : 'transparent',
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.systemOptionText,
+                          {
+                            color:
+                              measurementSystem === 'metric'
+                                ? '#fff'
+                                : theme.onSurface,
+                          },
+                        ]}
+                      >
+                        {t('settings.metric', 'Metric')}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.systemOptionSubtext,
+                          {
+                            color:
+                              measurementSystem === 'metric'
+                                ? '#fff'
+                                : theme.onSurfaceSecondary,
+                          },
+                        ]}
+                      >
+                        km, kg, °C
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() => setMeasurementSystem('imperial')}
+                      style={[
+                        styles.systemOption,
+                        {
+                          borderColor:
+                            measurementSystem === 'imperial'
+                              ? theme.accent
+                              : theme.border,
+                          backgroundColor:
+                            measurementSystem === 'imperial'
+                              ? theme.accent
+                              : 'transparent',
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.systemOptionText,
+                          {
+                            color:
+                              measurementSystem === 'imperial'
+                                ? '#fff'
+                                : theme.onSurface,
+                          },
+                        ]}
+                      >
+                        {t('settings.imperial', 'Imperial')}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.systemOptionSubtext,
+                          {
+                            color:
+                              measurementSystem === 'imperial'
+                                ? '#fff'
+                                : theme.onSurfaceSecondary,
+                          },
+                        ]}
+                      >
+                        mi, lb, °F
+                      </Text>
+                    </Pressable>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -170,6 +300,43 @@ const styles = StyleSheet.create({
   image: {
     width: width,
     height: height * 0.75,
+  },
+  textOnlyPage: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  pageTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  pageText: {
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 26,
+  },
+  systemPicker: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 32,
+  },
+  systemOption: {
+    paddingVertical: 20,
+    paddingHorizontal: 28,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center',
+  },
+  systemOptionText: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  systemOptionSubtext: {
+    fontSize: 14,
+    marginTop: 4,
   },
   footer: {
     paddingHorizontal: 24,

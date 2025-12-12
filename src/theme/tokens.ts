@@ -1,4 +1,4 @@
-export type ThemeMode = 'light' | 'dark' | 'oled';
+export type ThemeMode = 'light' | 'dark' | 'solar' | 'mono';
 
 export interface ThemeTokens {
   surface: string;
@@ -25,26 +25,37 @@ export const light: ThemeTokens = {
 };
 
 export const dark: ThemeTokens = {
-  surface: '#0E0F12',
-  surfaceElevated: '#16181C',
-  onSurface: '#EDEDED',
-  onSurfaceSecondary: '#BBBBBB',
-  onSurfaceMuted: '#999999',
-  accent: '#4F9EF8',
-  border: '#2A2D32',
-  inputBackground: '#16181C',
-  inputBorder: '#3A3D42',
-};
-
-export const oled: ThemeTokens = {
   surface: '#000000',
-  surfaceElevated: '#0A0A0A',
-  onSurface: '#F6F6F6',
-  onSurfaceSecondary: '#CCCCCC',
-  onSurfaceMuted: '#AAAAAA',
+  surfaceElevated: '#000000',
+  onSurface: '#FFFFFF',
+  onSurfaceSecondary: '#A0A0A0',
+  onSurfaceMuted: '#707070',
   accent: '#4F9EF8',
-  border: '#1A1A1A',
-  inputBackground: '#0A0A0A',
-  inputBorder: '#2A2A2A',
+  border: '#222222',
+  inputBackground: '#000000',
+  inputBorder: '#333333',
 };
 
+export const solar: ThemeTokens = {
+  surface: '#FFF9E6',
+  surfaceElevated: '#FFF3CC',
+  onSurface: '#5C4813',
+  onSurfaceSecondary: '#8B7355',
+  onSurfaceMuted: '#A89070',
+  accent: '#E6A817',
+  border: '#E8DFC0',
+  inputBackground: '#FFFDF5',
+  inputBorder: '#D4C9A8',
+};
+
+export const mono: ThemeTokens = {
+  surface: '#D8D8D8',
+  surfaceElevated: '#C8C8C8',
+  onSurface: '#1A1A1A',
+  onSurfaceSecondary: '#4A4A4A',
+  onSurfaceMuted: '#6A6A6A',
+  accent: '#505050',
+  border: '#A0A0A0',
+  inputBackground: '#E5E5E5',
+  inputBorder: '#909090',
+};
