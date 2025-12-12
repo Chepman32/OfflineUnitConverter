@@ -1,1 +1,0 @@
-quiz,bilgi,test,öğrenme,bilim,tarih,programlama,eğitim,beyin,bulmaca,eğlence

@@ -1,1 +1,0 @@
-quiz,wiedza,test,nauka,historia,programowanie,edukacja,mózg,łamigłówki,trening
