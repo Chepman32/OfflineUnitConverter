@@ -16,37 +16,55 @@ export interface ConversionState {
   setPair: (fromUnitId: string, toUnitId: string) => void;
 }
 
-export const createConversionSlice: StateCreator<ConversionState, [], [], ConversionState> = (set, get) => ({
+export const createConversionSlice: StateCreator<
+  ConversionState,
+  [],
+  [],
+  ConversionState
+> = (set, get) => ({
   categoryId: 'length',
   fromUnitId: 'm',
   toUnitId: 'ft',
-  input: '1',
-  result: convert('1', 'm', 'ft'),
-  setCategory: (id) => set({ categoryId: id }),
-  setFrom: (unitId) => set((state) => {
-    let res = state.result;
-    try { res = convert(state.input, unitId, state.toUnitId); } catch {}
-    return { fromUnitId: unitId, result: res } as any;
-  }),
-  setTo: (unitId) => set((state) => {
-    let res = state.result;
-    try { res = convert(state.input, state.fromUnitId, unitId); } catch {}
-    return { toUnitId: unitId, result: res } as any;
-  }),
+  input: '0',
+  result: convert('0', 'm', 'ft'),
+  setCategory: id => set({ categoryId: id }),
+  setFrom: unitId =>
+    set(state => {
+      let res = state.result;
+      try {
+        res = convert(state.input, unitId, state.toUnitId);
+      } catch {}
+      return { fromUnitId: unitId, result: res } as any;
+    }),
+  setTo: unitId =>
+    set(state => {
+      let res = state.result;
+      try {
+        res = convert(state.input, state.fromUnitId, unitId);
+      } catch {}
+      return { toUnitId: unitId, result: res } as any;
+    }),
   swap: () => {
     const { fromUnitId, toUnitId, input } = get();
     let res = '-';
-    try { res = convert(input, toUnitId, fromUnitId); } catch {}
+    try {
+      res = convert(input, toUnitId, fromUnitId);
+    } catch {}
     set({ fromUnitId: toUnitId, toUnitId: fromUnitId, result: res });
   },
   setInput: (value: string) => {
     let res = '-';
-    try { res = convert(value, get().fromUnitId, get().toUnitId); } catch {}
+    try {
+      res = convert(value, get().fromUnitId, get().toUnitId);
+    } catch {}
     set({ input: value, result: res });
   },
-  setPair: (fromUnitId: string, toUnitId: string) => set((state) => {
-    let res = '-';
-    try { res = convert(state.input, fromUnitId, toUnitId); } catch {}
-    return { fromUnitId, toUnitId, result: res };
-  }),
+  setPair: (fromUnitId: string, toUnitId: string) =>
+    set(state => {
+      let res = '-';
+      try {
+        res = convert(state.input, fromUnitId, toUnitId);
+      } catch {}
+      return { fromUnitId, toUnitId, result: res };
+    }),
 });

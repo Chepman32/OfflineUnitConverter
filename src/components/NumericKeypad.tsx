@@ -1,20 +1,37 @@
 import React, { useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { useReduceMotion } from '../hooks/useReduceMotion';
-import ReactNativeHaptic from 'react-native-haptic-feedback';
-import { useAppStore } from '../store';
+import { triggerLightHaptic } from '../utils/haptics';
 
-const KEYS = ['7','8','9','4','5','6','1','2','3','±','0','⌫','·'];
+const KEYS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '±', '0', '⌫', '·'];
 
 function Key({ k, onKey }: { k: string; onKey: (k: string) => void }) {
   const scale = useRef(new Animated.Value(1)).current;
   const reduce = useReduceMotion();
-  const haptics = useAppStore(s => s.haptics);
   return (
     <Pressable
-      onPress={() => { if (haptics) ReactNativeHaptic.trigger('impactLight'); onKey(k); }}
-      onPressIn={() => !reduce && Animated.spring(scale, { toValue: 0.96, useNativeDriver: true, speed: 20, bounciness: 10 }).start()}
-      onPressOut={() => !reduce && Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 10 }).start()}
+      onPress={() => {
+        triggerLightHaptic();
+        onKey(k);
+      }}
+      onPressIn={() =>
+        !reduce &&
+        Animated.spring(scale, {
+          toValue: 0.96,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 10,
+        }).start()
+      }
+      onPressOut={() =>
+        !reduce &&
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 10,
+        }).start()
+      }
       style={({ pressed }) => [styles.key, pressed && styles.keyPressed]}
     >
       <Animated.View style={{ transform: [{ scale }] }}>
@@ -24,7 +41,11 @@ function Key({ k, onKey }: { k: string; onKey: (k: string) => void }) {
   );
 }
 
-export default function NumericKeypad({ onKey }: { onKey: (k: string) => void }) {
+export default function NumericKeypad({
+  onKey,
+}: {
+  onKey: (k: string) => void;
+}) {
   return (
     <View style={styles.grid}>
       {KEYS.map(k => (
@@ -35,8 +56,22 @@ export default function NumericKeypad({ onKey }: { onKey: (k: string) => void })
 }
 
 const styles = StyleSheet.create({
-  grid: { flexDirection:'row', flexWrap:'wrap', gap: 12, justifyContent:'center' },
-  key: { width: 90, height: 80, borderRadius: 16, borderWidth:1, borderColor:'#ddd', alignItems:'center', justifyContent:'center', backgroundColor:'#fff' },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  key: {
+    width: 90,
+    height: 80,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
   keyPressed: { opacity: 0.7 },
-  keyText: { fontSize: 32, fontWeight:'600' },
+  keyText: { fontSize: 32, fontWeight: '600' },
 });

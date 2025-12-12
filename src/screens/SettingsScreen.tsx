@@ -20,6 +20,7 @@ import AnimatedPress from '../components/AnimatedPress';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { t } from '../i18n';
+import { triggerLightHaptic } from '../utils/haptics';
 
 const ACCORDION_HEIGHT = 220; // Approximate height of expanded content
 
@@ -63,24 +64,38 @@ export default function SettingsScreen() {
   const toggleMore = () => {
     if (moreOpen) {
       // Closing
-      accordionHeight.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.inOut(Easing.cubic),
-      });
+      if (reduceMotion) {
+        accordionHeight.value = 0;
+      } else {
+        accordionHeight.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic),
+        });
+      }
       setMoreOpen(false);
-      setTimeout(() => {
-        scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
-      }, 300);
+      setTimeout(
+        () => {
+          scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
+        },
+        reduceMotion ? 0 : 300,
+      );
     } else {
       // Opening
       setMoreOpen(true);
-      accordionHeight.value = withTiming(ACCORDION_HEIGHT, {
-        duration: 300,
-        easing: Easing.inOut(Easing.cubic),
-      });
-      setTimeout(() => {
-        scrollRef.current?.scrollToEnd({ animated: !reduceMotion });
-      }, 300);
+      if (reduceMotion) {
+        accordionHeight.value = ACCORDION_HEIGHT;
+      } else {
+        accordionHeight.value = withTiming(ACCORDION_HEIGHT, {
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic),
+        });
+      }
+      setTimeout(
+        () => {
+          scrollRef.current?.scrollToEnd({ animated: !reduceMotion });
+        },
+        reduceMotion ? 0 : 300,
+      );
     }
   };
 
@@ -232,7 +247,10 @@ export default function SettingsScreen() {
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <Pressable
             style={[styles.btnSmall, { borderColor: tokens.border }]}
-            onPress={() => setDecimals(Math.max(0, decimals - 1))}
+            onPress={() => {
+              triggerLightHaptic();
+              setDecimals(Math.max(0, decimals - 1));
+            }}
           >
             <Text style={{ color: tokens.onSurface }}>-</Text>
           </Pressable>
@@ -247,7 +265,10 @@ export default function SettingsScreen() {
           </Text>
           <Pressable
             style={[styles.btnSmall, { borderColor: tokens.border }]}
-            onPress={() => setDecimals(Math.min(12, decimals + 1))}
+            onPress={() => {
+              triggerLightHaptic();
+              setDecimals(Math.min(12, decimals + 1));
+            }}
           >
             <Text style={{ color: tokens.onSurface }}>+</Text>
           </Pressable>
@@ -261,7 +282,10 @@ export default function SettingsScreen() {
           {(['halfUp', 'floor', 'ceil', 'bankers'] as const).map(m => (
             <Pressable
               key={m}
-              onPress={() => setRounding(m)}
+              onPress={() => {
+                triggerLightHaptic();
+                setRounding(m);
+              }}
               style={[
                 styles.chip,
                 { borderColor: tokens.border },
@@ -337,7 +361,10 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Pressable
           accessibilityRole="button"
-          onPress={toggleMore}
+          onPress={() => {
+            triggerLightHaptic();
+            toggleMore();
+          }}
           style={[styles.accordionHeader, { borderColor: tokens.border }]}
         >
           <Text
@@ -387,7 +414,10 @@ export default function SettingsScreen() {
               <React.Fragment key={item.label}>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={item.action}
+                  onPress={() => {
+                    triggerLightHaptic();
+                    item.action();
+                  }}
                   style={[
                     styles.listItem,
                     idx === arr.length - 1 && { borderBottomWidth: 0 },

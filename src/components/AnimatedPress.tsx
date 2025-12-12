@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Pressable, Animated, ViewStyle } from 'react-native';
 import { useReduceMotion } from '../hooks/useReduceMotion';
+import { triggerLightHaptic } from '../utils/haptics';
 
 export default function AnimatedPress({
   children,
@@ -19,16 +20,40 @@ export default function AnimatedPress({
 }) {
   const scale = useRef(new Animated.Value(1)).current;
   const reduce = useReduceMotion();
+
+  const handlePress = () => {
+    triggerLightHaptic();
+    onPress?.();
+  };
+
   return (
     <Pressable
-      onPress={onPress}
-      onPressIn={() => !reduce && Animated.spring(scale, { toValue: scaleTo, useNativeDriver: true, speed: 20, bounciness: 10 }).start()}
-      onPressOut={() => !reduce && Animated.spring(scale, { toValue: 1, useNativeDriver: true, speed: 20, bounciness: 10 }).start()}
+      onPress={handlePress}
+      onPressIn={() =>
+        !reduce &&
+        Animated.spring(scale, {
+          toValue: scaleTo,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 10,
+        }).start()
+      }
+      onPressOut={() =>
+        !reduce &&
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 10,
+        }).start()
+      }
       style={style as any}
       accessibilityRole={accessibilityRole}
       accessibilityHint={accessibilityHint}
     >
-      <Animated.View style={{ transform: [{ scale }] }}>{children}</Animated.View>
+      <Animated.View style={{ transform: [{ scale }] }}>
+        {children}
+      </Animated.View>
     </Pressable>
   );
 }

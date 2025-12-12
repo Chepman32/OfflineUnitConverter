@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Alert,
+  ScrollView,
+} from 'react-native';
 import { convert } from '../domain/conversion/engine';
 import { getUnitById, categories, getUnitsByCategory } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
@@ -12,7 +19,7 @@ import { useFormatOptions } from '../hooks/useFormatOptions';
 import { useAppStore } from '../store';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { MenuView } from '@react-native-menu/menu';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { triggerLightHaptic, triggerSelectionHaptic } from '../utils/haptics';
 
 export default function ConverterScreen() {
   const fromUnit = useAppStore(s => s.fromUnitId);
@@ -23,7 +30,9 @@ export default function ConverterScreen() {
   const setPair = useAppStore(s => s.setPair);
   const setInput = useAppStore(s => s.setInput);
   const swap = useAppStore(s => s.swap);
-  const [pickerFor, setPickerFor] = React.useState<'from'|'to'|'category'|null>(null);
+  const [pickerFor, setPickerFor] = React.useState<
+    'from' | 'to' | 'category' | null
+  >(null);
   const [showPrecision, setShowPrecision] = React.useState(false);
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
   const addHistory = useAppStore(s => s.addHistory);
@@ -32,89 +41,99 @@ export default function ConverterScreen() {
   const removeFavorite = useAppStore(s => s.removeFavorite);
   const recentsUnits = useAppStore(s => s.recentsUnits);
   const addRecentUnit = useAppStore(s => s.addRecentUnit);
-  const haptics = useAppStore(s => s.haptics);
+  const copyMode = useAppStore(s => s.copyMode);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
 
   // Build menu for unit selection
-  const buildUnitMenu = React.useCallback((forSide: 'from' | 'to') => {
-    const currentUnitId = forSide === 'from' ? fromUnit : toUnit;
-    const categoryUnits = getUnitsByCategory(categoryId);
+  const buildUnitMenu = React.useCallback(
+    (forSide: 'from' | 'to') => {
+      const currentUnitId = forSide === 'from' ? fromUnit : toUnit;
+      const categoryUnits = getUnitsByCategory(categoryId);
 
-    // Filter recent units by current category, take first 6
-    const recentInCategory = recentsUnits
-      .map(id => getUnitById(id))
-      .filter(u => u && u.categoryId === categoryId)
-      .slice(0, 6);
+      // Filter recent units by current category, take first 6
+      const recentInCategory = recentsUnits
+        .map(id => getUnitById(id))
+        .filter(u => u && u.categoryId === categoryId)
+        .slice(0, 6);
 
-    const recentIds = new Set(recentInCategory.map(u => u!.id));
-    const otherUnits = categoryUnits.filter(u => !recentIds.has(u.id));
+      const recentIds = new Set(recentInCategory.map(u => u!.id));
+      const otherUnits = categoryUnits.filter(u => !recentIds.has(u.id));
 
-    const menuItems = [];
+      const menuItems = [];
 
-    // Recent section with displayInline
-    if (recentInCategory.length > 0) {
+      // Recent section with displayInline
+      if (recentInCategory.length > 0) {
+        menuItems.push({
+          id: '__recent',
+          title: 'Recent',
+          displayInline: true,
+          subactions: recentInCategory.map(unit => ({
+            id: unit!.id,
+            title: unit!.name,
+            subtitle: unit!.symbol,
+            state: unit!.id === currentUnitId ? 'on' : undefined,
+          })),
+        });
+      }
+
+      // All units section with displayInline
       menuItems.push({
-        id: '__recent',
-        title: 'Recent',
+        id: '__all',
+        title: 'All Units',
         displayInline: true,
-        subactions: recentInCategory.map(unit => ({
-          id: unit!.id,
-          title: unit!.name,
-          subtitle: unit!.symbol,
-          state: unit!.id === currentUnitId ? 'on' : undefined,
+        subactions: otherUnits.map(unit => ({
+          id: unit.id,
+          title: unit.name,
+          subtitle: unit.symbol,
+          state: unit.id === currentUnitId ? 'on' : undefined,
         })),
       });
-    }
 
-    // All units section with displayInline
-    menuItems.push({
-      id: '__all',
-      title: 'All Units',
-      displayInline: true,
-      subactions: otherUnits.map(unit => ({
-        id: unit.id,
-        title: unit.name,
-        subtitle: unit.symbol,
-        state: unit.id === currentUnitId ? 'on' : undefined,
-      })),
-    });
-
-    return menuItems;
-  }, [fromUnit, toUnit, categoryId, recentsUnits]);
+      return menuItems;
+    },
+    [fromUnit, toUnit, categoryId, recentsUnits],
+  );
 
   // Handle unit selection from menu
-  const handleUnitSelection = React.useCallback((unitId: string, forSide: 'from' | 'to') => {
-    if (haptics) {
-      ReactNativeHapticFeedback.trigger('selection', {
-        enableVibrateFallback: true,
-        ignoreAndroidSystemSettings: false,
-      });
-    }
+  const handleUnitSelection = React.useCallback(
+    (unitId: string, forSide: 'from' | 'to') => {
+      triggerSelectionHaptic();
 
-    if (forSide === 'from') {
-      setFrom(unitId);
-    } else {
-      setTo(unitId);
-    }
+      if (forSide === 'from') {
+        setFrom(unitId);
+      } else {
+        setTo(unitId);
+      }
 
-    addRecentUnit(unitId);
-  }, [setFrom, setTo, addRecentUnit, haptics]);
+      addRecentUnit(unitId);
+    },
+    [setFrom, setTo, addRecentUnit],
+  );
 
   // Validate that fromUnit and toUnit exist, otherwise reset to defaults
   React.useEffect(() => {
     const from = getUnitById(fromUnit);
     const to = getUnitById(toUnit);
     if (!from || !to) {
-      console.warn('Invalid unit detected, resetting to defaults:', { fromUnit, toUnit });
-      const [defaultFrom, defaultTo] = getDefaultPairForCategory(categoryId as any);
+      console.warn('Invalid unit detected, resetting to defaults:', {
+        fromUnit,
+        toUnit,
+      });
+      const [defaultFrom, defaultTo] = getDefaultPairForCategory(
+        categoryId as any,
+      );
       setPair(defaultFrom, defaultTo);
     }
   }, [fromUnit, toUnit, categoryId, setPair]);
 
   const fmt = useFormatOptions();
   const result = useMemo(() => {
-    try { return convert(input || '0', fromUnit, toUnit, fmt); } catch { return '-'; }
+    try {
+      return convert(input || '0', fromUnit, toUnit, fmt);
+    } catch {
+      return '-';
+    }
   }, [input, fromUnit, toUnit, fmt]);
 
   const invalid = useMemo(() => {
@@ -129,7 +148,7 @@ export default function ConverterScreen() {
   // Auto-track history when conversion changes
   React.useEffect(() => {
     if (!input || input === '0' || result === '-' || invalid) return;
-    
+
     const timeoutId = setTimeout(() => {
       try {
         addHistory({
@@ -152,12 +171,16 @@ export default function ConverterScreen() {
     const prev = useAppStore.getState().input;
     if (k === '⌫') return setInput(prev.slice(0, -1));
     if (k === '·') return setInput(prev.includes('.') ? prev : prev + '.');
-    if (k === '±') return setInput(prev.startsWith('-') ? prev.slice(1) : '-' + prev);
+    if (k === '±')
+      return setInput(prev.startsWith('-') ? prev.slice(1) : '-' + prev);
     if (/^\d$/.test(k)) return setInput(prev === '0' ? k : prev + k);
   };
 
-  const favMatch = favorites.find(f => f.fromUnitId === fromUnit && f.toUnitId === toUnit);
+  const favMatch = favorites.find(
+    f => f.fromUnitId === fromUnit && f.toUnitId === toUnit,
+  );
   const toggleFavorite = () => {
+    triggerLightHaptic();
     if (favMatch) {
       removeFavorite(favMatch.id);
       return;
@@ -165,7 +188,9 @@ export default function ConverterScreen() {
     const from = getUnitById(fromUnit);
     const to = getUnitById(toUnit);
     const id = `${fromUnit}-${toUnit}`;
-    const label = `${input || '0'} ${from?.symbol || fromUnit} → ${result} ${to?.symbol || toUnit}`;
+    const label = `${input || '0'} ${from?.symbol || fromUnit} → ${result} ${
+      to?.symbol || toUnit
+    }`;
     addFavorite({
       id,
       fromUnitId: fromUnit,
@@ -175,16 +200,39 @@ export default function ConverterScreen() {
     });
   };
 
-  const copyValue = React.useCallback((value: string, side: 'from' | 'to') => {
-    Clipboard.setString(value);
-    if (haptics) {
-      ReactNativeHapticFeedback.trigger('impactLight', {
-        enableVibrateFallback: true,
-        ignoreAndroidSystemSettings: false,
-      });
-    }
-    Alert.alert('Copied', side === 'from' ? 'Input value copied to clipboard' : 'Result copied to clipboard');
-  }, [haptics]);
+  const copyValue = React.useCallback(
+    (value: string, side: 'from' | 'to') => {
+      const unitId = side === 'from' ? fromUnit : toUnit;
+      const unit = getUnitById(unitId);
+      const unitSymbol = unit?.symbol || unitId;
+
+      let textToCopy = value;
+      let message =
+        side === 'from'
+          ? 'Input value copied to clipboard'
+          : 'Result copied to clipboard';
+
+      if (copyMode === 'value_unit') {
+        textToCopy = `${value} ${unitSymbol}`;
+        message =
+          side === 'from'
+            ? 'Input with unit copied to clipboard'
+            : 'Result with unit copied to clipboard';
+      } else if (copyMode === 'expression') {
+        const fromUnitObj = getUnitById(fromUnit);
+        const toUnitObj = getUnitById(toUnit);
+        const fromSymbol = fromUnitObj?.symbol || fromUnit;
+        const toSymbol = toUnitObj?.symbol || toUnit;
+        textToCopy = `${input || '0'} ${fromSymbol} = ${result} ${toSymbol}`;
+        message = 'Expression copied to clipboard';
+      }
+
+      Clipboard.setString(textToCopy);
+      triggerLightHaptic();
+      Alert.alert('Copied', message);
+    },
+    [copyMode, fromUnit, toUnit, input, result],
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.surface }]}>
@@ -197,19 +245,44 @@ export default function ConverterScreen() {
         {/* Category Header */}
         <View style={styles.headerRow}>
           <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
-            {categories.find(c => c.id === categoryId)?.name?.toUpperCase() || 'CONVERSION'}
+            {categories.find(c => c.id === categoryId)?.name?.toUpperCase() ||
+              'CONVERSION'}
           </Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Toggle favorite" onPress={toggleFavorite} style={styles.starBtn}>
-            <Text style={[styles.starIcon, { color: favMatch ? '#f5b300' : '#999' }]}>{favMatch ? '★' : '☆'}</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Toggle favorite"
+            onPress={toggleFavorite}
+            style={styles.starBtn}
+          >
+            <Text
+              style={[
+                styles.starIcon,
+                { color: favMatch ? '#f5b300' : '#999' },
+              ]}
+            >
+              {favMatch ? '★' : '☆'}
+            </Text>
           </Pressable>
         </View>
 
         {/* Main Conversion Display */}
-        <View style={[styles.conversionCard, { backgroundColor: theme.surfaceElevated }]}>
+        <View
+          style={[
+            styles.conversionCard,
+            { backgroundColor: theme.surfaceElevated },
+          ]}
+        >
           <View style={styles.conversionRow}>
             <View style={styles.valueContainer}>
-              <Pressable onPress={() => copyValue(input || '0', 'from')} hitSlop={10}>
-                <Text style={[styles.inputValue, { color: theme.onSurface }]} numberOfLines={1} adjustsFontSizeToFit>
+              <Pressable
+                onPress={() => copyValue(input || '0', 'from')}
+                hitSlop={10}
+              >
+                <Text
+                  style={[styles.inputValue, { color: theme.onSurface }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
                   {input || '0'}
                 </Text>
               </Pressable>
@@ -221,16 +294,7 @@ export default function ConverterScreen() {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <Pressable
-                  onPress={() => {
-                    if (haptics) {
-                      ReactNativeHapticFeedback.trigger('impactLight', {
-                        enableVibrateFallback: true,
-                        ignoreAndroidSystemSettings: false,
-                      });
-                    }
-                  }}
-                >
+                <Pressable onPress={() => triggerLightHaptic()}>
                   <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
                     {getUnitById(fromUnit)?.symbol || fromUnit}
                   </Text>
@@ -241,7 +305,10 @@ export default function ConverterScreen() {
             {/* Swap Button */}
             <Pressable
               style={styles.swapButton}
-              onPress={() => swap()}
+              onPress={() => {
+                triggerLightHaptic();
+                swap();
+              }}
               accessibilityRole="button"
               accessibilityLabel="Swap units"
             >
@@ -255,7 +322,9 @@ export default function ConverterScreen() {
                 onLongPress={() => {
                   Alert.alert(
                     'Result Options',
-                    `Value: ${result}\nFrom: ${getUnitById(fromUnit)?.name || fromUnit}\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
+                    `Value: ${result}\nFrom: ${
+                      getUnitById(fromUnit)?.name || fromUnit
+                    }\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
                     [
                       { text: 'Cancel', style: 'cancel' },
                       {
@@ -263,7 +332,7 @@ export default function ConverterScreen() {
                         onPress: () => {
                           Clipboard.setString(result);
                           Alert.alert('Copied', 'Result copied to clipboard');
-                        }
+                        },
                       },
                       {
                         text: 'Copy with Unit',
@@ -271,10 +340,13 @@ export default function ConverterScreen() {
                           const unit = getUnitById(toUnit);
                           const text = `${result} ${unit?.symbol || toUnit}`;
                           Clipboard.setString(text);
-                          Alert.alert('Copied', 'Result with unit copied to clipboard');
-                        }
-                      }
-                    ]
+                          Alert.alert(
+                            'Copied',
+                            'Result with unit copied to clipboard',
+                          );
+                        },
+                      },
+                    ],
                   );
                 }}
               >
@@ -294,16 +366,7 @@ export default function ConverterScreen() {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <Pressable
-                  onPress={() => {
-                    if (haptics) {
-                      ReactNativeHapticFeedback.trigger('impactLight', {
-                        enableVibrateFallback: true,
-                        ignoreAndroidSystemSettings: false,
-                      });
-                    }
-                  }}
-                >
+                <Pressable onPress={() => triggerLightHaptic()}>
                   <Text style={[styles.unitLabel, { color: theme.onSurface }]}>
                     {getUnitById(toUnit)?.symbol || toUnit}
                   </Text>
@@ -316,7 +379,7 @@ export default function ConverterScreen() {
         {/* Category Pills - Horizontal Scroll */}
         <ScrollRowCategories
           active={categoryId}
-          onSelect={(id) => {
+          onSelect={id => {
             const pair = getDefaultPairForCategory(id as any);
             setPair(pair[0], pair[1]);
             setInput('0');
@@ -333,19 +396,27 @@ export default function ConverterScreen() {
       {/* Hidden UI Elements - keeping existing functionality */}
       <View style={{ opacity: 0, position: 'absolute', top: -1000 }}>
         {invalid && (
-          <Text style={styles.validation}>{t('errors.invalidNumber','Invalid number format')}</Text>
+          <Text style={styles.validation}>
+            {t('errors.invalidNumber', 'Invalid number format')}
+          </Text>
         )}
       </View>
 
       {/* Modals and Pickers */}
-      <PrecisionControl visible={showPrecision} onClose={() => setShowPrecision(false)} />
+      <PrecisionControl
+        visible={showPrecision}
+        onClose={() => setShowPrecision(false)}
+      />
       <UnitPicker
         visible={pickerFor === 'from' || pickerFor === 'to'}
         onClose={() => setPickerFor(null)}
         categoryId={categoryId}
-        onSelect={(id) => {
-          if (pickerFor === 'from') setFrom(id); else setTo(id);
-          try { useAppStore.getState().addRecentUnit(id); } catch {}
+        onSelect={id => {
+          if (pickerFor === 'from') setFrom(id);
+          else setTo(id);
+          try {
+            useAppStore.getState().addRecentUnit(id);
+          } catch {}
         }}
       />
 
@@ -357,15 +428,18 @@ export default function ConverterScreen() {
         >
           <Pressable
             style={[styles.categoryModal, { backgroundColor: theme.surface }]}
-            onPress={(e) => e.stopPropagation()}
+            onPress={e => e.stopPropagation()}
           >
-            <Text style={[styles.modalTitle, { color: theme.onSurface }]}>Select Category</Text>
+            <Text style={[styles.modalTitle, { color: theme.onSurface }]}>
+              Select Category
+            </Text>
             <ScrollView style={{ maxHeight: 300 }}>
               {categories.map(cat => (
                 <Pressable
                   key={cat.id}
                   style={[styles.categoryItem, { borderBottomColor: '#ddd' }]}
                   onPress={() => {
+                    triggerLightHaptic();
                     const pair = getDefaultPairForCategory(cat.id as any);
                     setPair(pair[0], pair[1]);
                     setInput('0');
@@ -373,7 +447,14 @@ export default function ConverterScreen() {
                     setPickerFor(null);
                   }}
                 >
-                  <Text style={[styles.categoryItemText, { color: theme.onSurface }]}>{cat.name}</Text>
+                  <Text
+                    style={[
+                      styles.categoryItemText,
+                      { color: theme.onSurface },
+                    ]}
+                  >
+                    {cat.name}
+                  </Text>
                 </Pressable>
               ))}
             </ScrollView>
@@ -390,7 +471,13 @@ export default function ConverterScreen() {
   );
 }
 
-function ScrollRowCategories({ active, onSelect }: { active: string; onSelect: (id: string) => void }) {
+function ScrollRowCategories({
+  active,
+  onSelect,
+}: {
+  active: string;
+  onSelect: (id: string) => void;
+}) {
   return (
     <ScrollView
       horizontal
@@ -403,16 +490,21 @@ function ScrollRowCategories({ active, onSelect }: { active: string; onSelect: (
           key={cat.id}
           accessibilityRole="button"
           accessibilityLabel={cat.name}
-          onPress={() => onSelect(cat.id)}
+          onPress={() => {
+            triggerLightHaptic();
+            onSelect(cat.id);
+          }}
           style={[
             styles.categoryPill,
-            active === cat.id && styles.categoryPillActive
+            active === cat.id && styles.categoryPillActive,
           ]}
         >
-          <Text style={[
-            styles.categoryPillText,
-            active === cat.id && styles.categoryPillTextActive
-          ]}>
+          <Text
+            style={[
+              styles.categoryPillText,
+              active === cat.id && styles.categoryPillTextActive,
+            ]}
+          >
             {cat.name}
           </Text>
         </Pressable>
@@ -490,7 +582,7 @@ const styles = StyleSheet.create({
   unitLabel: {
     fontSize: 40,
     fontWeight: '500',
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     paddingHorizontal: 12,
     paddingVertical: 0,
     borderRadius: 12,
@@ -574,7 +666,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  
+
   // Modal Styles
   modalOverlay: {
     position: 'absolute',
@@ -586,31 +678,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   categoryModal: {
     width: '80%',
     maxHeight: '70%',
     borderRadius: 20,
     padding: 20,
   },
-  
+
   modalTitle: {
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 20,
   },
-  
+
   categoryItem: {
     paddingVertical: 15,
     borderBottomWidth: 1,
   },
-  
+
   categoryItemText: {
     fontSize: 16,
     textAlign: 'center',
   },
-  
+
   modalCloseButton: {
     marginTop: 20,
     padding: 15,
@@ -618,16 +710,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-  
+
   modalCloseText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  
+
   // Legacy styles for hidden elements
-  validation: { 
-    color:'#ff3b30', 
-    marginTop: -6 
+  validation: {
+    color: '#ff3b30',
+    marginTop: -6,
   },
 });

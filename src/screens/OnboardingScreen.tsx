@@ -26,6 +26,7 @@ export default function OnboardingScreen() {
   const setSeen = useAppStore(s => s.setOnboardingSeen);
   const measurementSystem = useAppStore(s => s.measurementSystem);
   const setMeasurementSystem = useAppStore(s => s.setMeasurementSystem);
+  const reduceMotion = useAppStore(s => s.reduceMotion);
   const [index, setIndex] = React.useState(0);
   const scroller = React.useRef<ScrollView | null>(null);
 
@@ -90,7 +91,7 @@ export default function OnboardingScreen() {
   const next = () => {
     if (index < pages.length - 1) {
       const x = (index + 1) * width;
-      scroller.current?.scrollTo({ x, animated: true });
+      scroller.current?.scrollTo({ x, animated: !reduceMotion });
       setIndex(i => Math.min(i + 1, pages.length - 1));
     } else {
       setSeen(true);

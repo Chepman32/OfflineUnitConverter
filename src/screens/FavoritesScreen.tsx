@@ -5,10 +5,12 @@ import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { useOptionalNavigation } from '../navigation/safe';
 import { t } from '../i18n';
+import { triggerLightHaptic } from '../utils/haptics';
 
 export default function FavoritesScreen() {
   const theme = useTheme();
   const favorites = useAppStore(s => s.favorites);
+  const reduceMotion = useAppStore(s => s.reduceMotion);
   const setFrom = useAppStore(s => s.setFrom);
   const setTo = useAppStore(s => s.setTo);
   const moveUp = useAppStore(s => s.moveFavoriteUp);
@@ -18,6 +20,7 @@ export default function FavoritesScreen() {
 
   const handleMoveUp = useCallback(
     (id: string) => {
+      triggerLightHaptic();
       moveUp(id);
     },
     [moveUp],
@@ -25,6 +28,7 @@ export default function FavoritesScreen() {
 
   const handleMoveDown = useCallback(
     (id: string) => {
+      triggerLightHaptic();
       moveDown(id);
     },
     [moveDown],
@@ -32,6 +36,7 @@ export default function FavoritesScreen() {
 
   const handleRemove = useCallback(
     (id: string) => {
+      triggerLightHaptic();
       remove(id);
     },
     [remove],
@@ -52,9 +57,13 @@ export default function FavoritesScreen() {
             <Animated.View
               key={item.id}
               style={styles.row}
-              layout={Layout.springify().damping(15).stiffness(120)}
-              entering={FadeIn.duration(200)}
-              exiting={FadeOut.duration(200)}
+              layout={
+                reduceMotion
+                  ? undefined
+                  : Layout.springify().damping(15).stiffness(120)
+              }
+              entering={reduceMotion ? undefined : FadeIn.duration(200)}
+              exiting={reduceMotion ? undefined : FadeOut.duration(200)}
             >
               <Text style={[styles.pair, { color: theme.onSurface }]}>
                 {item.fromUnitId} → {item.toUnitId}
@@ -85,6 +94,7 @@ export default function FavoritesScreen() {
                   accessibilityRole="button"
                   style={styles.open}
                   onPress={() => {
+                    triggerLightHaptic();
                     setFrom(item.fromUnitId);
                     setTo(item.toUnitId);
                     nav?.navigate?.('Converter');
