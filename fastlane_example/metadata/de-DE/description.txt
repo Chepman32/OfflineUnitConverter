@@ -1,0 +1,49 @@
+Quizoryx ist eine wunderschön gestaltete Quiz-App, die das Lernen unterhaltsam und fesselnd macht.
+
+20+ WISSENSKATEGORIEN
+• Exakte Wissenschaften: Mathematik, Physik, Chemie, Biologie
+• Technologie: Programmierung, Algorithmen, Datenstrukturen, JavaScript
+• Geisteswissenschaften: Geschichte, Literatur, Kunst, Musik
+• Naturwissenschaften: Astronomie, Geografie
+• Sozialwissenschaften: Wirtschaft, Psychologie, Philosophie
+
+8 SCHWIERIGKEITSSTUFEN
+Wähle deine Herausforderung:
+— Sehr einfach (10 Fragen)
+— Einfach (20 Fragen)
+— Mittel (30 Fragen)
+— Normal (40 Fragen)
+— Schwer (50 Fragen)
+— Sehr schwer (60 Fragen)
+— Legendär (70 Fragen)
+— Professor (100 Fragen) — Premium exklusiv
+
+SMARTE HINWEISE
+Bei einer Frage festgefahren? Nutze Hinweise zur Hilfe:
+• 50/50 — entfernt zwei falsche Antworten
+• Aufdecken — hebt die richtige Antwort hervor
+Dein Hinweis-Guthaben wird zwischen Sitzungen gespeichert.
+
+DETAILLIERTE STATISTIKEN
+Verfolge deinen Lernfortschritt:
+• Gesamtzahl abgeschlossener Quizze
+• Genauigkeitsprozentsatz
+• Zeit beim Lernen
+• Fortschritt nach Kategorie
+• Verlauf der letzten Aktivitäten
+
+FUNKTIONIERT OFFLINE
+Alle Quizze ohne Internet verfügbar. Lerne in der U-Bahn, im Flugzeug, überall.
+
+POLIERTES DESIGN
+• Dunkles Theme für Augenkomfort
+• Flüssige Animationen
+• Haptisches Feedback
+• Soundeffekte (können deaktiviert werden)
+
+FLEXIBLE EINSTELLUNGEN
+• 4 Themes: Dunkel, Hell, Solar, Mono
+• Antwortbestätigung — verhindert versehentliches Tippen
+• Vibration und Töne — separat anpassbar
+
+Lade Quizoryx herunter und verwandle Lernen in ein Abenteuer!

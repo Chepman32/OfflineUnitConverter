@@ -1,0 +1,49 @@
+Quizoryx on kauniisti suunniteltu tietovisasovellus, joka tekee oppimisesta hauskaa ja mukaansatempaavaa.
+
+YLI 20 TIETOKATEGORIAA
+• Eksaktit tieteet: Matematiikka, Fysiikka, Kemia, Biologia
+• Teknologia: Ohjelmointi, Algoritmit, Tietorakenteet, JavaScript
+• Humanistiset tieteet: Historia, Kirjallisuus, Taide, Musiikki
+• Luonnontieteet: Tähtitiede, Maantiede
+• Yhteiskuntatieteet: Taloustiede, Psykologia, Filosofia
+
+8 VAIKEUSTASOA
+Valitse haasteesi:
+— Erittäin helppo (10 kysymystä)
+— Helppo (20 kysymystä)
+— Keskitaso (30 kysymystä)
+— Normaali (40 kysymystä)
+— Vaikea (50 kysymystä)
+— Erittäin vaikea (60 kysymystä)
+— Legendaarinen (70 kysymystä)
+— Professori (100 kysymystä) — Premium-yksinoikeus
+
+ÄLYKKÄÄT VIHJEET
+Jumissa kysymyksessä? Käytä vihjeitä avuksi:
+• 50/50 — poistaa kaksi väärää vastausta
+• Paljasta — korostaa oikean vastauksen
+Vihjesaldosi tallentuu istuntojen välillä.
+
+YKSITYISKOHTAISET TILASTOT
+Seuraa oppimismatkaasi:
+• Suoritettujen tietovisojen kokonaismäärä
+• Tarkkuusprosentti
+• Oppimiseen käytetty aika
+• Edistyminen kategorioittain
+• Viimeaikaisen toiminnan historia
+
+TOIMII OFFLINE
+Kaikki tietovisat saatavilla ilman internetiä. Opi metrossa, lentokoneessa, missä tahansa.
+
+VIIMEISTELTY MUOTOILU
+• Tumma teema silmien mukavuudeksi
+• Sulava animaatiot
+• Haptinen palaute
+• Äänitehosteet (voidaan poistaa käytöstä)
+
+JOUSTAVAT ASETUKSET
+• 4 teemaa: Tumma, Vaalea, Solar, Mono
+• Vastauksen vahvistus — estää vahingossa tapahtuvia napautuksia
+• Värinä ja äänet — säädettävissä erikseen
+
+Lataa Quizoryx ja tee oppimisesta seikkailu!

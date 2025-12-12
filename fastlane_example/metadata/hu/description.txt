@@ -1,0 +1,49 @@
+A Quizoryx egy gyönyörűen tervezett kvízalkalmazás, amely szórakoztatóvá és lebilincselővé teszi a tanulást.
+
+20+ TUDÁSKATEGÓRIA
+• Egzakt tudományok: Matematika, Fizika, Kémia, Biológia
+• Technológia: Programozás, Algoritmusok, Adatszerkezetek, JavaScript
+• Humán tudományok: Történelem, Irodalom, Művészet, Zene
+• Természettudományok: Csillagászat, Földrajz
+• Társadalomtudományok: Közgazdaságtan, Pszichológia, Filozófia
+
+8 NEHÉZSÉGI SZINT
+Válaszd ki a kihívásod:
+— Nagyon könnyű (10 kérdés)
+— Könnyű (20 kérdés)
+— Közepes (30 kérdés)
+— Normál (40 kérdés)
+— Nehéz (50 kérdés)
+— Nagyon nehéz (60 kérdés)
+— Legendás (70 kérdés)
+— Professzor (100 kérdés) — Prémium exkluzív
+
+OKOS TIPPEK
+Elakadtál egy kérdésnél? Használj tippeket segítségül:
+• 50/50 — eltávolít két rossz választ
+• Felfedés — kiemeli a helyes választ
+A tipp egyenleged mentésre kerül a munkamenetek között.
+
+RÉSZLETES STATISZTIKÁK
+Kövesd a tanulási utadat:
+• Összes befejezett kvíz
+• Pontossági százalék
+• Tanulással töltött idő
+• Kategóriánkénti haladás
+• Legutóbbi tevékenység előzmények
+
+OFFLINE IS MŰKÖDIK
+Minden kvíz elérhető internet nélkül. Tanulj a metrón, a repülőn, bárhol.
+
+CSISZOLT DIZÁJN
+• Sötét téma a szemek kényelméért
+• Sima animációk
+• Haptikus visszajelzés
+• Hangeffektek (kikapcsolhatók)
+
+RUGALMAS BEÁLLÍTÁSOK
+• 4 téma: Sötét, Világos, Solar, Mono
+• Válasz megerősítés — megakadályozza a véletlen koppintásokat
+• Rezgés és hangok — külön testreszabhatók
+
+Töltsd le a Quizoryxet és változtasd a tanulást kalanddá!

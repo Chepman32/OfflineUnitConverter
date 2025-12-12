@@ -1,0 +1,49 @@
+Quizoryx je krásně navržená kvízová aplikace, která činí učení zábavným a poutavým.
+
+VÍCE NEŽ 20 KATEGORIÍ ZNALOSTÍ
+• Exaktní vědy: Matematika, Fyzika, Chemie, Biologie
+• Technologie: Programování, Algoritmy, Datové struktury, JavaScript
+• Humanitní vědy: Historie, Literatura, Umění, Hudba
+• Přírodní vědy: Astronomie, Geografie
+• Společenské vědy: Ekonomie, Psychologie, Filozofie
+
+8 ÚROVNÍ OBTÍŽNOSTI
+Vyberte si svou výzvu:
+— Velmi snadné (10 otázek)
+— Snadné (20 otázek)
+— Střední (30 otázek)
+— Normální (40 otázek)
+— Těžké (50 otázek)
+— Velmi těžké (60 otázek)
+— Legendární (70 otázek)
+— Profesor (100 otázek) — Exkluzivně pro Premium
+
+CHYTRÉ NÁPOVĚDY
+Zasekli jste se na otázce? Použijte nápovědy:
+• 50/50 — odstraní dvě špatné odpovědi
+• Odhalit — zvýrazní správnou odpověď
+Váš zůstatek nápověd se ukládá mezi relacemi.
+
+PODROBNÉ STATISTIKY
+Sledujte svou cestu učením:
+• Celkový počet dokončených kvízů
+• Procento přesnosti
+• Čas strávený učením
+• Pokrok podle kategorie
+• Historie nedávné aktivity
+
+FUNGUJE OFFLINE
+Všechny kvízy jsou dostupné bez internetu. Učte se v metru, v letadle, kdekoli.
+
+PROPRACOVANÝ DESIGN
+• Tmavý motiv pro pohodlí očí
+• Plynulé animace
+• Haptická zpětná vazba
+• Zvukové efekty (lze vypnout)
+
+FLEXIBILNÍ NASTAVENÍ
+• 4 motivy: Tmavý, Světlý, Solar, Mono
+• Potvrzení odpovědi — zabraňuje náhodným klepnutím
+• Vibrace a zvuky — nastavitelné samostatně
+
+Stáhněte si Quizoryx a proměňte učení v dobrodružství!

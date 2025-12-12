@@ -1,0 +1,49 @@
+Quizoryx, öğrenmeyi eğlenceli ve ilgi çekici hale getiren güzel tasarlanmış bir quiz uygulamasıdır.
+
+20+ BİLGİ KATEGORİSİ
+• Temel Bilimler: Matematik, Fizik, Kimya, Biyoloji
+• Teknoloji: Programlama, Algoritmalar, Veri Yapıları, JavaScript
+• Beşeri Bilimler: Tarih, Edebiyat, Sanat, Müzik
+• Doğa Bilimleri: Astronomi, Coğrafya
+• Sosyal Bilimler: Ekonomi, Psikoloji, Felsefe
+
+8 ZORLUK SEVİYESİ
+Meydan okumanızı seçin:
+— Çok kolay (10 soru)
+— Kolay (20 soru)
+— Orta (30 soru)
+— Normal (40 soru)
+— Zor (50 soru)
+— Çok zor (60 soru)
+— Efsanevi (70 soru)
+— Profesör (100 soru) — Premium özel
+
+AKILLI İPUÇLARI
+Bir soruda takıldınız mı? Yardım için ipuçları kullanın:
+• 50/50 — iki yanlış cevabı eler
+• Göster — doğru cevabı vurgular
+İpucu bakiyeniz oturumlar arasında kaydedilir.
+
+DETAYLI İSTATİSTİKLER
+Öğrenme yolculuğunuzu takip edin:
+• Tamamlanan toplam quiz
+• Doğruluk yüzdesi
+• Öğrenmeye harcanan zaman
+• Kategori bazında ilerleme
+• Son etkinlik geçmişi
+
+ÇEVRİMDIŞI ÇALIŞIR
+Tüm quizler internet olmadan kullanılabilir. Metroda, uçakta, her yerde öğrenin.
+
+CİLALI TASARIM
+• Göz konforu için koyu tema
+• Akıcı animasyonlar
+• Dokunsal geri bildirim
+• Ses efektleri (devre dışı bırakılabilir)
+
+ESNEK AYARLAR
+• 4 tema: Koyu, Açık, Solar, Mono
+• Cevap onayı — yanlışlıkla dokunmaları önler
+• Titreşim ve sesler — ayrı ayrı özelleştirilebilir
+
+Quizoryx'i indirin ve öğrenmeyi bir maceraya dönüştürün!

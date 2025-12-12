@@ -1,0 +1,49 @@
+Quizoryx is een prachtig ontworpen quiz-app die leren leuk en boeiend maakt.
+
+20+ KENNISCATEGORIEËN
+• Exacte wetenschappen: Wiskunde, Natuurkunde, Scheikunde, Biologie
+• Technologie: Programmeren, Algoritmen, Datastructuren, JavaScript
+• Geesteswetenschappen: Geschiedenis, Literatuur, Kunst, Muziek
+• Natuurwetenschappen: Astronomie, Geografie
+• Sociale wetenschappen: Economie, Psychologie, Filosofie
+
+8 MOEILIJKHEIDSNIVEAUS
+Kies je uitdaging:
+— Zeer makkelijk (10 vragen)
+— Makkelijk (20 vragen)
+— Gemiddeld (30 vragen)
+— Normaal (40 vragen)
+— Moeilijk (50 vragen)
+— Zeer moeilijk (60 vragen)
+— Legendarisch (70 vragen)
+— Professor (100 vragen) — Premium exclusief
+
+SLIMME HINTS
+Vastgelopen bij een vraag? Gebruik hints om te helpen:
+• 50/50 — verwijdert twee foute antwoorden
+• Onthullen — markeert het juiste antwoord
+Je hintsaldo wordt opgeslagen tussen sessies.
+
+GEDETAILLEERDE STATISTIEKEN
+Volg je leerreis:
+• Totaal voltooide quizzen
+• Nauwkeurigheidspercentage
+• Tijd besteed aan leren
+• Voortgang per categorie
+• Recente activiteitengeschiedenis
+
+WERKT OFFLINE
+Alle quizzen beschikbaar zonder internet. Leer in de metro, in het vliegtuig, overal.
+
+GEPOLIJST ONTWERP
+• Donker thema voor oogcomfort
+• Vloeiende animaties
+• Haptische feedback
+• Geluidseffecten (kunnen worden uitgeschakeld)
+
+FLEXIBELE INSTELLINGEN
+• 4 thema's: Donker, Licht, Solar, Mono
+• Antwoordbevestiging — voorkomt onbedoelde tikken
+• Trillingen en geluiden — afzonderlijk aanpasbaar
+
+Download Quizoryx en verander leren in een avontuur!
