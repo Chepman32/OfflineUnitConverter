@@ -168,12 +168,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   image: {
-    width: width - 40,
-    height: height * 0.7,
+    width: width,
+    height: height * 0.75,
   },
   footer: {
     paddingHorizontal: 24,
-    paddingBottom: 50,
+    paddingBottom: 40,
     alignItems: 'center',
   },
   dots: {
@@ -187,9 +187,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   nextBtn: {
-    paddingHorizontal: 48,
+    width: width * 0.9,
     paddingVertical: 16,
     borderRadius: 30,
+    alignItems: 'center',
   },
   nextText: {
     color: '#fff',
