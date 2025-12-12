@@ -276,6 +276,7 @@ export default function OnboardingScreen() {
           }
           onPress={next}
           style={styles.nextBtn}
+          animated={index === pages.length - 1 && !reduceMotion}
         />
       </View>
     </View>

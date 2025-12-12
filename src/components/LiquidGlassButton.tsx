@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   Pressable,
   Animated,
   ViewStyle,
+  Easing,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { triggerLightHaptic } from '../utils/haptics';
@@ -14,15 +15,41 @@ interface LiquidGlassButtonProps {
   title: string;
   onPress: () => void;
   style?: ViewStyle;
+  animated?: boolean;
 }
 
 export default function LiquidGlassButton({
   title,
   onPress,
   style,
+  animated = false,
 }: LiquidGlassButtonProps) {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(1)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (animated) {
+      const animation = Animated.loop(
+        Animated.sequence([
+          Animated.timing(translateX, {
+            toValue: -400,
+            duration: 2500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(translateX, {
+            toValue: 0,
+            duration: 2500,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+      );
+      animation.start();
+      return () => animation.stop();
+    }
+  }, [animated, translateX]);
 
   const handlePressIn = () => {
     Animated.parallel([
@@ -61,6 +88,73 @@ export default function LiquidGlassButton({
     onPress();
   };
 
+  const renderGradientSvg = (id: string) => (
+    <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+      <Defs>
+        <LinearGradient id={`grad_${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor="#b4d0ff" stopOpacity="1" />
+          <Stop offset="30%" stopColor="#9bb8ff" stopOpacity="1" />
+          <Stop offset="60%" stopColor="#8a9eff" stopOpacity="1" />
+          <Stop offset="100%" stopColor="#9080e0" stopOpacity="1" />
+        </LinearGradient>
+        <LinearGradient id={`shine_${id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+          <Stop offset="50%" stopColor="#ffffff" stopOpacity="0.15" />
+          <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill={`url(#grad_${id})`} />
+      <Rect x="0" y="0" width="100%" height="100%" fill={`url(#shine_${id})`} />
+    </Svg>
+  );
+
+  const renderAnimatedGradientSvg = () => (
+    <Svg width={800} height="100%">
+      <Defs>
+        <LinearGradient id="animGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          {/* Pattern spans 400px (50%), then repeats identically */}
+          {/* First 400px */}
+          <Stop offset="0%" stopColor="#b4d0ff" stopOpacity="1" />
+          <Stop offset="12.5%" stopColor="#a0c4ff" stopOpacity="1" />
+          <Stop offset="25%" stopColor="#9bb8ff" stopOpacity="1" />
+          <Stop offset="37.5%" stopColor="#8a9eff" stopOpacity="1" />
+          <Stop offset="50%" stopColor="#9080e0" stopOpacity="1" />
+          {/* Second 400px - exact mirror back to start color */}
+          <Stop offset="62.5%" stopColor="#8a9eff" stopOpacity="1" />
+          <Stop offset="75%" stopColor="#9bb8ff" stopOpacity="1" />
+          <Stop offset="87.5%" stopColor="#a0c4ff" stopOpacity="1" />
+          <Stop offset="100%" stopColor="#b4d0ff" stopOpacity="1" />
+        </LinearGradient>
+      </Defs>
+      <Rect x="0" y="0" width="800" height="100%" fill="url(#animGrad)" />
+    </Svg>
+  );
+
+  const renderShineOverlay = (id: string) => (
+    <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+      <Defs>
+        <LinearGradient
+          id={`shineOver_${id}`}
+          x1="0%"
+          y1="0%"
+          x2="0%"
+          y2="100%"
+        >
+          <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+          <Stop offset="50%" stopColor="#ffffff" stopOpacity="0.15" />
+          <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      <Rect
+        x="0"
+        y="0"
+        width="100%"
+        height="100%"
+        fill={`url(#shineOver_${id})`}
+      />
+    </Svg>
+  );
+
   return (
     <Pressable
       onPress={handlePress}
@@ -71,52 +165,26 @@ export default function LiquidGlassButton({
       <Animated.View
         style={[styles.container, style, { transform: [{ scale }], opacity }]}
       >
-        {/* Main glass button */}
         <View style={styles.glassContainer}>
-          {/* Combined gradient background with shine */}
-          <Svg width="100%" height="100%" style={styles.svgBackground}>
-            <Defs>
-              {/* Main glass gradient */}
-              <LinearGradient
-                id="glassGrad"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
-              >
-                <Stop offset="0%" stopColor="#b4d0ff" stopOpacity="1" />
-                <Stop offset="30%" stopColor="#9bb8ff" stopOpacity="1" />
-                <Stop offset="60%" stopColor="#8a9eff" stopOpacity="1" />
-                <Stop offset="100%" stopColor="#9080e0" stopOpacity="1" />
-              </LinearGradient>
-              {/* Shine gradient - fades from white to transparent */}
-              <LinearGradient id="shineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
-                <Stop offset="60%" stopColor="#ffffff" stopOpacity="0.1" />
-                <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-              </LinearGradient>
-            </Defs>
-            {/* Base gradient */}
-            <Rect
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              fill="url(#glassGrad)"
-              rx="26"
-              ry="26"
-            />
-            {/* Shine overlay */}
-            <Rect
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              fill="url(#shineGrad)"
-              rx="26"
-              ry="26"
-            />
-          </Svg>
+          {/* Static gradient for non-animated */}
+          {!animated && renderGradientSvg('static')}
+
+          {/* Animated gradient */}
+          {animated && (
+            <>
+              <View style={styles.animatedGradientContainer}>
+                <Animated.View
+                  style={[
+                    styles.movingGradient,
+                    { transform: [{ translateX }] },
+                  ]}
+                >
+                  {renderAnimatedGradientSvg()}
+                </Animated.View>
+              </View>
+              {renderShineOverlay('anim')}
+            </>
+          )}
 
           {/* Border */}
           <View style={styles.border} />
@@ -144,12 +212,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  svgBackground: {
+  animatedGradientContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+    overflow: 'hidden',
+  },
+  movingGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: 800,
   },
   border: {
     position: 'absolute',
