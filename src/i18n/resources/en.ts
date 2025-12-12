@@ -14,6 +14,8 @@ export default {
     value: 'Value',
     filter: 'Filter',
     filterPlaceholder: 'e.g., ft or foot',
+    skip: 'Skip',
+    getStarted: 'Get Started',
   },
   precision: {
     title: 'Precision',
@@ -100,16 +102,20 @@ export default {
     title3: 'Fully Featured',
     text3: 'Unlimited history and favorites, themes, and more.',
     card1: {
-      title: 'History',
-      text: 'View your recent conversion history',
+      title: 'Offline and Private',
+      text: 'Units are bundled and all data stays on-device with no network calls.',
     },
     card2: {
-      title: 'Settings',
-      text: 'Customize the app to suit your preferences',
+      title: 'Instant, accurate conversions',
+      text: 'High-precision decimal math, real-time multi-convert',
     },
     card3: {
-      title: 'Simple and Easy',
-      text: 'Enjoy a clean and easy-to-use interface',
+      title: 'Simple, easy to use',
+      text: 'Instantly convert units across many categories.',
+    },
+    card4: {
+      title: '15 unit categories',
+      text: 'Convert area, data, speed, time and more.',
     },
   },
 };

@@ -1,12 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Pressable,
+  Image,
+} from 'react-native';
 import { t } from '../i18n';
 import { useOptionalNavigation } from '../navigation/safe';
 import { useTheme } from '../theme/ThemeProvider';
 import { useAppStore } from '../store';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+const onboarding1 = require('../assets/onboarding/onboarding1.png');
+const onboarding2 = require('../assets/onboarding/onboarding2.png');
+const onboarding3 = require('../assets/onboarding/onboarding3.png');
+const onboarding4 = require('../assets/onboarding/onboarding4.png');
 
 export default function OnboardingScreen() {
   const nav = useOptionalNavigation();
@@ -17,22 +29,40 @@ export default function OnboardingScreen() {
 
   const pages = [
     {
-      key: 'history',
-      icon: 'time-outline' as const,
-      title: t('onboarding.card1.title', 'History'),
-      text: t('onboarding.card1.text', 'View your recent conversion history'),
+      key: 'offline',
+      image: onboarding1,
+      title: t('onboarding.card1.title', 'Offline and Private'),
+      text: t(
+        'onboarding.card1.text',
+        'Units are bundled and all data stays on-device with no network calls.',
+      ),
     },
     {
-      key: 'settings',
-      icon: 'settings-outline' as const,
-      title: t('onboarding.card2.title', 'Settings'),
-      text: t('onboarding.card2.text', 'Customize the app to suit your preferences'),
+      key: 'accurate',
+      image: onboarding2,
+      title: t('onboarding.card2.title', 'Instant, accurate conversions'),
+      text: t(
+        'onboarding.card2.text',
+        'High-precision decimal math, real-time multi-convert',
+      ),
     },
     {
       key: 'simple',
-      icon: 'happy-outline' as const,
-      title: t('onboarding.card3.title', 'Simple and Easy'),
-      text: t('onboarding.card3.text', 'Enjoy a clean and easy-to-use interface'),
+      image: onboarding3,
+      title: t('onboarding.card3.title', 'Simple, easy to use'),
+      text: t(
+        'onboarding.card3.text',
+        'Instantly convert units across many categories.',
+      ),
+    },
+    {
+      key: 'categories',
+      image: onboarding4,
+      title: t('onboarding.card4.title', '15 unit categories'),
+      text: t(
+        'onboarding.card4.text',
+        'Convert area, data, speed, time and more.',
+      ),
     },
   ];
 
@@ -47,66 +77,123 @@ export default function OnboardingScreen() {
     }
   };
 
+  const skip = () => {
+    setSeen(true);
+    nav?.navigate?.('Main');
+  };
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}> 
+    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+      <Pressable
+        accessibilityRole="button"
+        style={styles.skipBtn}
+        onPress={skip}
+      >
+        <Text style={[styles.skipText, { color: theme.onSurfaceSecondary }]}>
+          {t('common.skip', 'Skip')}
+        </Text>
+      </Pressable>
+
       <ScrollView
         ref={scroller}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
+        onMomentumScrollEnd={e => {
           const newIndex = Math.round(e.nativeEvent.contentOffset.x / width);
           setIndex(newIndex);
         }}
-        contentContainerStyle={{ alignItems:'center' }}
+        contentContainerStyle={styles.scrollContent}
       >
-        {pages.map((p) => (
-          <View key={p.key} style={[styles.page, { width }]}> 
-            <View style={[styles.card, { backgroundColor: theme.surfaceElevated }]}> 
-              <View style={styles.iconWrap}>
-                <Ionicons name={p.icon} size={82} color={theme.onSurface} />
-              </View>
-              <Text style={[styles.title, { color: theme.onSurface }]}>{p.title}</Text>
-              <Text style={[styles.text, { color: '#5b6672' }]}>{p.text}</Text>
-              <Pressable accessibilityRole="button" style={styles.nextBtn} onPress={next}>
-                <Text style={styles.nextText}>{t('common.next', 'Next')}</Text>
-              </Pressable>
-            </View>
+        {pages.map(p => (
+          <View key={p.key} style={[styles.page, { width }]}>
+            <Image source={p.image} style={styles.image} resizeMode="contain" />
           </View>
         ))}
       </ScrollView>
+
+      <View style={styles.footer}>
+        <View style={styles.dots}>
+          {pages.map((p, i) => (
+            <View
+              key={p.key}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor:
+                    i === index ? theme.accent : theme.onSurfaceSecondary,
+                  opacity: i === index ? 1 : 0.3,
+                },
+              ]}
+            />
+          ))}
+        </View>
+
+        <Pressable
+          accessibilityRole="button"
+          style={[styles.nextBtn, { backgroundColor: theme.accent }]}
+          onPress={next}
+        >
+          <Text style={styles.nextText}>
+            {index === pages.length - 1
+              ? t('common.getStarted', 'Get Started')
+              : t('common.next', 'Next')}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  page: { paddingHorizontal: 18, alignItems: 'center', justifyContent:'center' },
-  card: {
-    width: width - 48,
-    borderRadius: 22,
-    paddingVertical: 24,
-    paddingHorizontal: 22,
-    alignItems:'center',
-    // iOS shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 20,
-    // Android
-    elevation: 4,
+  skipBtn: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    zIndex: 10,
+    padding: 8,
   },
-  iconWrap: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    alignItems:'center',
-    justifyContent:'center',
-    backgroundColor: 'rgba(0,0,0,0.03)',
-    marginBottom: 16,
+  skipText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
-  title: { fontSize: 24, fontWeight: '800', marginTop: 6 },
-  text: { marginTop: 8, textAlign:'center', fontSize: 15, lineHeight: 20 },
-  nextBtn: { marginTop: 28, backgroundColor: '#EBEEF3', paddingHorizontal: 22, paddingVertical: 12, borderRadius: 20 },
-  nextText: { color: '#0f172a', fontWeight:'700' },
+  scrollContent: {
+    alignItems: 'center',
+  },
+  page: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  image: {
+    width: width - 40,
+    height: height * 0.7,
+  },
+  footer: {
+    paddingHorizontal: 24,
+    paddingBottom: 50,
+    alignItems: 'center',
+  },
+  dots: {
+    flexDirection: 'row',
+    marginBottom: 24,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  nextBtn: {
+    paddingHorizontal: 48,
+    paddingVertical: 16,
+    borderRadius: 30,
+  },
+  nextText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
 });
