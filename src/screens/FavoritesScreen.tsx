@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, { Layout, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { useOptionalNavigation } from '../navigation/safe';
-import { t } from '../i18n';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function FavoritesScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const favorites = useAppStore(s => s.favorites);
   const reduceMotion = useAppStore(s => s.reduceMotion);

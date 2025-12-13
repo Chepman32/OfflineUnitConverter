@@ -8,7 +8,9 @@ import {
   Pressable,
   TextInput,
   ScrollView,
+  Image,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,12 +20,15 @@ import Animated, {
 import AnimatedPress from '../components/AnimatedPress';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
-import { t } from '../i18n';
+import { SUPPORTED_LANGUAGES, setLanguage as setI18nLanguage } from '../i18n';
+import { FLAGS } from '../i18n/flags';
 import { triggerLightHaptic } from '../utils/haptics';
 
 const ACCORDION_HEIGHT = 160; // Approximate height of expanded content
+const LANGUAGE_ACCORDION_HEIGHT = 400; // Height for language list
 
 export default function SettingsScreen() {
+  const { t } = useTranslation();
   const reduceMotion = useAppStore(s => s.reduceMotion);
   const setReduceMotion = useAppStore(s => s.setReduceMotion);
   const haptics = useAppStore(s => s.haptics);
@@ -41,16 +46,18 @@ export default function SettingsScreen() {
   const copyMode = useAppStore(s => s.copyMode);
   const setCopyMode = useAppStore(s => s.setCopyMode);
   const language = useAppStore(s => s.language);
-  const setLanguage = useAppStore(s => s.setLanguage);
+  const setLanguageStore = useAppStore(s => s.setLanguage);
 
   const measurementSystem = useAppStore(s => s.measurementSystem);
   const setMeasurementSystem = useAppStore(s => s.setMeasurementSystem);
   const [moreOpen, setMoreOpen] = React.useState(false);
+  const [languageOpen, setLanguageOpen] = React.useState(false);
   const scrollRef = React.useRef<ScrollView>(null);
   const nav = useOptionalNavigation();
   const tokens = useTheme();
 
   const accordionHeight = useSharedValue(0);
+  const languageAccordionHeight = useSharedValue(0);
 
   const accordionStyle = useAnimatedStyle(() => {
     return {
@@ -59,6 +66,50 @@ export default function SettingsScreen() {
       overflow: 'hidden' as const,
     };
   });
+
+  const languageAccordionStyle = useAnimatedStyle(() => {
+    return {
+      height:
+        languageAccordionHeight.value === 0 ? 0 : languageAccordionHeight.value,
+      opacity: languageAccordionHeight.value / LANGUAGE_ACCORDION_HEIGHT,
+      overflow: 'hidden' as const,
+    };
+  });
+
+  const toggleLanguage = () => {
+    if (languageOpen) {
+      if (reduceMotion) {
+        languageAccordionHeight.value = 0;
+      } else {
+        languageAccordionHeight.value = withTiming(0, {
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic),
+        });
+      }
+      setLanguageOpen(false);
+    } else {
+      setLanguageOpen(true);
+      if (reduceMotion) {
+        languageAccordionHeight.value = LANGUAGE_ACCORDION_HEIGHT;
+      } else {
+        languageAccordionHeight.value = withTiming(LANGUAGE_ACCORDION_HEIGHT, {
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic),
+        });
+      }
+    }
+  };
+
+  const handleLanguageSelect = (code: string) => {
+    triggerLightHaptic();
+    setLanguageStore(code);
+    setI18nLanguage(code);
+    toggleLanguage();
+  };
+
+  const currentLanguage =
+    SUPPORTED_LANGUAGES.find(l => l.code === language) ||
+    SUPPORTED_LANGUAGES[0];
 
   const toggleMore = () => {
     if (moreOpen) {
@@ -128,7 +179,7 @@ export default function SettingsScreen() {
                   themeMode === m && { color: '#FFFFFF' },
                 ]}
               >
-                {m.charAt(0).toUpperCase() + m.slice(1)}
+                {t(`settings.themes.${m}`)}
               </Text>
             </AnimatedPress>
           ))}
@@ -153,32 +204,29 @@ export default function SettingsScreen() {
           {t('settings.copy', 'Copy Mode')}
         </Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-          {(['value', 'value_unit', 'expression'] as const).map(m => {
-            const label = m === 'value_unit' ? 'Value & Unit' : m;
-            return (
-              <AnimatedPress
-                key={m}
-                onPress={() => setCopyMode(m)}
+          {(['value', 'value_unit', 'expression'] as const).map(m => (
+            <AnimatedPress
+              key={m}
+              onPress={() => setCopyMode(m)}
+              style={[
+                styles.chip,
+                { borderColor: tokens.border },
+                copyMode === m && {
+                  backgroundColor: tokens.accent,
+                  borderColor: tokens.accent,
+                },
+              ]}
+            >
+              <Text
                 style={[
-                  styles.chip,
-                  { borderColor: tokens.border },
-                  copyMode === m && {
-                    backgroundColor: tokens.accent,
-                    borderColor: tokens.accent,
-                  },
+                  { color: tokens.onSurface },
+                  copyMode === m && { color: '#FFFFFF' },
                 ]}
               >
-                <Text
-                  style={[
-                    { color: tokens.onSurface },
-                    copyMode === m && { color: '#FFFFFF' },
-                  ]}
-                >
-                  {label}
-                </Text>
-              </AnimatedPress>
-            );
-          })}
+                {t(`settings.copyModes.${m}`)}
+              </Text>
+            </AnimatedPress>
+          ))}
         </View>
       </View>
       <View style={styles.row}>
@@ -208,35 +256,70 @@ export default function SettingsScreen() {
         </Text>
         <Switch value={haptics} onValueChange={setHaptics} />
       </View>
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: tokens.onSurface }]}>
-          {t('settings.language', 'Language')}
-        </Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {(['en'] as const).map(lng => (
-            <AnimatedPress
-              key={lng}
-              onPress={() => setLanguage(lng)}
+      <View style={styles.section}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            triggerLightHaptic();
+            toggleLanguage();
+          }}
+          style={[styles.accordionHeader, { borderColor: tokens.border }]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image
+              source={FLAGS[currentLanguage.flag]}
+              style={styles.flagIcon}
+            />
+            <Text
               style={[
-                styles.chip,
-                { borderColor: tokens.border },
-                language === lng && {
-                  backgroundColor: tokens.accent,
-                  borderColor: tokens.accent,
-                },
+                styles.subtitle,
+                { color: tokens.onSurface, marginBottom: 0 },
               ]}
             >
-              <Text
+              {currentLanguage.name}
+            </Text>
+          </View>
+          <Text style={{ color: tokens.onSurface }}>
+            {languageOpen ? '−' : '+'}
+          </Text>
+        </Pressable>
+        <Animated.View style={languageAccordionStyle}>
+          <ScrollView
+            style={[
+              styles.languageList,
+              { borderColor: tokens.border, backgroundColor: tokens.surface },
+            ]}
+            nestedScrollEnabled
+          >
+            {SUPPORTED_LANGUAGES.map((lang, idx, arr) => (
+              <Pressable
+                key={lang.code}
+                accessibilityRole="button"
+                onPress={() => handleLanguageSelect(lang.code)}
                 style={[
-                  { color: tokens.onSurface },
-                  language === lng && { color: '#FFFFFF' },
+                  styles.languageItem,
+                  { borderColor: tokens.border },
+                  idx === arr.length - 1 && { borderBottomWidth: 0 },
+                  language === lang.code && {
+                    backgroundColor: tokens.surfaceElevated,
+                  },
                 ]}
               >
-                {lng}
-              </Text>
-            </AnimatedPress>
-          ))}
-        </View>
+                <Image source={FLAGS[lang.flag]} style={styles.flagIcon} />
+                <Text
+                  style={[styles.languageText, { color: tokens.onSurface }]}
+                >
+                  {lang.name}
+                </Text>
+                {language === lang.code && (
+                  <Text style={{ color: tokens.accent, marginLeft: 'auto' }}>
+                    ✓
+                  </Text>
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
+        </Animated.View>
       </View>
       <View style={styles.row}>
         <Text style={[styles.label, { color: tokens.onSurface }]}>
@@ -302,7 +385,7 @@ export default function SettingsScreen() {
                   rounding === m && { color: '#FFFFFF' },
                 ]}
               >
-                {m}
+                {t(`settings.roundingModes.${m}`)}
               </Text>
             </Pressable>
           ))}
@@ -496,4 +579,26 @@ const styles = StyleSheet.create({
     borderColor: '#eee',
   },
   listItemText: { fontSize: 17, fontWeight: '500' },
+  flagIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  languageList: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderRadius: 16,
+    maxHeight: 380,
+  },
+  languageItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  languageText: {
+    fontSize: 16,
+  },
 });

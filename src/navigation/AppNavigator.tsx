@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import ConverterScreen from '../screens/ConverterScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MultiConvertScreen from '../screens/MultiConvertScreen';
 import AboutScreen from '../screens/AboutScreen';
-import { t } from '../i18n';
 import HomeScreen from '../screens/HomeScreen';
 import LicensesScreen from '../screens/LicensesScreen';
 import CustomUnitsScreen from '../screens/CustomUnitsScreen';
@@ -73,6 +73,7 @@ export default function AppNavigator() {
         const SettingsStack = createNativeStackNavigator();
         const SettingsStackScreen = () => {
           const theme = useTheme();
+          const { t } = useTranslation();
           return (
             <SettingsStack.Navigator
               screenOptions={{
@@ -85,22 +86,22 @@ export default function AppNavigator() {
               <SettingsStack.Screen
                 name="SettingsMain"
                 component={SettingsScreen}
-                options={{ title: t('tabs.settings', 'Settings') }}
+                options={{ title: t('tabs.settings') }}
               />
               <SettingsStack.Screen
                 name="About"
                 component={AboutScreen}
-                options={{ title: t('settings.about', 'About') }}
+                options={{ title: t('settings.about') }}
               />
               <SettingsStack.Screen
                 name="Licenses"
                 component={LicensesScreen}
-                options={{ title: t('licenses.title', 'Licenses') }}
+                options={{ title: t('licenses.title') }}
               />
               <SettingsStack.Screen
                 name="CustomUnits"
                 component={CustomUnitsScreen}
-                options={{ title: t('customUnits.title', 'Custom Units') }}
+                options={{ title: t('customUnits.title') }}
               />
             </SettingsStack.Navigator>
           );
@@ -110,6 +111,7 @@ export default function AppNavigator() {
         const HomeStack = createNativeStackNavigator();
         const HomeStackScreen = () => {
           const theme = useTheme();
+          const { t } = useTranslation();
           return (
             <HomeStack.Navigator
               screenOptions={{
@@ -125,7 +127,7 @@ export default function AppNavigator() {
                 component={MultiConvertScreen}
                 options={{
                   headerShown: true,
-                  title: t('tabs.multiConvert', 'All Units'),
+                  title: t('tabs.multiConvert'),
                 }}
               />
             </HomeStack.Navigator>
@@ -135,6 +137,7 @@ export default function AppNavigator() {
         const TabsNav = () => {
           const theme = useTheme();
           const insets = useSafeAreaInsets();
+          const { t } = useTranslation();
           return (
             <Tabs.Navigator
               screenOptions={({ route }: any) => ({
@@ -168,27 +171,27 @@ export default function AppNavigator() {
               <Tabs.Screen
                 name="Home"
                 component={HomeStackScreen}
-                options={{ tabBarLabel: t('tabs.home', 'Home') }}
+                options={{ tabBarLabel: t('tabs.home') }}
               />
               <Tabs.Screen
                 name="Converter"
                 component={ConverterScreen}
-                options={{ tabBarLabel: t('tabs.converter', 'Converter') }}
+                options={{ tabBarLabel: t('tabs.converter') }}
               />
               <Tabs.Screen
                 name="Favorites"
                 component={FavoritesScreen}
-                options={{ tabBarLabel: t('tabs.favorites', 'Favorites') }}
+                options={{ tabBarLabel: t('tabs.favorites') }}
               />
               <Tabs.Screen
                 name="History"
                 component={HistoryScreen}
-                options={{ tabBarLabel: t('tabs.history', 'History') }}
+                options={{ tabBarLabel: t('tabs.history') }}
               />
               <Tabs.Screen
                 name="Settings"
                 component={SettingsStackScreen}
-                options={{ tabBarLabel: t('tabs.settings', 'Settings') }}
+                options={{ tabBarLabel: t('tabs.settings') }}
               />
             </Tabs.Navigator>
           );

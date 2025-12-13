@@ -7,17 +7,18 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { categories } from '../data/units';
 import CategoryCard from '../components/CategoryCard';
 import { useOptionalNavigation } from '../navigation/safe';
 import { useAppStore } from '../store';
-import { t } from '../i18n';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import { useTheme } from '../theme/ThemeProvider';
 import IconTest from '../components/IconTest';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const nav = useOptionalNavigation();
   const setPair = useAppStore(s => s.setPair);
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
@@ -28,7 +29,7 @@ export default function HomeScreen() {
       <IconTest />
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.onSurface }]}>
-          {t('home.categories', 'Categories')}
+          {t('home.categories')}
         </Text>
         <Pressable
           style={[styles.multiConvertBtn, { backgroundColor: theme.accent }]}
@@ -37,15 +38,13 @@ export default function HomeScreen() {
             nav?.navigate?.('MultiConvert');
           }}
         >
-          <Text style={styles.multiConvertText}>
-            {t('tabs.multiConvert', 'All Units')}
-          </Text>
+          <Text style={styles.multiConvertText}>{t('tabs.multiConvert')}</Text>
         </Pressable>
       </View>
       {recents.length > 0 && (
         <View style={{ marginBottom: 8 }}>
           <Text style={[styles.subtitle, { color: theme.onSurface }]}>
-            {t('home.recents', 'Recents')}
+            {t('home.recents')}
           </Text>
           <ScrollView
             horizontal
@@ -65,7 +64,9 @@ export default function HomeScreen() {
                     nav?.navigate?.('Converter');
                   }}
                 >
-                  <Text style={styles.chipText}>{cat.name}</Text>
+                  <Text style={styles.chipText}>
+                    {t(`categories.${cat.id}`, cat.name)}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -79,7 +80,7 @@ export default function HomeScreen() {
         keyExtractor={c => c.id}
         renderItem={({ item }) => (
           <CategoryCard
-            title={item.name}
+            title={t(`categories.${item.id}`, item.name)}
             onPress={() => {
               const pair = getDefaultPairForCategory(item.id as any);
               setPair(pair[0], pair[1]);

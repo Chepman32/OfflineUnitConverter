@@ -10,12 +10,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { getUnitsByCategory, getUnitById } from '../data/units';
 import { useAppStore } from '../store';
-import { t } from '../i18n';
 import { useOptionalNavigation } from '../navigation/safe';
 import { categories } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
@@ -24,6 +24,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function MultiConvertScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const fromUnit = useAppStore(s => s.fromUnitId);
   const toUnit = useAppStore(s => s.toUnitId);
@@ -123,7 +124,7 @@ export default function MultiConvertScreen() {
                       isFrom && styles.selectBtnTextActive,
                     ]}
                   >
-                    From
+                    {t('common.from')}
                   </Text>
                 </Pressable>
                 <Pressable
@@ -139,7 +140,7 @@ export default function MultiConvertScreen() {
                       isTo && styles.selectBtnTextActive,
                     ]}
                   >
-                    To
+                    {t('common.to')}
                   </Text>
                 </Pressable>
               </View>
@@ -149,7 +150,7 @@ export default function MultiConvertScreen() {
         ListHeaderComponent={
           <View>
             <Text style={[styles.title, { color: theme.onSurface }]}>
-              {t('screens.unitPicker', 'Select Units')}
+              {t('screens.unitPicker')}
             </Text>
 
             {/* Current Selection Card */}
@@ -161,7 +162,7 @@ export default function MultiConvertScreen() {
             >
               <View style={styles.selectionRow}>
                 <View style={styles.selectionUnit}>
-                  <Text style={styles.selectionLabel}>From</Text>
+                  <Text style={styles.selectionLabel}>{t('common.from')}</Text>
                   <Text
                     style={[styles.selectionValue, { color: theme.onSurface }]}
                   >
@@ -173,7 +174,7 @@ export default function MultiConvertScreen() {
                 </View>
                 <Text style={styles.arrow}>→</Text>
                 <View style={styles.selectionUnit}>
-                  <Text style={styles.selectionLabel}>To</Text>
+                  <Text style={styles.selectionLabel}>{t('common.to')}</Text>
                   <Text
                     style={[styles.selectionValue, { color: theme.onSurface }]}
                   >
@@ -191,7 +192,9 @@ export default function MultiConvertScreen() {
                   nav?.navigate?.('Converter');
                 }}
               >
-                <Text style={styles.convertBtnText}>Go to Converter</Text>
+                <Text style={styles.convertBtnText}>
+                  {t('common.goToConverter')}
+                </Text>
               </Pressable>
             </View>
 
@@ -206,7 +209,7 @@ export default function MultiConvertScreen() {
                 <AnimatedPress
                   key={cat.id}
                   accessibilityRole="button"
-                  accessibilityLabel={cat.name}
+                  accessibilityLabel={t(`categories.${cat.id}`, cat.name)}
                   onPress={() => {
                     const pair = getDefaultPairForCategory(cat.id as any);
                     setPair(pair[0], pair[1]);
@@ -223,7 +226,7 @@ export default function MultiConvertScreen() {
                       categoryId === cat.id && styles.chipTextActive,
                     ]}
                   >
-                    {cat.name}
+                    {t(`categories.${cat.id}`, cat.name)}
                   </Text>
                 </AnimatedPress>
               ))}
@@ -241,19 +244,22 @@ export default function MultiConvertScreen() {
                 ]}
                 value={filter}
                 onChangeText={setFilter}
-                placeholder={t('common.filterPlaceholder', 'Search units...')}
+                placeholder={t('common.filterPlaceholder')}
                 placeholderTextColor="#999"
               />
             </View>
 
             <Text style={styles.sectionLabel}>
-              {categories.find(c => c.id === categoryId)?.name || 'Units'}
+              {t(
+                `categories.${categoryId}`,
+                categories.find(c => c.id === categoryId)?.name || 'Units',
+              )}
             </Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No units found</Text>
+            <Text style={styles.emptyText}>{t('unitPicker.empty')}</Text>
           </View>
         }
       />

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, BackHandler } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
-import { t } from '../i18n';
 
 export default function PrecisionControl({
   visible,
@@ -11,6 +11,7 @@ export default function PrecisionControl({
   visible: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const decimals = useAppStore(s => s.decimalsGlobal);
   const setDecimals = useAppStore(s => s.setDecimals);
@@ -31,22 +32,22 @@ export default function PrecisionControl({
     <View
       style={styles.overlay}
       accessibilityViewIsModal
-      accessibilityLabel={t('precision.title', 'Precision')}
+      accessibilityLabel={t('precision.title')}
     >
       <View style={[styles.card, { backgroundColor: theme.surface }]}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.onSurface }]}>
-            {t('precision.title', 'Precision')}
+            {t('precision.title')}
           </Text>
           <Pressable accessibilityRole="button" onPress={onClose}>
-            <Text style={styles.close}>{t('common.close', 'Close')}</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </Pressable>
         </View>
         <View style={styles.section}>
-          <Text style={styles.label}>{t('settings.decimals', 'Decimals')}</Text>
+          <Text style={styles.label}>{t('settings.decimals')}</Text>
           <View style={styles.row}>
             <Pressable
-              accessibilityLabel={t('precision.decrease', 'Decrease')}
+              accessibilityLabel={t('precision.decrease')}
               accessibilityRole="button"
               style={styles.step}
               onPress={() => setDecimals(Math.max(0, decimals - 1))}
@@ -55,7 +56,7 @@ export default function PrecisionControl({
             </Pressable>
             <Text style={styles.value}>{decimals}</Text>
             <Pressable
-              accessibilityLabel={t('precision.increase', 'Increase')}
+              accessibilityLabel={t('precision.increase')}
               accessibilityRole="button"
               style={styles.step}
               onPress={() => setDecimals(Math.min(12, decimals + 1))}
@@ -65,7 +66,7 @@ export default function PrecisionControl({
           </View>
         </View>
         <View style={styles.section}>
-          <Text style={styles.label}>{t('settings.rounding', 'Rounding')}</Text>
+          <Text style={styles.label}>{t('settings.rounding')}</Text>
           <View style={styles.chipGrid}>
             {(['halfUp', 'floor', 'ceil', 'bankers'] as const).map(m => (
               <Pressable

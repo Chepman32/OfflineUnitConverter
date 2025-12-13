@@ -8,7 +8,7 @@ import {
   Pressable,
   Image,
 } from 'react-native';
-import { t } from '../i18n';
+import { useTranslation } from 'react-i18next';
 import { useOptionalNavigation } from '../navigation/safe';
 import { useTheme } from '../theme/ThemeProvider';
 import { useAppStore } from '../store';
@@ -23,6 +23,7 @@ const onboarding3 = require('../assets/onboarding/onboarding3.png');
 const onboarding4 = require('../assets/onboarding/onboarding4.png');
 
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const nav = useOptionalNavigation();
   const theme = useTheme();
   const setSeen = useAppStore(s => s.setOnboardingSeen);
@@ -36,57 +37,39 @@ export default function OnboardingScreen() {
     {
       key: 'offline',
       image: onboarding1,
-      title: t('onboarding.card1.title', 'Offline and Private'),
-      text: t(
-        'onboarding.card1.text',
-        'Units are bundled and all data stays on-device with no network calls.',
-      ),
+      title: t('onboarding.card1.title'),
+      text: t('onboarding.card1.text'),
     },
     {
       key: 'accurate',
       image: onboarding2,
-      title: t('onboarding.card2.title', 'Instant, accurate conversions'),
-      text: t(
-        'onboarding.card2.text',
-        'High-precision decimal math, real-time multi-convert',
-      ),
+      title: t('onboarding.card2.title'),
+      text: t('onboarding.card2.text'),
     },
     {
       key: 'simple',
       image: onboarding3,
-      title: t('onboarding.card3.title', 'Simple, easy to use'),
-      text: t(
-        'onboarding.card3.text',
-        'Instantly convert units across many categories.',
-      ),
+      title: t('onboarding.card3.title'),
+      text: t('onboarding.card3.text'),
     },
     {
       key: 'categories',
       image: onboarding4,
-      title: t('onboarding.card4.title', '15 unit categories'),
-      text: t(
-        'onboarding.card4.text',
-        'Convert area, data, speed, time and more.',
-      ),
+      title: t('onboarding.card4.title'),
+      text: t('onboarding.card4.text'),
     },
     {
       key: 'measurementSystem',
       image: null,
-      title: t('onboarding.card6.title', 'Choose your measurement system'),
-      text: t(
-        'onboarding.card6.text',
-        'Select your preferred unit system. You can change this later in settings.',
-      ),
+      title: t('onboarding.card6.title'),
+      text: t('onboarding.card6.text'),
       interactive: true,
     },
     {
       key: 'getStarted',
       image: null,
-      title: t('onboarding.card5.title', "You're all set!"),
-      text: t(
-        'onboarding.card5.text',
-        'Start converting units instantly. Tap below to begin.',
-      ),
+      title: t('onboarding.card5.title'),
+      text: t('onboarding.card5.text'),
     },
   ];
 
@@ -114,7 +97,7 @@ export default function OnboardingScreen() {
         onPress={skip}
       >
         <Text style={[styles.skipText, { color: theme.onSurfaceSecondary }]}>
-          {t('common.skip', 'Skip')}
+          {t('common.skip')}
         </Text>
       </Pressable>
 
@@ -180,7 +163,7 @@ export default function OnboardingScreen() {
                           },
                         ]}
                       >
-                        {t('settings.metric', 'Metric')}
+                        {t('settings.metric')}
                       </Text>
                       <Text
                         style={[
@@ -227,7 +210,7 @@ export default function OnboardingScreen() {
                           },
                         ]}
                       >
-                        {t('settings.imperial', 'Imperial')}
+                        {t('settings.imperial')}
                       </Text>
                       <Text
                         style={[
@@ -271,8 +254,8 @@ export default function OnboardingScreen() {
         <LiquidGlassButton
           title={
             index === pages.length - 1
-              ? t('common.getStarted', 'Get Started')
-              : t('common.next', 'Next')
+              ? t('common.getStarted')
+              : t('common.next')
           }
           onPress={next}
           style={styles.nextBtn}

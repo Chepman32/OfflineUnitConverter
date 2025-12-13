@@ -9,10 +9,10 @@ import {
   ScrollView,
   BackHandler,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { searchUnits } from '../domain/conversion/search';
 import { categories, getUnitById, getUnitsByCategory } from '../data/units';
 import { useAppStore } from '../store';
-import { t } from '../i18n';
 import UnitRow from './UnitRow';
 import { useTheme } from '../theme/ThemeProvider';
 import { triggerLightHaptic } from '../utils/haptics';
@@ -28,6 +28,7 @@ export default function UnitPicker({
   onClose: () => void;
   categoryId?: string;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [q, setQ] = useState('');
   const recents = useAppStore(s => s.recentsUnits);
@@ -62,19 +63,19 @@ export default function UnitPicker({
     <View
       style={styles.overlay}
       accessibilityViewIsModal
-      accessibilityLabel={t('unitPicker.title', 'Unit Picker')}
+      accessibilityLabel={t('unitPicker.title')}
     >
       <View style={[styles.card, { backgroundColor: theme.surface }]}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.onSurface }]}>
-            {t('unitPicker.title', 'Select Unit')}
+            {t('unitPicker.title')}
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t('common.close', 'Close')}
+            accessibilityLabel={t('common.close')}
             onPress={onClose}
           >
-            <Text style={styles.close}>{t('common.close', 'Close')}</Text>
+            <Text style={styles.close}>{t('common.close')}</Text>
           </Pressable>
         </View>
         <ScrollView
@@ -99,13 +100,13 @@ export default function UnitPicker({
                   filterCat === cat.id && styles.tabTextActive,
                 ]}
               >
-                {cat.name}
+                {t(`categories.${cat.id}`, cat.name)}
               </Text>
             </Pressable>
           ))}
         </ScrollView>
         <TextInput
-          placeholder={t('unitPicker.searchPlaceholder', 'Search units')}
+          placeholder={t('unitPicker.searchPlaceholder')}
           value={q}
           onChangeText={setQ}
           style={styles.input}
@@ -150,9 +151,7 @@ export default function UnitPicker({
             />
           )}
           ListEmptyComponent={
-            <Text style={styles.empty}>
-              {t('unitPicker.empty', 'Type to search')}
-            </Text>
+            <Text style={styles.empty}>{t('unitPicker.empty')}</Text>
           }
         />
       </View>

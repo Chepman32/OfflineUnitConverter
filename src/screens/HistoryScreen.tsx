@@ -8,17 +8,18 @@ import {
   Alert,
   Share,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { getUnitById } from '../data/units';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { t } from '../i18n';
 import { useOptionalNavigation } from '../navigation/safe';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function HistoryScreen() {
+  const { t } = useTranslation();
   dayjs.extend(relativeTime as any);
   const theme = useTheme();
   const history = useAppStore(s => s.history);
@@ -46,18 +47,14 @@ export default function HistoryScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={() =>
-            Alert.alert(
-              t('history.title', 'History'),
-              t('confirm.areYouSure', 'Are you sure?'),
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: t('history.clear', 'Clear'),
-                  style: 'destructive',
-                  onPress: () => clear(),
-                },
-              ],
-            )
+            Alert.alert(t('history.title'), t('confirm.areYouSure'), [
+              { text: t('common.cancel'), style: 'cancel' },
+              {
+                text: t('history.clear'),
+                style: 'destructive',
+                onPress: () => clear(),
+              },
+            ])
           }
         >
           <Text style={{ color: theme.onSurface }}>

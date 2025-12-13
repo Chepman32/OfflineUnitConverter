@@ -7,11 +7,11 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { convert } from '../domain/conversion/engine';
 import { getUnitById, categories, getUnitsByCategory } from '../data/units';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import { useTheme } from '../theme/ThemeProvider';
-import { t } from '../i18n';
 import PrecisionControl from '../components/PrecisionControl';
 import NumericKeypad from '../components/NumericKeypad';
 import UnitPicker from '../components/UnitPicker';
@@ -22,6 +22,7 @@ import { MenuView } from '@react-native-menu/menu';
 import { triggerLightHaptic, triggerSelectionHaptic } from '../utils/haptics';
 
 export default function ConverterScreen() {
+  const { t } = useTranslation();
   const fromUnit = useAppStore(s => s.fromUnitId);
   const toUnit = useAppStore(s => s.toUnitId);
   const input = useAppStore(s => s.input);
@@ -66,7 +67,7 @@ export default function ConverterScreen() {
       if (recentInCategory.length > 0) {
         menuItems.push({
           id: '__recent',
-          title: 'Recent',
+          title: t('common.recent'),
           displayInline: true,
           subactions: recentInCategory.map(unit => ({
             id: unit!.id,
@@ -80,7 +81,7 @@ export default function ConverterScreen() {
       // All units section with displayInline
       menuItems.push({
         id: '__all',
-        title: 'All Units',
+        title: t('common.allUnits'),
         displayInline: true,
         subactions: otherUnits.map(unit => ({
           id: unit.id,
@@ -92,7 +93,7 @@ export default function ConverterScreen() {
 
       return menuItems;
     },
-    [fromUnit, toUnit, categoryId, recentsUnits],
+    [fromUnit, toUnit, categoryId, recentsUnits, t],
   );
 
   // Handle unit selection from menu
@@ -209,29 +210,29 @@ export default function ConverterScreen() {
       let textToCopy = value;
       let message =
         side === 'from'
-          ? 'Input value copied to clipboard'
-          : 'Result copied to clipboard';
+          ? t('converter.inputCopied')
+          : t('converter.resultCopied');
 
       if (copyMode === 'value_unit') {
         textToCopy = `${value} ${unitSymbol}`;
         message =
           side === 'from'
-            ? 'Input with unit copied to clipboard'
-            : 'Result with unit copied to clipboard';
+            ? t('converter.inputWithUnitCopied')
+            : t('converter.resultWithUnitCopied');
       } else if (copyMode === 'expression') {
         const fromUnitObj = getUnitById(fromUnit);
         const toUnitObj = getUnitById(toUnit);
         const fromSymbol = fromUnitObj?.symbol || fromUnit;
         const toSymbol = toUnitObj?.symbol || toUnit;
         textToCopy = `${input || '0'} ${fromSymbol} = ${result} ${toSymbol}`;
-        message = 'Expression copied to clipboard';
+        message = t('converter.expressionCopied');
       }
 
       Clipboard.setString(textToCopy);
       triggerLightHaptic();
-      Alert.alert('Copied', message);
+      Alert.alert(t('common.copied'), message);
     },
-    [copyMode, fromUnit, toUnit, input, result],
+    [copyMode, fromUnit, toUnit, input, result, t],
   );
 
   return (
@@ -245,12 +246,14 @@ export default function ConverterScreen() {
         {/* Category Header */}
         <View style={styles.headerRow}>
           <Text style={[styles.categoryHeader, { color: theme.onSurface }]}>
-            {categories.find(c => c.id === categoryId)?.name?.toUpperCase() ||
-              'CONVERSION'}
+            {t(
+              `categories.${categoryId}`,
+              categories.find(c => c.id === categoryId)?.name || 'CONVERSION',
+            ).toUpperCase()}
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Toggle favorite"
+            accessibilityLabel={t('converter.toggleFavorite')}
             onPress={toggleFavorite}
             style={styles.starBtn}
           >
@@ -287,7 +290,7 @@ export default function ConverterScreen() {
                 </Text>
               </Pressable>
               <MenuView
-                title="Select From Unit"
+                title={t('unitPicker.selectFromUnit')}
                 actions={buildUnitMenu('from')}
                 onPressAction={({ nativeEvent }) => {
                   handleUnitSelection(nativeEvent.event, 'from');
@@ -310,7 +313,7 @@ export default function ConverterScreen() {
                 swap();
               }}
               accessibilityRole="button"
-              accessibilityLabel="Swap units"
+              accessibilityLabel={t('converter.swapUnits')}
             >
               <Text style={styles.swapIcon}>⇄</Text>
             </Pressable>
@@ -321,28 +324,33 @@ export default function ConverterScreen() {
                 hitSlop={10}
                 onLongPress={() => {
                   Alert.alert(
-                    'Result Options',
-                    `Value: ${result}\nFrom: ${
+                    t('converter.resultOptions'),
+                    `${t('common.value')}: ${result}\n${t('common.from')}: ${
                       getUnitById(fromUnit)?.name || fromUnit
-                    }\nTo: ${getUnitById(toUnit)?.name || toUnit}`,
+                    }\n${t('common.to')}: ${
+                      getUnitById(toUnit)?.name || toUnit
+                    }`,
                     [
-                      { text: 'Cancel', style: 'cancel' },
+                      { text: t('common.cancel'), style: 'cancel' },
                       {
-                        text: 'Copy Value',
+                        text: t('converter.copyValue'),
                         onPress: () => {
                           Clipboard.setString(result);
-                          Alert.alert('Copied', 'Result copied to clipboard');
+                          Alert.alert(
+                            t('common.copied'),
+                            t('converter.resultCopied'),
+                          );
                         },
                       },
                       {
-                        text: 'Copy with Unit',
+                        text: t('converter.copyWithUnit'),
                         onPress: () => {
                           const unit = getUnitById(toUnit);
                           const text = `${result} ${unit?.symbol || toUnit}`;
                           Clipboard.setString(text);
                           Alert.alert(
-                            'Copied',
-                            'Result with unit copied to clipboard',
+                            t('common.copied'),
+                            t('converter.resultWithUnitCopied'),
                           );
                         },
                       },
@@ -359,7 +367,7 @@ export default function ConverterScreen() {
                 </Text>
               </Pressable>
               <MenuView
-                title="Select To Unit"
+                title={t('unitPicker.selectToUnit')}
                 actions={buildUnitMenu('to')}
                 onPressAction={({ nativeEvent }) => {
                   handleUnitSelection(nativeEvent.event, 'to');
@@ -431,7 +439,7 @@ export default function ConverterScreen() {
             onPress={e => e.stopPropagation()}
           >
             <Text style={[styles.modalTitle, { color: theme.onSurface }]}>
-              Select Category
+              {t('unitPicker.selectCategory')}
             </Text>
             <ScrollView style={{ maxHeight: 300 }}>
               {categories.map(cat => (
@@ -462,7 +470,7 @@ export default function ConverterScreen() {
               style={styles.modalCloseButton}
               onPress={() => setPickerFor(null)}
             >
-              <Text style={styles.modalCloseText}>Close</Text>
+              <Text style={styles.modalCloseText}>{t('common.close')}</Text>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -478,6 +486,7 @@ function ScrollRowCategories({
   active: string;
   onSelect: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -489,7 +498,7 @@ function ScrollRowCategories({
         <Pressable
           key={cat.id}
           accessibilityRole="button"
-          accessibilityLabel={cat.name}
+          accessibilityLabel={t(`categories.${cat.id}`, cat.name)}
           onPress={() => {
             triggerLightHaptic();
             onSelect(cat.id);
@@ -505,7 +514,7 @@ function ScrollRowCategories({
               active === cat.id && styles.categoryPillTextActive,
             ]}
           >
-            {cat.name}
+            {t(`categories.${cat.id}`, cat.name)}
           </Text>
         </Pressable>
       ))}

@@ -13,7 +13,7 @@ import { useAppStore } from './src/store';
 import React, { useEffect } from 'react';
 import AnimatedSplash from './src/components/AnimatedSplash';
 import ErrorBoundary from './src/components/ErrorBoundary';
-import { getDeviceLanguage } from './src/i18n';
+import { getDeviceLanguage, setLanguage as setI18nLanguage } from './src/i18n';
 
 function App() {
   const themeMode = useAppStore(s => s.theme);
@@ -26,6 +26,9 @@ function App() {
     if (!onboardingSeen && !language) {
       const deviceLang = getDeviceLanguage();
       setLanguage(deviceLang);
+    } else if (language) {
+      // Initialize i18n with stored language
+      setI18nLanguage(language);
     }
   }, [onboardingSeen, language, setLanguage]);
 
