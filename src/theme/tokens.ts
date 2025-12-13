@@ -1,6 +1,7 @@
 export type ThemeMode = 'light' | 'dark' | 'solar' | 'mono';
 
 export interface ThemeTokens {
+  isDark: boolean;
   surface: string;
   surfaceElevated: string;
   onSurface: string;
@@ -13,6 +14,7 @@ export interface ThemeTokens {
 }
 
 export const light: ThemeTokens = {
+  isDark: false,
   surface: '#FFFFFF',
   surfaceElevated: '#F6F7FA',
   onSurface: '#1C1C1E',
@@ -25,6 +27,7 @@ export const light: ThemeTokens = {
 };
 
 export const dark: ThemeTokens = {
+  isDark: true,
   surface: '#000000',
   surfaceElevated: '#000000',
   onSurface: '#FFFFFF',
@@ -37,6 +40,7 @@ export const dark: ThemeTokens = {
 };
 
 export const solar: ThemeTokens = {
+  isDark: false,
   surface: '#FFF9E6',
   surfaceElevated: '#FFF3CC',
   onSurface: '#5C4813',
@@ -49,6 +53,7 @@ export const solar: ThemeTokens = {
 };
 
 export const mono: ThemeTokens = {
+  isDark: false,
   surface: '#D8D8D8',
   surfaceElevated: '#C8C8C8',
   onSurface: '#1A1A1A',

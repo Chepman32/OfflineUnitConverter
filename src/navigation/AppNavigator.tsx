@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ConverterScreen from '../screens/ConverterScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import HistoryScreen from '../screens/HistoryScreen';
@@ -133,13 +134,14 @@ export default function AppNavigator() {
 
         const TabsNav = () => {
           const theme = useTheme();
+          const insets = useSafeAreaInsets();
           return (
             <Tabs.Navigator
               screenOptions={({ route }: any) => ({
                 headerShown: false,
                 tabBarStyle: {
-                  height: 60,
-                  paddingBottom: 5,
+                  height: 60 + insets.bottom,
+                  paddingBottom: insets.bottom + 5,
                   paddingTop: 5,
                   backgroundColor: theme.surface,
                   borderTopColor: theme.border,

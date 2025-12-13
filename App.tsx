@@ -5,13 +5,10 @@
  * @format
  */
 
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
-import { ThemeProvider } from './src/theme/ThemeProvider';
+import { ThemeProvider, useTheme } from './src/theme/ThemeProvider';
 import { useAppStore } from './src/store';
 import React, { useEffect } from 'react';
 import AnimatedSplash from './src/components/AnimatedSplash';
@@ -19,7 +16,6 @@ import ErrorBoundary from './src/components/ErrorBoundary';
 import { getDeviceLanguage } from './src/i18n';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
   const themeMode = useAppStore(s => s.theme);
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
@@ -36,7 +32,6 @@ function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider mode={themeMode}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <AppContent />
       </ThemeProvider>
     </SafeAreaProvider>
@@ -44,10 +39,14 @@ function App() {
 }
 
 function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+  const theme = useTheme();
 
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top, paddingBottom: safeAreaInsets.bottom }] }>
+    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+      <StatusBar
+        barStyle={theme.isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={theme.surface}
+      />
       <ErrorBoundary>
         <AppNavigator />
       </ErrorBoundary>

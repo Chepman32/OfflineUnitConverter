@@ -31,7 +31,7 @@ export default function HomeScreen() {
           {t('home.categories', 'Categories')}
         </Text>
         <Pressable
-          style={styles.multiConvertBtn}
+          style={[styles.multiConvertBtn, { backgroundColor: theme.accent }]}
           onPress={() => {
             triggerLightHaptic();
             nav?.navigate?.('MultiConvert');
@@ -103,7 +103,6 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 20, fontWeight: '700' },
   multiConvertBtn: {
-    backgroundColor: '#007AFF',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,

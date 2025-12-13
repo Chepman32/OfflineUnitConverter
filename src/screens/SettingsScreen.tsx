@@ -72,12 +72,6 @@ export default function SettingsScreen() {
         });
       }
       setMoreOpen(false);
-      setTimeout(
-        () => {
-          scrollRef.current?.scrollTo({ y: 0, animated: !reduceMotion });
-        },
-        reduceMotion ? 0 : 300,
-      );
     } else {
       // Opening
       setMoreOpen(true);
