@@ -56,7 +56,6 @@ export default function MultiConvertScreen() {
   React.useEffect(() => {
     const unit = getUnitById(fromUnit);
     if (!unit) {
-      console.warn('Invalid fromUnit:', fromUnit, '- resetting to default');
       const defaultUnit = units[0]?.id || 'm';
       setFrom(defaultUnit);
     }

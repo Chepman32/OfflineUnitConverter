@@ -127,10 +127,6 @@ export default function ConverterScreen() {
     const from = getUnitById(fromUnit);
     const to = getUnitById(toUnit);
     if (!from || !to) {
-      console.warn('Invalid unit detected, resetting to defaults:', {
-        fromUnit,
-        toUnit,
-      });
       const [defaultFrom, defaultTo] = getDefaultPairForCategory(
         categoryId as any,
       );
@@ -170,8 +166,9 @@ export default function ConverterScreen() {
           resultValue: result,
           createdAt: Date.now(),
         });
-      } catch (error) {
-        console.warn('Failed to add history:', error);
+      } catch {
+        // Ignore history persistence issues in production
+        void 0;
       }
     }, 1000); // Debounce for 1 second to avoid spamming history
 
