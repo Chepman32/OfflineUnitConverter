@@ -7,6 +7,7 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { categories } from '../data/units';
 import CategoryCard from '../components/CategoryCard';
@@ -14,7 +15,6 @@ import { useOptionalNavigation } from '../navigation/safe';
 import { useAppStore } from '../store';
 import { getDefaultPairForCategory } from '../utils/defaultPairs';
 import { useTheme } from '../theme/ThemeProvider';
-import IconTest from '../components/IconTest';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function HomeScreen() {
@@ -24,9 +24,15 @@ export default function HomeScreen() {
   const addRecentCategory = useAppStore(s => s.addRecentCategory);
   const recents = useAppStore(s => s.recentsCategories);
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}>
-      <IconTest />
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, paddingTop: insets.top + 10 },
+      ]}
+    >
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.onSurface }]}>
           {t('home.categories')}
@@ -42,21 +48,31 @@ export default function HomeScreen() {
         </Pressable>
       </View>
       {recents.length > 0 && (
-        <View style={{ marginBottom: 8 }}>
+        <View style={styles.recentsContainer}>
           <Text style={[styles.subtitle, { color: theme.onSurface }]}>
             {t('home.recents')}
           </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 8 }}
+            contentContainerStyle={styles.recentsScrollContent}
           >
             {recents.map(id => {
               const cat = categories.find(c => c.id === id)!;
               return (
                 <Pressable
                   key={id}
-                  style={styles.chip}
+                  style={[
+                    styles.chip,
+                    {
+                      backgroundColor: theme.isDark
+                        ? 'rgba(255, 255, 255, 0.15)'
+                        : 'rgba(0, 0, 0, 0.05)',
+                      borderColor: theme.isDark
+                        ? 'rgba(255, 255, 255, 0.3)'
+                        : '#ddd',
+                    },
+                  ]}
                   onPress={() => {
                     triggerLightHaptic();
                     const pair = getDefaultPairForCategory(id as any);
@@ -64,7 +80,12 @@ export default function HomeScreen() {
                     nav?.navigate?.('Converter');
                   }}
                 >
-                  <Text style={styles.chipText}>
+                  <Text
+                    style={[
+                      styles.chipText,
+                      { color: theme.isDark ? '#FFFFFF' : theme.onSurface },
+                    ]}
+                  >
                     {t(`categories.${cat.id}`, cat.name)}
                   </Text>
                 </Pressable>
@@ -74,10 +95,11 @@ export default function HomeScreen() {
         </View>
       )}
       <FlatList
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={[styles.grid, { paddingBottom: 100 }]}
         data={categories}
         numColumns={2}
         keyExtractor={c => c.id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <CategoryCard
             title={t(`categories.${item.id}`, item.name)}
@@ -95,12 +117,12 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, paddingBottom: 80 },
+  container: { flex: 1, paddingHorizontal: 20 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: { fontSize: 20, fontWeight: '700' },
   multiConvertBtn: {
@@ -110,13 +132,21 @@ const styles = StyleSheet.create({
   },
   multiConvertText: { color: '#fff', fontWeight: '600', fontSize: 14 },
   subtitle: { fontWeight: '600', marginBottom: 6 },
+  recentsContainer: {
+    marginBottom: 12,
+    flexShrink: 0,
+  },
+  recentsScrollContent: {
+    gap: 8,
+    paddingRight: 20,
+    minHeight: 32,
+  },
   grid: { justifyContent: 'space-between' },
   chip: {
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  chipText: { color: '#111' },
+  chipText: { fontWeight: '500', fontSize: 14 },
 });

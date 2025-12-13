@@ -13,7 +13,11 @@ import { createFavoritesSlice } from './slices/favoritesSlice';
 import type { HistoryState } from './slices/historySlice';
 import { createHistorySlice } from './slices/historySlice';
 
-export type AppState = ConversionState & SettingsState & UnitsState & FavoritesState & HistoryState;
+export type AppState = ConversionState &
+  SettingsState &
+  UnitsState &
+  FavoritesState &
+  HistoryState;
 
 export const useAppStore = create<AppState>()(
   devtools(
@@ -47,9 +51,11 @@ export const useAppStore = create<AppState>()(
           favorites: state.favorites,
           history: state.history,
           measurementSystem: state.measurementSystem,
+          recentsCategories: state.recentsCategories,
+          recentsUnits: state.recentsUnits,
         }),
-      }
+      },
     ),
-    { name: 'Metryvo' }
-  )
+    { name: 'Metryvo' },
+  ),
 );

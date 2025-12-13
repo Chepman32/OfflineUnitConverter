@@ -23,6 +23,16 @@ import AnimatedPress from '../components/AnimatedPress';
 import { useTheme } from '../theme/ThemeProvider';
 import { triggerLightHaptic } from '../utils/haptics';
 
+// Helper function to get the correct translation key for a unit
+// Temperature units C and F need to use temp_C and temp_F keys to avoid conflict with Coulomb and Farad
+const getUnitTranslationKey = (unitId: string): string => {
+  const unit = getUnitById(unitId);
+  if (unit?.categoryId === 'temperature' && (unitId === 'C' || unitId === 'F')) {
+    return `temp_${unitId}`;
+  }
+  return unitId;
+};
+
 export default function MultiConvertScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -93,6 +103,12 @@ export default function MultiConvertScreen() {
             <View
               style={[
                 styles.unitRow,
+                {
+                  backgroundColor: theme.surfaceElevated || '#fff',
+                  borderColor: theme.isDark
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : '#eee',
+                },
                 isFrom && styles.unitRowFrom,
                 isTo && styles.unitRowTo,
               ]}
@@ -107,12 +123,26 @@ export default function MultiConvertScreen() {
                     { color: theme.onSurfaceSecondary || '#666' },
                   ]}
                 >
-                  {item.name}
+                  {t(`units.${getUnitTranslationKey(item.id)}`, item.name)}
                 </Text>
               </View>
               <View style={styles.unitActions}>
                 <Pressable
-                  style={[styles.selectBtn, isFrom && styles.selectBtnActive]}
+                  style={[
+                    styles.selectBtn,
+                    {
+                      backgroundColor: isFrom
+                        ? '#007AFF'
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : '#fff',
+                      borderColor: isFrom
+                        ? '#007AFF'
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.2)'
+                        : '#ddd',
+                    },
+                  ]}
                   onPress={() => {
                     triggerLightHaptic();
                     setFrom(item.id);
@@ -121,14 +151,30 @@ export default function MultiConvertScreen() {
                   <Text
                     style={[
                       styles.selectBtnText,
-                      isFrom && styles.selectBtnTextActive,
+                      {
+                        color: isFrom ? '#fff' : theme.isDark ? '#fff' : '#333',
+                      },
                     ]}
                   >
                     {t('common.from')}
                   </Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.selectBtn, isTo && styles.selectBtnActive]}
+                  style={[
+                    styles.selectBtn,
+                    {
+                      backgroundColor: isTo
+                        ? '#007AFF'
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.1)'
+                        : '#fff',
+                      borderColor: isTo
+                        ? '#007AFF'
+                        : theme.isDark
+                        ? 'rgba(255, 255, 255, 0.2)'
+                        : '#ddd',
+                    },
+                  ]}
                   onPress={() => {
                     triggerLightHaptic();
                     setTo(item.id);
@@ -137,7 +183,9 @@ export default function MultiConvertScreen() {
                   <Text
                     style={[
                       styles.selectBtnText,
-                      isTo && styles.selectBtnTextActive,
+                      {
+                        color: isTo ? '#fff' : theme.isDark ? '#fff' : '#333',
+                      },
                     ]}
                   >
                     {t('common.to')}
@@ -169,7 +217,12 @@ export default function MultiConvertScreen() {
                     {fromUnitData?.symbol || fromUnit}
                   </Text>
                   <Text style={styles.selectionName}>
-                    {fromUnitData?.name || ''}
+                    {fromUnitData
+                      ? t(
+                          `units.${getUnitTranslationKey(fromUnitData.id)}`,
+                          fromUnitData.name,
+                        )
+                      : ''}
                   </Text>
                 </View>
                 <Text style={styles.arrow}>→</Text>
@@ -181,7 +234,12 @@ export default function MultiConvertScreen() {
                     {toUnitData?.symbol || toUnit}
                   </Text>
                   <Text style={styles.selectionName}>
-                    {toUnitData?.name || ''}
+                    {toUnitData
+                      ? t(
+                          `units.${getUnitTranslationKey(toUnitData.id)}`,
+                          toUnitData.name,
+                        )
+                      : ''}
                   </Text>
                 </View>
               </View>
@@ -205,31 +263,51 @@ export default function MultiConvertScreen() {
               style={styles.categoryScroll}
               contentContainerStyle={styles.categoryScrollContent}
             >
-              {categories.map(cat => (
-                <AnimatedPress
-                  key={cat.id}
-                  accessibilityRole="button"
-                  accessibilityLabel={t(`categories.${cat.id}`, cat.name)}
-                  onPress={() => {
-                    const pair = getDefaultPairForCategory(cat.id as any);
-                    setPair(pair[0], pair[1]);
-                    addRecentCategory(cat.id);
-                  }}
-                  style={[
-                    styles.chip,
-                    categoryId === cat.id && styles.chipActive,
-                  ]}
-                >
-                  <Text
+              {categories.map(cat => {
+                const isActive = categoryId === cat.id;
+                return (
+                  <AnimatedPress
+                    key={cat.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={t(`categories.${cat.id}`, cat.name)}
+                    onPress={() => {
+                      const pair = getDefaultPairForCategory(cat.id as any);
+                      setPair(pair[0], pair[1]);
+                      addRecentCategory(cat.id);
+                    }}
                     style={[
-                      styles.chipText,
-                      categoryId === cat.id && styles.chipTextActive,
+                      styles.chip,
+                      {
+                        backgroundColor: isActive
+                          ? theme.accent
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.1)'
+                          : '#fff',
+                        borderColor: isActive
+                          ? theme.accent
+                          : theme.isDark
+                          ? 'rgba(255, 255, 255, 0.2)'
+                          : '#ddd',
+                      },
                     ]}
                   >
-                    {t(`categories.${cat.id}`, cat.name)}
-                  </Text>
-                </AnimatedPress>
-              ))}
+                    <Text
+                      style={[
+                        styles.chipText,
+                        {
+                          color: isActive
+                            ? '#fff'
+                            : theme.isDark
+                            ? '#fff'
+                            : '#333',
+                        },
+                      ]}
+                    >
+                      {t(`categories.${cat.id}`, cat.name)}
+                    </Text>
+                  </AnimatedPress>
+                );
+              })}
             </ScrollView>
 
             {/* Filter */}
@@ -249,7 +327,12 @@ export default function MultiConvertScreen() {
               />
             </View>
 
-            <Text style={styles.sectionLabel}>
+            <Text
+              style={[
+                styles.sectionLabel,
+                { color: theme.onSurfaceSecondary || '#888' },
+              ]}
+            >
               {t(
                 `categories.${categoryId}`,
                 categories.find(c => c.id === categoryId)?.name || 'Units',
@@ -288,7 +371,7 @@ const styles = StyleSheet.create({
   },
   selectionLabel: {
     fontSize: 12,
-    color: '#888',
+    color: '#999',
     marginBottom: 4,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -300,7 +383,7 @@ const styles = StyleSheet.create({
   },
   selectionName: {
     fontSize: 12,
-    color: '#666',
+    color: '#888',
   },
   arrow: {
     fontSize: 24,
@@ -330,23 +413,13 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: '#fff',
-  },
-  chipActive: {
-    backgroundColor: '#111',
-    borderColor: '#111',
   },
   chipText: {
-    color: '#333',
     fontSize: 14,
     fontWeight: '500',
-  },
-  chipTextActive: {
-    color: '#fff',
   },
 
   // Filter
@@ -364,7 +437,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#888',
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -379,9 +451,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 12,
     marginBottom: 8,
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#eee',
   },
   unitRowFrom: {
     borderColor: '#007AFF',
@@ -408,23 +478,13 @@ const styles = StyleSheet.create({
   },
   selectBtn: {
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: '#fff',
-  },
-  selectBtnActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
   },
   selectBtnText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#333',
-  },
-  selectBtnTextActive: {
-    color: '#fff',
   },
 
   // Empty State

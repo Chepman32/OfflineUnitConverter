@@ -21,6 +21,16 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { MenuView } from '@react-native-menu/menu';
 import { triggerLightHaptic, triggerSelectionHaptic } from '../utils/haptics';
 
+// Helper function to get the correct translation key for a unit
+// Temperature units C and F need to use temp_C and temp_F keys to avoid conflict with Coulomb and Farad
+const getUnitTranslationKey = (unitId: string): string => {
+  const unit = getUnitById(unitId);
+  if (unit?.categoryId === 'temperature' && (unitId === 'C' || unitId === 'F')) {
+    return `temp_${unitId}`;
+  }
+  return unitId;
+};
+
 export default function ConverterScreen() {
   const { t } = useTranslation();
   const fromUnit = useAppStore(s => s.fromUnitId);
@@ -71,7 +81,7 @@ export default function ConverterScreen() {
           displayInline: true,
           subactions: recentInCategory.map(unit => ({
             id: unit!.id,
-            title: unit!.name,
+            title: t(`units.${getUnitTranslationKey(unit!.id)}`, unit!.name),
             subtitle: unit!.symbol,
             state: unit!.id === currentUnitId ? 'on' : undefined,
           })),
@@ -85,7 +95,7 @@ export default function ConverterScreen() {
         displayInline: true,
         subactions: otherUnits.map(unit => ({
           id: unit.id,
-          title: unit.name,
+          title: t(`units.${getUnitTranslationKey(unit.id)}`, unit.name),
           subtitle: unit.symbol,
           state: unit.id === currentUnitId ? 'on' : undefined,
         })),
@@ -323,12 +333,18 @@ export default function ConverterScreen() {
                 onPress={() => copyValue(result, 'to')}
                 hitSlop={10}
                 onLongPress={() => {
+                  const fromUnitObj = getUnitById(fromUnit);
+                  const toUnitObj = getUnitById(toUnit);
                   Alert.alert(
                     t('converter.resultOptions'),
                     `${t('common.value')}: ${result}\n${t('common.from')}: ${
-                      getUnitById(fromUnit)?.name || fromUnit
+                      fromUnitObj
+                        ? t(`units.${getUnitTranslationKey(fromUnitObj.id)}`, fromUnitObj.name)
+                        : fromUnit
                     }\n${t('common.to')}: ${
-                      getUnitById(toUnit)?.name || toUnit
+                      toUnitObj
+                        ? t(`units.${getUnitTranslationKey(toUnitObj.id)}`, toUnitObj.name)
+                        : toUnit
                     }`,
                     [
                       { text: t('common.cancel'), style: 'cancel' },
