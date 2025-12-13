@@ -8,7 +8,6 @@ import {
   Pressable,
   TextInput,
   ScrollView,
-  Alert,
 } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -22,7 +21,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { t } from '../i18n';
 import { triggerLightHaptic } from '../utils/haptics';
 
-const ACCORDION_HEIGHT = 220; // Approximate height of expanded content
+const ACCORDION_HEIGHT = 160; // Approximate height of expanded content
 
 export default function SettingsScreen() {
   const reduceMotion = useAppStore(s => s.reduceMotion);
@@ -43,7 +42,7 @@ export default function SettingsScreen() {
   const setCopyMode = useAppStore(s => s.setCopyMode);
   const language = useAppStore(s => s.language);
   const setLanguage = useAppStore(s => s.setLanguage);
-  const setOnboardingSeen = useAppStore(s => s.setOnboardingSeen);
+
   const measurementSystem = useAppStore(s => s.measurementSystem);
   const setMeasurementSystem = useAppStore(s => s.setMeasurementSystem);
   const [moreOpen, setMoreOpen] = React.useState(false);
@@ -153,34 +152,39 @@ export default function SettingsScreen() {
         </Text>
         <Switch value={!!useGrouping} onValueChange={setUseGrouping} />
       </View>
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: tokens.onSurface }]}>
+      <View style={styles.section}>
+        <Text
+          style={[styles.label, { color: tokens.onSurface, marginBottom: 12 }]}
+        >
           {t('settings.copy', 'Copy Mode')}
         </Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {(['value', 'value_unit', 'expression'] as const).map(m => (
-            <AnimatedPress
-              key={m}
-              onPress={() => setCopyMode(m)}
-              style={[
-                styles.chip,
-                { borderColor: tokens.border },
-                copyMode === m && {
-                  backgroundColor: tokens.accent,
-                  borderColor: tokens.accent,
-                },
-              ]}
-            >
-              <Text
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          {(['value', 'value_unit', 'expression'] as const).map(m => {
+            const label = m === 'value_unit' ? 'Value & Unit' : m;
+            return (
+              <AnimatedPress
+                key={m}
+                onPress={() => setCopyMode(m)}
                 style={[
-                  { color: tokens.onSurface },
-                  copyMode === m && { color: '#FFFFFF' },
+                  styles.chip,
+                  { borderColor: tokens.border },
+                  copyMode === m && {
+                    backgroundColor: tokens.accent,
+                    borderColor: tokens.accent,
+                  },
                 ]}
               >
-                {m}
-              </Text>
-            </AnimatedPress>
-          ))}
+                <Text
+                  style={[
+                    { color: tokens.onSurface },
+                    copyMode === m && { color: '#FFFFFF' },
+                  ]}
+                >
+                  {label}
+                </Text>
+              </AnimatedPress>
+            );
+          })}
         </View>
       </View>
       <View style={styles.row}>
@@ -274,11 +278,13 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
       </View>
-      <View style={styles.row}>
-        <Text style={[styles.label, { color: tokens.onSurface }]}>
+      <View style={styles.section}>
+        <Text
+          style={[styles.label, { color: tokens.onSurface, marginBottom: 12 }]}
+        >
           {t('settings.rounding', 'Rounding')}
         </Text>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+        <View style={styles.roundingGrid}>
           {(['halfUp', 'floor', 'ceil', 'bankers'] as const).map(m => (
             <Pressable
               key={m}
@@ -287,7 +293,7 @@ export default function SettingsScreen() {
                 setRounding(m);
               }}
               style={[
-                styles.chip,
+                styles.roundingChip,
                 { borderColor: tokens.border },
                 rounding === m && {
                   backgroundColor: tokens.accent,
@@ -297,6 +303,7 @@ export default function SettingsScreen() {
             >
               <Text
                 style={[
+                  styles.roundingChipText,
                   { color: tokens.onSurface },
                   rounding === m && { color: '#FFFFFF' },
                 ]}
@@ -339,25 +346,6 @@ export default function SettingsScreen() {
           ))}
         </View>
       </View>
-      {/* Temporary: Reset Onboarding button for development */}
-      <View style={styles.row}>
-        <AnimatedPress
-          onPress={() => {
-            setOnboardingSeen(false);
-            Alert.alert(
-              'Onboarding Reset',
-              'Onboarding will show again on next app launch',
-            );
-          }}
-          style={[
-            styles.chip,
-            { borderColor: '#c0392b', backgroundColor: '#c0392b' },
-          ]}
-        >
-          <Text style={{ color: '#FFFFFF' }}>Reset Onboarding</Text>
-        </AnimatedPress>
-      </View>
-
       <View style={styles.section}>
         <Pressable
           accessibilityRole="button"
@@ -399,17 +387,6 @@ export default function SettingsScreen() {
                 label: t('customUnits.title', 'Custom Units'),
                 action: () => nav?.navigate?.('CustomUnits'),
               },
-              {
-                label: 'Reset Onboarding',
-                action: () => {
-                  setOnboardingSeen(false);
-                  Alert.alert(
-                    'Onboarding Reset',
-                    'Onboarding will show again on next app launch',
-                  );
-                },
-                danger: true,
-              },
             ].map((item, idx, arr) => (
               <React.Fragment key={item.label}>
                 <Pressable
@@ -424,10 +401,7 @@ export default function SettingsScreen() {
                   ]}
                 >
                   <Text
-                    style={[
-                      styles.listItemText,
-                      { color: item.danger ? '#c0392b' : tokens.onSurface },
-                    ]}
+                    style={[styles.listItemText, { color: tokens.onSurface }]}
                   >
                     {item.label}
                   </Text>
@@ -472,6 +446,23 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: '#111', borderColor: '#111' },
   chipText: { color: '#111' },
   chipTextActive: { color: '#fff' },
+  roundingGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  roundingChip: {
+    width: '48%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  roundingChipText: {
+    fontSize: 15,
+    fontWeight: '500',
+  },
   themeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
