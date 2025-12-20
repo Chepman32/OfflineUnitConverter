@@ -161,6 +161,8 @@ export default {
     mph: 'マイル毎時',
     temp_C: '摂氏',
     temp_F: '華氏',
+    degC: '摂氏',
+    degF: '華氏',
     K: 'ケルビン',
     R: 'ランキン',
     day: '日',

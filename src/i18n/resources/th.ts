@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'เซลเซียส',
     temp_F: 'ฟาเรนไฮต์',
+    degC: 'เซลเซียส',
+    degF: 'ฟาเรนไฮต์',
     K: 'เคลวิน',
     R: 'แรงกิน',
     // Time

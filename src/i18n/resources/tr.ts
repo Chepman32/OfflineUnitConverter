@@ -161,6 +161,8 @@ export default {
     mph: 'Mil bölü saat',
     temp_C: 'Santigrat',
     temp_F: 'Fahrenhayt',
+    degC: 'Santigrat',
+    degF: 'Fahrenhayt',
     K: 'Kelvin',
     R: 'Rankine',
     day: 'Gün',

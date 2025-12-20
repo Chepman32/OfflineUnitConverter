@@ -184,9 +184,9 @@ export default {
     kn: 'Knot',
     m_s: 'Meter per second',
     mph: 'Mile per hour',
-    // Temperature (note: C and F keys shared with Coulomb/Farad - using separate keys)
-    temp_C: 'Celsius',
-    temp_F: 'Fahrenheit',
+    // Temperature
+    degC: 'Celsius',
+    degF: 'Fahrenheit',
     K: 'Kelvin',
     R: 'Rankine',
     // Time

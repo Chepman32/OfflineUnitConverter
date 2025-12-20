@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'צלזיוס',
     temp_F: 'פרנהייט',
+    degC: 'צלזיוס',
+    degF: 'פרנהייט',
     K: 'קלווין',
     R: 'רנקין',
     // Time

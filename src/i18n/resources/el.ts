@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'Κελσίου',
     temp_F: 'Φαρενάιτ',
+    degC: 'Κελσίου',
+    degF: 'Φαρενάιτ',
     K: 'Κέλβιν',
     R: 'Ράνκιν',
     // Time

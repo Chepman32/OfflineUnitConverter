@@ -22,6 +22,15 @@ export default function FavoritesScreen() {
   const remove = useAppStore(s => s.removeFavorite);
   const nav = useOptionalNavigation();
 
+  // Helper to get translated unit name
+  const getUnitName = (unitId: string) => {
+    const unit = getUnitById(unitId);
+    if (!unit) return unitId;
+    // Try to get translated name, fall back to symbol
+    const translatedName = t(`units.${unitId}`, '');
+    return translatedName || unit.symbol || unitId;
+  };
+
   const handleMoveUp = useCallback(
     (id: string) => {
       triggerLightHaptic();
@@ -63,10 +72,8 @@ export default function FavoritesScreen() {
           </Text>
         ) : (
           favorites.map(item => {
-            const fromUnit = getUnitById(item.fromUnitId);
-            const toUnit = getUnitById(item.toUnitId);
-            const fromSymbol = fromUnit?.symbol || item.fromUnitId;
-            const toSymbol = toUnit?.symbol || item.toUnitId;
+            const fromName = getUnitName(item.fromUnitId);
+            const toName = getUnitName(item.toUnitId);
             return (
               <Animated.View
                 key={item.id}
@@ -80,7 +87,7 @@ export default function FavoritesScreen() {
                 exiting={reduceMotion ? undefined : FadeOut.duration(200)}
               >
                 <Text style={[styles.pair, { color: theme.onSurface }]}>
-                  {fromSymbol} → {toSymbol}
+                  {fromName} → {toName}
                 </Text>
                 <View style={styles.actions}>
                   <Pressable

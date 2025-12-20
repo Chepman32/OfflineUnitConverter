@@ -161,6 +161,8 @@ export default {
     mph: 'Mila na godzinę',
     temp_C: 'Celsjusz',
     temp_F: 'Fahrenheit',
+    degC: 'Celsjusz',
+    degF: 'Fahrenheit',
     K: 'Kelwin',
     R: 'Rankine',
     day: 'Dzień',

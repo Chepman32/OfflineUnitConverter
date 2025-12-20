@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'Độ C',
     temp_F: 'Độ F',
+    degC: 'Độ C',
+    degF: 'Độ F',
     K: 'Kelvin',
     R: 'Rankine',
     // Time

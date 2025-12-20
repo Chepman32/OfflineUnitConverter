@@ -161,6 +161,8 @@ export default {
     mph: '英里每小时',
     temp_C: '摄氏度',
     temp_F: '华氏度',
+    degC: '摄氏度',
+    degF: '华氏度',
     K: '开尔文',
     R: '兰金',
     day: '天',

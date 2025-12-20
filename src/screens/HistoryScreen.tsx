@@ -33,6 +33,16 @@ export default function HistoryScreen() {
   const removeFavorite = useAppStore(s => s.removeFavorite);
   const copyMode = useAppStore(s => s.copyMode);
   const nav = useOptionalNavigation();
+
+  // Helper to get translated unit name
+  const getUnitName = (unitId: string) => {
+    const unit = getUnitById(unitId);
+    if (!unit) return unitId;
+    // Try to get translated name, fall back to symbol
+    const translatedName = t(`units.${unitId}`, '');
+    return translatedName || unit.symbol || unitId;
+  };
+
   return (
     <View
       style={[
@@ -81,6 +91,8 @@ export default function HistoryScreen() {
           const toUnit = getUnitById(item.toUnitId);
           const fromSymbol = fromUnit?.symbol || item.fromUnitId;
           const toSymbol = toUnit?.symbol || item.toUnitId;
+          const fromName = getUnitName(item.fromUnitId);
+          const toName = getUnitName(item.toUnitId);
 
           let shareMessage = item.resultValue;
           if (copyMode === 'value_unit') {
@@ -101,7 +113,7 @@ export default function HistoryScreen() {
                 }}
               >
                 <Text style={[styles.expr, { color: theme.onSurface }]}>
-                  {item.inputValue} {fromSymbol} → {item.resultValue} {toSymbol}
+                  {item.inputValue} {fromName} → {item.resultValue} {toName}
                 </Text>
                 <Text
                   style={[styles.time, { color: theme.onSurfaceSecondary }]}

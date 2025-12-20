@@ -161,6 +161,8 @@ export default {
     mph: '마일/시',
     temp_C: '섭씨',
     temp_F: '화씨',
+    degC: '섭씨',
+    degF: '화씨',
     K: '켈빈',
     R: '랭킨',
     day: '일',

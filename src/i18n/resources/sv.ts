@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'Celsius',
     temp_F: 'Fahrenheit',
+    degC: 'Celsius',
+    degF: 'Fahrenheit',
     K: 'Kelvin',
     R: 'Rankine',
     // Time

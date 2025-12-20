@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'Цельсій',
     temp_F: 'Фаренгейт',
+    degC: 'Цельсій',
+    degF: 'Фаренгейт',
     K: 'Кельвін',
     R: 'Ранкін',
     // Time

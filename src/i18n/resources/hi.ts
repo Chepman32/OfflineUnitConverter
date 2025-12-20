@@ -187,6 +187,8 @@ export default {
     // Temperature
     temp_C: 'सेल्सियस',
     temp_F: 'फ़ारेनहाइट',
+    degC: 'सेल्सियस',
+    degF: 'फ़ारेनहाइट',
     K: 'केल्विन',
     R: 'रैंकाइन',
     // Time
