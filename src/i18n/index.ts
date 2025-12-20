@@ -98,13 +98,24 @@ export function getDeviceLanguage(): string {
       locale = NativeModules.I18nManager?.localeIdentifier;
     }
     if (locale) {
+      // Normalize locale format (e.g., "pt_BR" -> "pt-BR", "en_US" -> "en-US")
+      const normalizedLocale = locale.replace('_', '-');
+
+      // First, try to match the full locale (e.g., "pt-BR")
+      const fullMatch = SUPPORTED_LANGUAGES.find(
+        l => l.code.toLowerCase() === normalizedLocale.toLowerCase(),
+      );
+      if (fullMatch) {
+        return fullMatch.code;
+      }
+
+      // Fall back to matching just the language code
       const langCode = locale.split(/[_-]/)[0].toLowerCase();
-      if (
-        SUPPORTED_LANGUAGES.some(
-          l => l.code === langCode || l.code.startsWith(langCode),
-        )
-      ) {
-        return langCode;
+      const langMatch = SUPPORTED_LANGUAGES.find(
+        l => l.code === langCode || l.code.split('-')[0] === langCode,
+      );
+      if (langMatch) {
+        return langMatch.code;
       }
     }
   } catch {}
