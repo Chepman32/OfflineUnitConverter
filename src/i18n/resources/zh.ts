@@ -17,6 +17,10 @@ export default {
     skip: '跳过',
     getStarted: '开始使用',
     goToConverter: '前往转换器',
+    cancel: '取消',
+    copied: '已复制',
+    recent: '最近',
+    allUnits: '所有单位',
   },
   categories: {
     acceleration: '加速度',
@@ -191,6 +195,9 @@ export default {
     title: '选择单位',
     searchPlaceholder: '搜索单位',
     empty: '输入以搜索',
+    selectFromUnit: '选择源单位',
+    selectToUnit: '选择目标单位',
+    selectCategory: '选择类别',
   },
   screens: {
     unitPicker: '选择单位',
@@ -227,6 +234,24 @@ export default {
     measurementSystem: '计量系统',
     metric: '公制',
     imperial: '英制',
+    themes: {
+      system: '跟随系统',
+      light: '浅色',
+      dark: '深色',
+      solar: '日光',
+      mono: '单色',
+    },
+    roundingModes: {
+      halfUp: '四舍五入',
+      floor: '向下取整',
+      ceil: '向上取整',
+      bankers: '银行家舍入',
+    },
+    copyModes: {
+      value: '仅数值',
+      value_unit: '数值和单位',
+      expression: '完整表达式',
+    },
   },
   home: {
     categories: '分类',
@@ -240,6 +265,7 @@ export default {
     title: '历史',
     clear: '清除',
     empty: '暂无历史记录。',
+    share: '分享',
   },
   favorites: {
     title: '收藏',
@@ -248,6 +274,27 @@ export default {
   },
   errors: {
     invalidNumber: '无效的数字格式',
+  },
+  relativeTime: {
+    justNow: '刚刚',
+    minutesAgo: '{{count}}分钟前',
+    hoursAgo: '{{count}}小时前',
+    daysAgo: '{{count}}天前',
+    weeksAgo: '{{count}}周前',
+    monthsAgo: '{{count}}个月前',
+    yearsAgo: '{{count}}年前',
+  },
+  converter: {
+    resultOptions: '结果选项',
+    copyValue: '复制数值',
+    copyWithUnit: '复制带单位',
+    inputCopied: '输入值已复制到剪贴板',
+    resultCopied: '结果已复制到剪贴板',
+    inputWithUnitCopied: '带单位的输入值已复制到剪贴板',
+    resultWithUnitCopied: '带单位的结果已复制到剪贴板',
+    expressionCopied: '表达式已复制到剪贴板',
+    toggleFavorite: '切换收藏',
+    swapUnits: '交换单位',
   },
   customUnits: {
     title: '自定义单位',

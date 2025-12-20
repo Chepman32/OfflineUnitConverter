@@ -189,8 +189,8 @@ export const units: UnitDef[] = [
   { id: 'mph', categoryId: 'speed', name: 'Mile per hour', symbol: 'mph', factor: 1609.344 / 3600 },
 
   // Temperature (base: K)
-  { id: 'C', categoryId: 'temperature', name: 'Celsius', symbol: '°C', factor: 1, offset: 273.15 },
-  { id: 'F', categoryId: 'temperature', name: 'Fahrenheit', symbol: '°F', factor: 5 / 9, offset: 459.67 },
+  { id: 'degC', categoryId: 'temperature', name: 'Celsius', symbol: '°C', factor: 1, offset: 273.15 },
+  { id: 'degF', categoryId: 'temperature', name: 'Fahrenheit', symbol: '°F', factor: 5 / 9, offset: 459.67 },
   { id: 'K', categoryId: 'temperature', name: 'Kelvin', symbol: 'K', factor: 1, offset: 0 },
   { id: 'R', categoryId: 'temperature', name: 'Rankine', symbol: '°R', factor: 5 / 9, offset: 0 },
 

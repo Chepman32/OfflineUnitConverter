@@ -1,15 +1,18 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Animated, { Layout, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { useOptionalNavigation } from '../navigation/safe';
 import { triggerLightHaptic } from '../utils/haptics';
+import { getUnitById } from '../data/units';
 
 export default function FavoritesScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const favorites = useAppStore(s => s.favorites);
   const reduceMotion = useAppStore(s => s.reduceMotion);
   const setFrom = useAppStore(s => s.setFrom);
@@ -44,7 +47,12 @@ export default function FavoritesScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, paddingTop: insets.top },
+      ]}
+    >
       <Text style={[styles.title, { color: theme.onSurface }]}>
         {t('favorites.title', 'Favorites')}
       </Text>
@@ -54,60 +62,66 @@ export default function FavoritesScreen() {
             {t('favorites.empty', 'No favorites yet.')}
           </Text>
         ) : (
-          favorites.map(item => (
-            <Animated.View
-              key={item.id}
-              style={styles.row}
-              layout={
-                reduceMotion
-                  ? undefined
-                  : Layout.springify().damping(15).stiffness(120)
-              }
-              entering={reduceMotion ? undefined : FadeIn.duration(200)}
-              exiting={reduceMotion ? undefined : FadeOut.duration(200)}
-            >
-              <Text style={[styles.pair, { color: theme.onSurface }]}>
-                {item.fromUnitId} → {item.toUnitId}
-              </Text>
-              <View style={styles.actions}>
-                <Pressable
-                  accessibilityRole="button"
-                  style={styles.smallBtn}
-                  onPress={() => handleMoveUp(item.id)}
-                >
-                  <Text style={styles.actionText}>↑</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  style={styles.smallBtn}
-                  onPress={() => handleMoveDown(item.id)}
-                >
-                  <Text style={styles.actionText}>↓</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  style={styles.smallBtn}
-                  onPress={() => handleRemove(item.id)}
-                >
-                  <Text style={styles.actionText}>✕</Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  style={styles.open}
-                  onPress={() => {
-                    triggerLightHaptic();
-                    setFrom(item.fromUnitId);
-                    setTo(item.toUnitId);
-                    nav?.navigate?.('Converter');
-                  }}
-                >
-                  <Text style={styles.openText}>
-                    {t('favorites.open', 'Open')}
-                  </Text>
-                </Pressable>
-              </View>
-            </Animated.View>
-          ))
+          favorites.map(item => {
+            const fromUnit = getUnitById(item.fromUnitId);
+            const toUnit = getUnitById(item.toUnitId);
+            const fromSymbol = fromUnit?.symbol || item.fromUnitId;
+            const toSymbol = toUnit?.symbol || item.toUnitId;
+            return (
+              <Animated.View
+                key={item.id}
+                style={styles.row}
+                layout={
+                  reduceMotion
+                    ? undefined
+                    : Layout.springify().damping(15).stiffness(120)
+                }
+                entering={reduceMotion ? undefined : FadeIn.duration(200)}
+                exiting={reduceMotion ? undefined : FadeOut.duration(200)}
+              >
+                <Text style={[styles.pair, { color: theme.onSurface }]}>
+                  {fromSymbol} → {toSymbol}
+                </Text>
+                <View style={styles.actions}>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.smallBtn}
+                    onPress={() => handleMoveUp(item.id)}
+                  >
+                    <Text style={styles.actionText}>↑</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.smallBtn}
+                    onPress={() => handleMoveDown(item.id)}
+                  >
+                    <Text style={styles.actionText}>↓</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.smallBtn}
+                    onPress={() => handleRemove(item.id)}
+                  >
+                    <Text style={styles.actionText}>✕</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={styles.open}
+                    onPress={() => {
+                      triggerLightHaptic();
+                      setFrom(item.fromUnitId);
+                      setTo(item.toUnitId);
+                      nav?.navigate?.('Converter');
+                    }}
+                  >
+                    <Text style={styles.openText}>
+                      {t('favorites.open', 'Open')}
+                    </Text>
+                  </Pressable>
+                </View>
+              </Animated.View>
+            );
+          })
         )}
       </ScrollView>
     </View>

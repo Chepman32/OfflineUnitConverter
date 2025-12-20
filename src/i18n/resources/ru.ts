@@ -291,6 +291,15 @@ export default {
   },
   favorites: { title: 'Избранное', empty: 'Избранное пусто.', open: 'Открыть' },
   errors: { invalidNumber: 'Неверный формат числа' },
+  relativeTime: {
+    justNow: 'только что',
+    minutesAgo: '{{count}} минут назад',
+    hoursAgo: '{{count}} часов назад',
+    daysAgo: '{{count}} дней назад',
+    weeksAgo: '{{count}} недель назад',
+    monthsAgo: '{{count}} месяцев назад',
+    yearsAgo: '{{count}} лет назад',
+  },
   converter: {
     resultOptions: 'Опции результата',
     copyValue: 'Копировать значение',

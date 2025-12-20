@@ -275,6 +275,15 @@ export default {
   errors: {
     invalidNumber: '잘못된 숫자 형식',
   },
+  relativeTime: {
+    justNow: '방금',
+    minutesAgo: '{{count}}분 전',
+    hoursAgo: '{{count}}시간 전',
+    daysAgo: '{{count}}일 전',
+    weeksAgo: '{{count}}주 전',
+    monthsAgo: '{{count}}개월 전',
+    yearsAgo: '{{count}}년 전',
+  },
   converter: {
     resultOptions: '결과 옵션',
     copyValue: '값 복사',

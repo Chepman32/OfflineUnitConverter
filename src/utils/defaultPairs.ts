@@ -4,7 +4,7 @@ import type { Category } from '../domain/conversion/types';
 export const defaultPairs: Record<string, [string, string]> = {
   length: ['m', 'ft'],
   mass: ['kg', 'lb'],
-  temperature: ['C', 'F'],
+  temperature: ['degC', 'degF'],
   volume: ['L', 'gal_us'],
   area: ['m2', 'ft2'],
   speed: ['m_s', 'mph'],

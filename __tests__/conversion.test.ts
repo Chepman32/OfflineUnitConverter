@@ -10,7 +10,7 @@ describe('conversion engine', () => {
   });
   it('converts celsius to fahrenheit via kelvin base', () => {
     // 0°C -> 32°F
-    const out = convert('0', 'C', 'F', { decimals: 2 });
+    const out = convert('0', 'degC', 'degF', { decimals: 2 });
     expect(out).toBe('32.00');
   });
   it('converts SI vs binary data units', () => {

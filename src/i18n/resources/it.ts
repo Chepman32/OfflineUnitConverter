@@ -262,6 +262,15 @@ export default {
   },
   favorites: { title: 'Preferiti', empty: 'Nessun preferito.', open: 'Apri' },
   errors: { invalidNumber: 'Formato numero non valido' },
+  relativeTime: {
+    justNow: 'proprio ora',
+    minutesAgo: '{{count}} minuti fa',
+    hoursAgo: '{{count}} ore fa',
+    daysAgo: '{{count}} giorni fa',
+    weeksAgo: '{{count}} settimane fa',
+    monthsAgo: '{{count}} mesi fa',
+    yearsAgo: '{{count}} anni fa',
+  },
   converter: {
     resultOptions: 'Opzioni risultato',
     copyValue: 'Copia valore',

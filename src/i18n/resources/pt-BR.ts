@@ -275,6 +275,15 @@ export default {
   errors: {
     invalidNumber: 'Formato de número inválido',
   },
+  relativeTime: {
+    justNow: 'agora mesmo',
+    minutesAgo: 'há {{count}} minutos',
+    hoursAgo: 'há {{count}} horas',
+    daysAgo: 'há {{count}} dias',
+    weeksAgo: 'há {{count}} semanas',
+    monthsAgo: 'há {{count}} meses',
+    yearsAgo: 'há {{count}} anos',
+  },
   converter: {
     resultOptions: 'Opções do resultado',
     copyValue: 'Copiar valor',

@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { convert } from '../domain/conversion/engine';
 import { getUnitById, categories, getUnitsByCategory } from '../data/units';
@@ -25,7 +26,10 @@ import { triggerLightHaptic, triggerSelectionHaptic } from '../utils/haptics';
 // Temperature units C and F need to use temp_C and temp_F keys to avoid conflict with Coulomb and Farad
 const getUnitTranslationKey = (unitId: string): string => {
   const unit = getUnitById(unitId);
-  if (unit?.categoryId === 'temperature' && (unitId === 'C' || unitId === 'F')) {
+  if (
+    unit?.categoryId === 'temperature' &&
+    (unitId === 'C' || unitId === 'F')
+  ) {
     return `temp_${unitId}`;
   }
   return unitId;
@@ -55,6 +59,7 @@ export default function ConverterScreen() {
   const copyMode = useAppStore(s => s.copyMode);
   const categoryId = getUnitById(fromUnit)?.categoryId ?? 'length';
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   // Build menu for unit selection
   const buildUnitMenu = React.useCallback(
@@ -243,7 +248,12 @@ export default function ConverterScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, paddingTop: insets.top },
+      ]}
+    >
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
@@ -336,11 +346,17 @@ export default function ConverterScreen() {
                     t('converter.resultOptions'),
                     `${t('common.value')}: ${result}\n${t('common.from')}: ${
                       fromUnitObj
-                        ? t(`units.${getUnitTranslationKey(fromUnitObj.id)}`, fromUnitObj.name)
+                        ? t(
+                            `units.${getUnitTranslationKey(fromUnitObj.id)}`,
+                            fromUnitObj.name,
+                          )
                         : fromUnit
                     }\n${t('common.to')}: ${
                       toUnitObj
-                        ? t(`units.${getUnitTranslationKey(toUnitObj.id)}`, toUnitObj.name)
+                        ? t(
+                            `units.${getUnitTranslationKey(toUnitObj.id)}`,
+                            toUnitObj.name,
+                          )
                         : toUnit
                     }`,
                     [

@@ -8,20 +8,21 @@ import {
   Alert,
   Share,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useAppStore } from '../store';
 import { useTheme } from '../theme/ThemeProvider';
 import { getUnitById } from '../data/units';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import { formatRelativeTime } from '../utils/relativeTime';
 import { useOptionalNavigation } from '../navigation/safe';
 import { triggerLightHaptic } from '../utils/haptics';
 
 export default function HistoryScreen() {
   const { t } = useTranslation();
-  dayjs.extend(relativeTime as any);
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+
   const history = useAppStore(s => s.history);
   const clear = useAppStore(s => s.clearHistory);
   const setFrom = useAppStore(s => s.setFrom);
@@ -33,7 +34,12 @@ export default function HistoryScreen() {
   const copyMode = useAppStore(s => s.copyMode);
   const nav = useOptionalNavigation();
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.surface, paddingTop: insets.top },
+      ]}
+    >
       <View
         style={{
           flexDirection: 'row',
@@ -95,13 +101,12 @@ export default function HistoryScreen() {
                 }}
               >
                 <Text style={[styles.expr, { color: theme.onSurface }]}>
-                  {item.inputValue} {item.fromUnitId} → {item.resultValue}{' '}
-                  {item.toUnitId}
+                  {item.inputValue} {fromSymbol} → {item.resultValue} {toSymbol}
                 </Text>
                 <Text
                   style={[styles.time, { color: theme.onSurfaceSecondary }]}
                 >
-                  {dayjs(item.createdAt).fromNow()}
+                  {formatRelativeTime(item.createdAt)}
                 </Text>
               </Pressable>
               <View style={styles.actions}>

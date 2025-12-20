@@ -255,6 +255,24 @@ export default {
     measurementSystem: 'माप प्रणाली',
     metric: 'मीट्रिक',
     imperial: 'इम्पीरियल',
+    themes: {
+      system: 'सिस्टम',
+      light: 'लाइट',
+      dark: 'डार्क',
+      solar: 'सोलर',
+      mono: 'मोनो',
+    },
+    roundingModes: {
+      halfUp: 'ऊपर राउंड',
+      floor: 'नीचे राउंड',
+      ceil: 'छत तक राउंड',
+      bankers: 'बैंकर राउंडिंग',
+    },
+    copyModes: {
+      value: 'मान',
+      value_unit: 'मान और इकाई',
+      expression: 'व्यंजक',
+    },
   },
   home: { categories: 'श्रेणियाँ', recents: 'हाल के' },
   licenses: { title: 'लाइसेंस', note: 'तृतीय-पक्ष लाइसेंस और आभार।' },
@@ -262,6 +280,7 @@ export default {
     title: 'इतिहास',
     clear: 'साफ़ करें',
     empty: 'अभी तक कोई इतिहास नहीं।',
+    share: 'शेयर',
   },
   favorites: {
     title: 'पसंदीदा',
@@ -269,6 +288,15 @@ export default {
     open: 'खोलें',
   },
   errors: { invalidNumber: 'अमान्य संख्या प्रारूप' },
+  relativeTime: {
+    justNow: 'अभी',
+    minutesAgo: '{{count}} मिनट पहले',
+    hoursAgo: '{{count}} घंटे पहले',
+    daysAgo: '{{count}} दिन पहले',
+    weeksAgo: '{{count}} सप्ताह पहले',
+    monthsAgo: '{{count}} महीने पहले',
+    yearsAgo: '{{count}} साल पहले',
+  },
   converter: {
     resultOptions: 'परिणाम विकल्प',
     copyValue: 'मान कॉपी करें',

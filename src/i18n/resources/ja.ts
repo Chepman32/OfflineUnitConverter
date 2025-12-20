@@ -275,6 +275,15 @@ export default {
   errors: {
     invalidNumber: '無効な数値形式',
   },
+  relativeTime: {
+    justNow: 'たった今',
+    minutesAgo: '{{count}}分前',
+    hoursAgo: '{{count}}時間前',
+    daysAgo: '{{count}}日前',
+    weeksAgo: '{{count}}週間前',
+    monthsAgo: '{{count}}ヶ月前',
+    yearsAgo: '{{count}}年前',
+  },
   converter: {
     resultOptions: '結果オプション',
     copyValue: '値をコピー',

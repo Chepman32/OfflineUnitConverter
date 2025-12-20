@@ -255,6 +255,15 @@ export default {
   },
   favorites: { title: 'المفضلة', empty: 'لا توجد مفضلات بعد.', open: 'فتح' },
   errors: { invalidNumber: 'تنسيق رقم غير صالح' },
+  relativeTime: {
+    justNow: 'الآن',
+    minutesAgo: 'منذ {{count}} دقائق',
+    hoursAgo: 'منذ {{count}} ساعات',
+    daysAgo: 'منذ {{count}} أيام',
+    weeksAgo: 'منذ {{count}} أسابيع',
+    monthsAgo: 'منذ {{count}} أشهر',
+    yearsAgo: 'منذ {{count}} سنوات',
+  },
   converter: {
     resultOptions: 'خيارات النتيجة',
     copyValue: 'نسخ القيمة',
